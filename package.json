@@ -1,0 +1,25 @@
+{
+  "name": "ai-lab",
+  "version": "0.0.1",
+  "description": "A set of components for AI in React",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinitered/ai-lab.git"
+  },
+  "keywords": [
+    "AI",
+    "TensorFlow.js",
+    "React",
+    "Vue"
+  ],
+  "author": "Gant Laborde",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/infinitered/ai-lab/issues"
+  },
+  "homepage": "https://github.com/infinitered/ai-lab#readme"
+}
