@@ -1,10 +1,39 @@
 {
   "name": "ai-lab",
-  "version": "0.0.1",
   "description": "A set of components for AI in React",
-  "main": "index.js",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test --passWithNoTests",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why"
+  },
+  "peerDependencies": {
+    "react": ">=16"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
   },
   "repository": {
     "type": "git",
@@ -17,9 +46,31 @@
     "Vue"
   ],
   "author": "Gant Laborde",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/infinitered/ai-lab/issues"
   },
-  "homepage": "https://github.com/infinitered/ai-lab#readme"
+  "homepage": "https://github.com/infinitered/ai-lab#readme",
+  "module": "dist/ai-lab.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/ai-lab.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/ai-lab.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^5.0.3",
+    "@types/react": "^17.0.22",
+    "@types/react-dom": "^17.0.9",
+    "husky": "^7.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "size-limit": "^5.0.3",
+    "tsdx": "^0.14.1",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.3"
+  }
 }
