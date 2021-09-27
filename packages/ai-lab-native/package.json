@@ -21,7 +21,7 @@
   "devDependencies": {
     "@react-native-community/eslint-config": "^0.0.5",
     "@types/react": "^17.0.24",
-    "@types/react-native": "^0.65.1",
+    "@types/react-native": "^0.65.1"
   },
   "peerDependencies": {
     "react": "^17.0.2",
