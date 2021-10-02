@@ -35,15 +35,13 @@ export const AILabImages = ({ src, ...props }: ImageProps) => {
   useEffect(() => {
     if (model) {
       async function tensorFlowIt() {
-        const aiImage = document.getElementById('mystery') as HTMLImageElement;
+        const aiImage = imgRef.current as HTMLImageElement;
         const myTensor = tf.browser.fromPixels(aiImage);
         // SSD Mobilenet single batch
         const readyfied = tf.expandDims(myTensor, 0);
         const results = await model.executeAsync(readyfied);
         // Prep Canvas
-        const detection = document.getElementById(
-          'detection'
-        ) as HTMLCanvasElement;
+        const detection = canvasRef.current as HTMLCanvasElement;
         const ctx = detection.getContext('2d');
         const imgWidth = aiImage.width;
         const imgHeight = aiImage.height;
@@ -51,8 +49,6 @@ export const AILabImages = ({ src, ...props }: ImageProps) => {
         detection.height = imgHeight;
         ctx.font = '16px sans-serif';
         ctx.textBaseline = 'top';
-
-        console.log({ readyfied, results, aiImage, detection });
 
         // Get a clean tensor of top indices
         const detectionThreshold = 0.4;
@@ -134,10 +130,9 @@ export const AILabImages = ({ src, ...props }: ImageProps) => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <img ref={imgRef} src={src} alt="image" id="mystery" />
+      <img ref={imgRef} src={src} alt="image" />
       <canvas
         ref={canvasRef}
-        id="detection"
         style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
       />
     </div>
