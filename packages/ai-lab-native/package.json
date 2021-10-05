@@ -18,8 +18,17 @@
   },
   "author": "Gant Laborde",
   "license": "MIT",
+  "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.0",
+    "@tensorflow/tfjs": "2.6.0",
+    "@tensorflow/tfjs-node": "^3.0.0",
+    "@tensorflow/tfjs-react-native": "^0.7.0",
+    "core-js": "^3.8.0",
+    "regenerator-runtime": "^0.13.7"
+  },
   "devDependencies": {
     "@babel/core": "^7.15.5",
+    "@react-native-async-storage/async-storage": "^1.15.9",
     "@react-native-community/eslint-config": "^0.0.5",
     "@storybook/addon-actions": "^5.3",
     "@storybook/addon-knobs": "^5.3",
@@ -27,12 +36,25 @@
     "@storybook/addon-ondevice-actions": "^5.3.23",
     "@storybook/addon-ondevice-knobs": "^5.3.25",
     "@storybook/react-native": "^5.3.25",
+    "@types/core-js": "^2.5.5",
     "@types/react": "^17.0.24",
     "@types/react-native": "^0.65.1",
-    "babel-loader": "^8.2.2"
+    "@types/regenerator-runtime": "^0.13.1",
+    "babel-loader": "^8.2.2",
+    "expo-camera": "^11.2.2",
+    "expo-gl": "^10.4.2",
+    "expo-gl-cpp": "^10.4.1",
+    "react-native-fs": "^2.18.0",
+    "react-native-unimodules": "^0.14.8"
   },
   "peerDependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.9",
+    "expo-camera": "^11.2.2",
+    "expo-gl": "^10.4.2",
+    "expo-gl-cpp": "^10.4.1",
     "react": "^17.0.2",
-    "react-native": "^0.65.1"
+    "react-native": "^0.65.1",
+    "react-native-fs": "^2.18.0",
+    "react-native-unimodules": "^0.14.8"
   }
 }

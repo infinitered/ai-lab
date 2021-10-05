@@ -3,16 +3,15 @@ import * as tf from '@tensorflow/tfjs';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { CLASSES } from './labels.js';
-import { GraphModel } from '@tensorflow/tfjs';
 
 interface ImageProps {
   src: string;
 }
 
-export const AILabImages = ({ src, ...props }: ImageProps) => {
+export const AILabImage = ({ src, ...props }: ImageProps) => {
   const imgRef = useRef();
   const canvasRef = useRef();
-  const [model, setModel] = useState<GraphModel>();
+  const [model, setModel] = useState<tf.GraphModel>();
 
   const modelPath =
     'https://tfhub.dev/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1';
