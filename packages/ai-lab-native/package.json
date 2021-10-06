@@ -44,6 +44,7 @@
     "expo-camera": "^11.2.2",
     "expo-gl": "^10.4.2",
     "expo-gl-cpp": "^10.4.1",
+    "react": "17.0.2",
     "react-native-fs": "^2.18.0",
     "react-native-unimodules": "^0.14.8"
   },
@@ -56,5 +57,8 @@
     "react-native": "^0.65.1",
     "react-native-fs": "^2.18.0",
     "react-native-unimodules": "^0.14.8"
+  },
+  "resolutions": {
+    "react": "17.0.2"
   }
 }
