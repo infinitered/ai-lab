@@ -30,11 +30,7 @@
     "@babel/core": "^7.15.5",
     "@react-native-async-storage/async-storage": "^1.15.9",
     "@react-native-community/eslint-config": "^0.0.5",
-    "@storybook/addon-actions": "^5.3",
-    "@storybook/addon-knobs": "^5.3",
-    "@storybook/addon-links": "^5.3",
-    "@storybook/addon-ondevice-actions": "^5.3.23",
-    "@storybook/addon-ondevice-knobs": "^5.3.25",
+    "@storybook/api": "^6.3.10",
     "@storybook/react-native": "^5.3.25",
     "@types/core-js": "^2.5.5",
     "@types/react": "^17.0.24",
@@ -44,7 +40,6 @@
     "expo-camera": "^11.2.2",
     "expo-gl": "^10.4.2",
     "expo-gl-cpp": "^10.4.1",
-    "react": "17.0.2",
     "react-native-fs": "^2.18.0",
     "react-native-unimodules": "^0.14.8"
   },
@@ -59,6 +54,6 @@
     "react-native-unimodules": "^0.14.8"
   },
   "resolutions": {
-    "react": "17.0.2"
+    "@storybook/api": "^6.3.10"
   }
 }

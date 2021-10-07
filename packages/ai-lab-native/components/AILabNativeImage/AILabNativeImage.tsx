@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import '@tensorflow/tfjs-react-native';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
 import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
 import { View, Image, ImageSourcePropType } from 'react-native';
 import * as mobilenet from '@tensorflow-models/mobilenet';
