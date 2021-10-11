@@ -23,14 +23,6 @@ module.exports = (async () => {
         'react-native': reactNativePath,
       },
     },
-    transformer: {
-      getTransformOptions: async () => ({
-        transform: {
-          experimentalImportSupport: false,
-          inlineRequires: true,
-        },
-      }),
-    },
     watchFolders: [aiLabNativePath],
   };
 })();
