@@ -1,5 +1,5 @@
 package com.example;
-import com.myapp.generated.BasePackageList;
+import com.example.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
@@ -19,7 +19,6 @@ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 
 public class MainApplication extends Application implements ReactApplication {
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
-
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
         @Override
