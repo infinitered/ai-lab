@@ -5,7 +5,9 @@
   "license": "MIT",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
     "react-app-polyfill": "^1.0.0"
@@ -19,6 +21,11 @@
   "devDependencies": {
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.8.4",
+    "@storybook/addon-actions": "^6.3.12",
+    "@storybook/addon-essentials": "^6.3.12",
+    "@storybook/addon-links": "^6.3.12",
+    "@storybook/addon-storyshots": "^6.3.12",
+    "@storybook/react": "^6.3.12",
     "parcel": "2.0.0-rc.0",
     "typescript": "^3.4.5"
   }
