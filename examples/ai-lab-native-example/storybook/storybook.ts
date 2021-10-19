@@ -1,11 +1,11 @@
 // if you use expo remove this line
-import { AppRegistry } from 'react-native';
+import {AppRegistry} from 'react-native';
 
-import { getStorybookUI, configure } from '@storybook/react-native';
+import {getStorybookUI, configure} from '@storybook/react-native';
 
 // import storiess
 configure(() => {
-  require('../components/AILabNativeImage/AILabNativeImage.stories');
+  require('./AILabNativeImage.stories');
 }, module);
 
 // Refer to https://github.com/storybookjs/storybook/tree/master/app/react-native#start-command-parameters
@@ -16,4 +16,4 @@ const StorybookUIRoot = getStorybookUI({});
 // If you use Expo you should remove this line.
 AppRegistry.registerComponent('AILabNative', () => StorybookUIRoot);
 
-export { StorybookUIRoot };
+export {StorybookUIRoot};
