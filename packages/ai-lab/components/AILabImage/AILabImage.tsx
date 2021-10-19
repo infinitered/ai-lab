@@ -14,12 +14,12 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
   const [model, setModel] = useState<tf.GraphModel>();
 
   const modelPath =
-    'https://tfhub.dev/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1';
+    'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
 
   useEffect(() => {
     async function loadModel(modelPath: string | tf.io.IOHandler) {
       try {
-        const model = await tf.loadGraphModel(modelPath, { fromTFHub: true });
+        const model = await tf.loadGraphModel(modelPath);
         setModel(model);
       } catch (err) {
         console.log(err);
@@ -36,9 +36,11 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
       async function tensorFlowIt() {
         const aiImage = imgRef.current as HTMLImageElement;
         const myTensor = tf.browser.fromPixels(aiImage);
+
         // SSD Mobilenet single batch
         const readyfied = tf.expandDims(myTensor, 0);
         const results = await model.executeAsync(readyfied);
+
         // Prep Canvas
         const detection = canvasRef.current as HTMLCanvasElement;
         const ctx = detection.getContext('2d');
