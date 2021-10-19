@@ -2,15 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { CLASSES } from './labels.js';
+import { CLASSES } from './labels';
 
-interface ImageProps {
+export interface ImageProps {
   src: string;
 }
 
 export const AILabImage = ({ src, ...props }: ImageProps) => {
-  const imgRef = useRef();
-  const canvasRef = useRef();
+  const imgRef = useRef<HTMLImageElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [model, setModel] = useState<tf.GraphModel>();
 
   const modelPath =
@@ -33,8 +33,8 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
 
   useEffect(() => {
     if (model) {
-      async function tensorFlowIt() {
-        const aiImage = imgRef.current as HTMLImageElement;
+      const tensorFlowIt = async () => {
+        const aiImage = imgRef.current;
         const myTensor = tf.browser.fromPixels(aiImage);
 
         // SSD Mobilenet single batch
@@ -42,7 +42,7 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
         const results = await model.executeAsync(readyfied);
 
         // Prep Canvas
-        const detection = canvasRef.current as HTMLCanvasElement;
+        const detection = canvasRef.current;
         const ctx = detection.getContext('2d');
         const imgWidth = aiImage.width;
         const imgHeight = aiImage.height;
@@ -124,7 +124,7 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
           ctx.fillStyle = '#000000';
           ctx.fillText(label, startX, startY);
         });
-      }
+      };
       tensorFlowIt();
     }
   }, [model]);

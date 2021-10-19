@@ -1,5 +1,5 @@
 import React from 'react';
-import { AILabImage } from './AILabImage';
+import { AILabImage } from '../../packages/ai-lab/components/AILabImage/AILabImage';
 
 export default {
   title: 'Example/AILabImage',
