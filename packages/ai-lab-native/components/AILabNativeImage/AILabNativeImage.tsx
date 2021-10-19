@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
-import { CLASSES } from './labels.js';
+import { CLASSES } from './labels';
 
-interface ImageProps {
+export interface ImageProps {
   source: ImageSourcePropType;
 }
 
@@ -66,7 +66,7 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
           const readyfied = tf.expandDims(myTensor, 0);
           const results = await model.executeAsync(readyfied);
           // Prep Canvas
-          const detection = canvasRef.current;
+          const detection = canvasRef.current!;
           const ctx = detection.getContext('2d');
           const imgWidth = imgDimensions.width;
           const imgHeight = imgDimensions.height;
@@ -77,7 +77,7 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
 
           // Get a clean tensor of top indices
           const detectionThreshold = 0.2;
-          const iouThreshold = 0.3;
+          const iouThreshold = 0.2;
           // set to 0.1 to bring only 1 unbrella with beach.jpeg file
           const maxBoxes = 20;
           const prominentDetection = tf.topk(results[0]);
