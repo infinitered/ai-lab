@@ -15,7 +15,7 @@
     "expo-gl-cpp": "^10.4.1",
     "jpeg-js": "^0.4.3",
     "react": "17.0.2",
-    "react-native": "0.63.2",
+    "react-native": "0.64.1",
     "react-native-fs": "^2.18.0",
     "react-native-unimodules": "^0.14.8"
   },
