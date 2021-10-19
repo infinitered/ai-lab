@@ -6,4 +6,4 @@ export default {
   component: AILabImage,
 };
 
-export const withAnImage = () => <AILabImage src={require('./beach.jpeg')} />;
+export const withAnImage = () => <AILabImage src={require('./dinner.jpg')} />;
