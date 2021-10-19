@@ -59,8 +59,7 @@
     // "experimentalDecorators": true,        /* Enables experimental support for ES7 decorators. */
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
     "paths": {
-      "ai-lab-native": ["../../packages/ai-lab-native"],
-      "ai-lab-native-storybook": ["../../packages/ai-lab-native/storybook"]
+      "ai-lab-native": ["../../packages/ai-lab-native"]
     }
   },
   "exclude": [
