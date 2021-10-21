@@ -21,7 +21,6 @@
   "dependencies": {
     "@tensorflow-models/mobilenet": "^2.1.0",
     "@tensorflow/tfjs": "2.6.0",
-    "@tensorflow/tfjs-node": "^3.0.0",
     "@tensorflow/tfjs-react-native": "^0.7.0"
   },
   "devDependencies": {
