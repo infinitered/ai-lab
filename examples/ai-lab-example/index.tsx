@@ -1,12 +1,12 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Thing } from 'ai-lab';
+import { AILabImage } from 'ai-lab';
 
 const App = () => {
   return (
     <div>
-      <Thing />
+      <AILabImage src={require('./storybook/dinner.jpg')} />
     </div>
   );
 };
