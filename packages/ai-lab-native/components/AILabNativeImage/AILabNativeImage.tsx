@@ -24,6 +24,7 @@ export const AILabNativeImage = ({
     y: 0,
   });
 
+  const [elapsed, setElapsed] = useState(0);
   const [isModelReady, setIsModelReady] = useState(false);
   const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
   const [model, setModel] = useState<tf.GraphModel>();
@@ -123,6 +124,8 @@ export const AILabNativeImage = ({
           //   justValues,
           // ]);
 
+          let start = performance.now();
+
           chosen.forEach(async (detection: string | number) => {
             ctx.strokeStyle = '#0F0';
             ctx.lineWidth = 4;
@@ -157,6 +160,9 @@ export const AILabNativeImage = ({
             // Draw the text last to ensure it's on top.
             ctx.fillStyle = '#000000';
             ctx.fillText(label, startX, startY);
+
+            //@ts-ignore
+            setElapsed(performance.now() - start);
           });
         }
         setIsTensorFlowReady(true);
@@ -212,7 +218,11 @@ export const AILabNativeImage = ({
       <View style={{ marginTop: 10 }}>
         {isModelReady && <Text>Model ready</Text>}
       </View>
-      {isTensorFlowReady && perf && perfProps && <Performance {...perfProps} />}
+      <View>
+        {isTensorFlowReady && perf && elapsed && perfProps && (
+          <Performance {...perfProps} elapsed={elapsed} />
+        )}
+      </View>
     </View>
   );
 };

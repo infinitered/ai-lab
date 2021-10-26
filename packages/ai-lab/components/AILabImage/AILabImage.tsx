@@ -22,6 +22,7 @@ export const AILabImage = ({
 }: ImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [elapsed, setElapsed] = useState(0);
   const [model, setModel] = useState<tf.GraphModel>();
   const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
@@ -105,6 +106,9 @@ export const AILabImage = ({
           justValues,
         ]);
 
+        //Checking drawing start time
+        let start = performance.now();
+
         chosen.forEach((detection: string | number) => {
           ctx.strokeStyle = '#0F0';
           ctx.lineWidth = 4;
@@ -136,6 +140,9 @@ export const AILabImage = ({
           // Draw the text last to ensure it's on top.
           ctx.fillStyle = '#000000';
           ctx.fillText(label, startX, startY);
+
+          // Checking drawing end time
+          setElapsed(performance.now() - start);
         });
       };
 
@@ -164,7 +171,11 @@ export const AILabImage = ({
         ref={canvasRef}
         style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
       />
-      {isTensorFlowReady && perf && perfProps && <Performance {...perfProps} />}
+      {isTensorFlowReady && perf && perfProps && (
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+          <Performance {...perfProps} elapsed={elapsed} />
+        </div>
+      )}
     </div>
   );
 };

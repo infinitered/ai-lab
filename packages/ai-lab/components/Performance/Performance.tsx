@@ -7,7 +7,8 @@ const numberWithCommas = (x: number) =>
 
 const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
 
-export type PerformanceInfo = tf.MemoryInfo & ProfileInfo & tf.TimingInfo;
+export type PerformanceInfo = ProfileInfo &
+  tf.TimingInfo & { elapsed?: number };
 
 export const perfInfo = async (callback: () => void | Promise<void>) => {
   let timeInfo: tf.TimingInfo = { kernelMs: 0, wallMs: 0 };
@@ -15,11 +16,7 @@ export const perfInfo = async (callback: () => void | Promise<void>) => {
     timeInfo = await tf.time(callback);
   });
 
-  const memoryInfo = tf.memory();
-  console.log('timeInfo: ', timeInfo);
-  console.log('profileInfo: ', profileInfo);
-
-  return { ...memoryInfo, ...profileInfo, ...timeInfo };
+  return { ...profileInfo, ...timeInfo };
 };
 
 export const Performance = ({
@@ -27,49 +24,31 @@ export const Performance = ({
   newBytes,
   newTensors,
   kernelMs,
+  elapsed,
 }: PerformanceInfo) => {
   return (
+    //checkout the bottom left corner
     <div style={styles.container}>
-      <p style={styles.title}>Code Result Memory</p>
-      <div style={styles.memBox}>
-        <div style={styles.dataPoint}>
-          <p>New Bytes: {formatKB(newBytes)} KB </p>
-        </div>
-        <div style={styles.dataPoint}>
-          <p>New Tensors: {newTensors}</p>
-        </div>
-        <div style={styles.dataPoint}>
-          <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
-        </div>
-        <div style={styles.dataPoint}>
-          <p>Execution: {kernelMs} ms</p>
-        </div>
-      </div>
+      <p>New Bytes: {formatKB(newBytes)} KB </p>
+      <p>New Tensors: {newTensors}</p>
+      <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
+      <p>Execution: {kernelMs} ms</p>
+      <p>Drawing Time: {elapsed.toFixed(2)} ms</p>
     </div>
   );
 };
 
 const styles = {
   container: {
-    // backgroundColor: '#3a3d4f',
-  },
-  title: {
-    // margin: 0,
-    // borderColor: '#44475c',
-    // borderWidth: 1,
-    // backgroundColor: '#3f4255',
-    // textAlign: 'center',
-    // fontSize: 16,
-  },
-  memBox: {
-    // display: 'flex',
-    // alignItems: 'flex-start',
-    // flexDirection: 'row',
-    // flexWrap: 'nowrap',
-    // fontSize: '0.9em',
-  },
-  dataPoint: {
-    // flex: 1,
-    // textAlign: 'center',
+    backgroundColor: '#3f4255',
+    borderColor: '#44475c',
+    borderWidth: 1,
+    color: '#fff',
+    fontSize: 16,
+    margin: 20,
+    opacity: '0.8',
+    padding: 10,
+    width: '20%',
+    fontFamily: 'sans-serif',
   },
 };
