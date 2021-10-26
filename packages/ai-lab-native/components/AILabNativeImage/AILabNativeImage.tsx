@@ -24,7 +24,7 @@ export const AILabNativeImage = ({
     y: 0,
   });
 
-  const [elapsed, setElapsed] = useState(0);
+  const [drawingTime, setDrawingTime] = useState(0);
   const [isModelReady, setIsModelReady] = useState(false);
   const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
   const [model, setModel] = useState<tf.GraphModel>();
@@ -67,7 +67,7 @@ export const AILabNativeImage = ({
 
           // SSD Mobilenet single batch
           const readyfied = tf.expandDims(myTensor, 0);
-          const results = await model!.executeAsync(readyfied);
+          const results = await model.executeAsync(readyfied);
           // Prep Canvas
           const detection = canvasRef.current!;
           const ctx = detection.getContext('2d');
@@ -161,8 +161,7 @@ export const AILabNativeImage = ({
             ctx.fillStyle = '#000000';
             ctx.fillText(label, startX, startY);
 
-            //@ts-ignore
-            setElapsed(performance.now() - start);
+            setDrawingTime(performance.now() - start);
           });
         }
         setIsTensorFlowReady(true);
@@ -219,8 +218,8 @@ export const AILabNativeImage = ({
         {isModelReady && <Text>Model ready</Text>}
       </View>
       <View>
-        {isTensorFlowReady && perf && elapsed && perfProps && (
-          <Performance {...perfProps} elapsed={elapsed} />
+        {isTensorFlowReady && perf && !!drawingTime && perfProps && (
+          <Performance {...perfProps} drawingTime={drawingTime} />
         )}
       </View>
     </View>
