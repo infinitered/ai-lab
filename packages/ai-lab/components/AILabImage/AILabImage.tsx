@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { CLASSES } from './labels';
-import { Performance, PerformanceInfo, perfInfo } from '../Performance';
+import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 
 export interface ImageProps
   extends React.DetailedHTMLProps<

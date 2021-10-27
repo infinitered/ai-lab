@@ -4,7 +4,7 @@ import { View, Image, ImageProps, Text, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
 import { CLASSES } from './labels';
-import { Performance, PerformanceInfo, perfInfo } from '../Performance';
+import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 
 export interface AILabNativeImage extends ImageProps {
   perf?: boolean;
@@ -25,163 +25,136 @@ export const AILabNativeImage = ({
   });
 
   const [drawingTime, setDrawingTime] = useState(0);
-  const [isModelReady, setIsModelReady] = useState(false);
-  const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
-  const [model, setModel] = useState<tf.GraphModel>();
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const canvasRef = useRef<Canvas>(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
 
-  useEffect(() => {
-    async function loadModel(modelPath: string | tf.io.IOHandler) {
-      try {
-        const model = await tf.loadGraphModel(modelPath);
-        setModel(model);
-        setIsModelReady(true);
-      } catch (err) {
-        console.log('err', err);
-      }
+  const tensorFlowIt = async (model: tf.GraphModel) => {
+    const imageURI = Image.resolveAssetSource(source).uri;
+    const response = await fetch(imageURI, {}, { isBinary: true });
+    const imageDataArrayBuffer = await response.arrayBuffer();
+    const imageData = new Uint8Array(imageDataArrayBuffer);
+    const { height, width } = imgDimensions;
+    const tensor = decodeJpeg(imageData)
+      .resizeBilinear([height, width])
+      .toInt();
+
+    // SSD Mobilenet single batch
+    const readyfied = tensor.expandDims();
+    const results = await model.executeAsync(readyfied);
+    const [detections, detectionAreas] = results as tf.Tensor<tf.Rank.R2>[];
+
+    // Prep Canvas
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext('2d');
+    canvas.width = width;
+    canvas.height = height;
+    ctx.font = '16px sans-serif';
+    ctx.textBaseline = 'top';
+
+    // Get a clean tensor of top indices
+    const detectionThreshold = 0.2;
+    const iouThreshold = 0.2;
+    // set to 0.1 to bring only 1 unbrella with beach.jpeg file
+    const maxBoxes = 20;
+    const prominentDetection = tf.topk(detections);
+    const justBoxes = detectionAreas.squeeze<tf.Tensor<tf.Rank.R2>>();
+    const justValues = prominentDetection.values.squeeze<
+      tf.Tensor<tf.Rank.R1>
+    >();
+
+    // Move results back to JavaScript in parallel
+    const [maxIndices, scores, boxes] = await Promise.all([
+      prominentDetection.indices.data(),
+      justValues.array(),
+      justBoxes.array(),
+    ]);
+
+    // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
+    const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
+      justBoxes, // [numBoxes, 4]
+      justValues, // [numBoxes]
+      maxBoxes,
+      iouThreshold,
+      detectionThreshold,
+      1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
+    );
+
+    const chosen = await nmsDetections.selectedIndices.data();
+
+    // Mega Clean
+    tf.dispose([
+      results[0],
+      results[1],
+      model,
+      nmsDetections.selectedIndices,
+      nmsDetections.selectedScores,
+      prominentDetection.indices,
+      prominentDetection.values,
+      tensor,
+      readyfied,
+      justBoxes,
+      justValues,
+    ]);
+
+    let start = performance.now();
+
+    for (const detection of chosen) {
+      ctx.strokeStyle = '#0F0';
+      ctx.lineWidth = 4;
+      ctx.globalCompositionOperation = 'destination-over';
+      const detectedIndex = maxIndices[detection];
+      const detectedClass = CLASSES[detectedIndex];
+      const detectedScore = scores[detection];
+      const dBox = boxes[detection];
+
+      // No negative values for start positions
+      const startY = dBox[0] > 0 ? dBox[0] * height : 0;
+      const startX = dBox[1] > 0 ? dBox[1] * width : 0;
+      const boxHeight = (dBox[2] - dBox[0]) * height;
+      const boxWidth = (dBox[3] - dBox[1]) * width;
+      ctx.strokeRect(startX, startY, boxWidth, boxHeight);
+
+      // Draw the label background.
+      ctx.globalCompositionOperation = 'source-over';
+      const textHeight = 16;
+      const textPad = 4;
+      const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
+      const textWidth = (await ctx.measureText(label)).width;
+      ctx.fillStyle = '#0B0';
+      ctx.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
+      // Draw the text last to ensure it's on top.
+      ctx.fillStyle = '#000000';
+      ctx.fillText(label, startX, startY);
     }
-    tf.ready().then(() => {
-      loadModel(modelPath);
-    });
-  }, []);
+
+    setDrawingTime(performance.now() - start);
+  };
 
   useEffect(() => {
-    if (!isTensorFlowReady) {
-      if (model && imgDimensions.width > 0) {
-        async function tensorFlowIt() {
-          const imageAssetPath = Image.resolveAssetSource(source);
-          const response = await fetch(
-            imageAssetPath.uri,
-            {},
-            { isBinary: true }
-          );
-          const imageDataArrayBuffer = await response.arrayBuffer();
-          const imageData = new Uint8Array(imageDataArrayBuffer);
-          const myTensor = decodeJpeg(imageData)
-            .resizeBilinear([300, 400])
-            .toInt();
-
-          // SSD Mobilenet single batch
-          const readyfied = tf.expandDims(myTensor, 0);
-          const results = await model.executeAsync(readyfied);
-          // Prep Canvas
-          const detection = canvasRef.current!;
-          const ctx = detection.getContext('2d');
-          const imgWidth = imgDimensions.width;
-          const imgHeight = imgDimensions.height;
-          detection.width = imgWidth;
-          detection.height = imgHeight;
-          ctx.font = '16px sans-serif';
-          ctx.textBaseline = 'top';
-
-          // Get a clean tensor of top indices
-          const detectionThreshold = 0.2;
-          const iouThreshold = 0.2;
-          // set to 0.1 to bring only 1 unbrella with beach.jpeg file
-          const maxBoxes = 20;
-          // @ts-ignore
-          const prominentDetection = tf.topk(results[0]);
-          // @ts-ignore
-          const justBoxes = results[1].squeeze();
-          const justValues = prominentDetection.values.squeeze();
-
-          // Move results back to JavaScript in parallel
-          const [maxIndices, scores, boxes] = await Promise.all([
-            prominentDetection.indices.data(),
-            justValues.array(),
-            justBoxes.array(),
-          ]);
-
-          // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
-          const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
-            justBoxes, // [numBoxes, 4]
-            justValues, // [numBoxes]
-            maxBoxes,
-            iouThreshold,
-            detectionThreshold,
-            1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
-          );
-
-          const chosen = await nmsDetections.selectedIndices.data();
-          // Mega Clean
-          // tf.dispose([
-          //   // @ts-ignore
-          //   results[0],
-          //   // @ts-ignore
-          //   results[1],
-          //   model,
-          //   nmsDetections.selectedIndices,
-          //   nmsDetections.selectedScores,
-          //   prominentDetection.indices,
-          //   prominentDetection.values,
-          //   myTensor,
-          //   readyfied,
-          //   justBoxes,
-          //   justValues,
-          // ]);
-
-          let start = performance.now();
-
-          chosen.forEach(async (detection: string | number) => {
-            ctx.strokeStyle = '#0F0';
-            ctx.lineWidth = 4;
-            ctx.globalCompositionOperation = 'destination-over';
-            const detectedIndex = maxIndices[detection];
-            const detectedClass = CLASSES[detectedIndex];
-            const detectedScore = scores[detection];
-            const dBox = boxes[detection];
-
-            // No negative values for start positions
-            const startY = dBox[0] > 0 ? dBox[0] * imgHeight : 0;
-            const startX = dBox[1] > 0 ? dBox[1] * imgWidth : 0;
-            const height = (dBox[2] - dBox[0]) * imgHeight;
-            const width = (dBox[3] - dBox[1]) * imgWidth;
-            ctx.strokeRect(startX, startY, width, height);
-
-            // Draw the label background.
-            ctx.globalCompositionOperation = 'source-over';
-            const textHeight = 16;
-            const textPad = 4;
-            const label = `${detectedClass} ${Math.round(
-              detectedScore * 100
-            )}%`;
-            const textWidth = (await ctx.measureText(label)).width;
-            ctx.fillStyle = '#0B0';
-            ctx.fillRect(
-              startX,
-              startY,
-              textWidth + textPad,
-              textHeight + textPad
-            );
-            // Draw the text last to ensure it's on top.
-            ctx.fillStyle = '#000000';
-            ctx.fillText(label, startX, startY);
-
-            setDrawingTime(performance.now() - start);
-          });
+    const setupTFJS = async () => {
+      await tf.ready();
+      const model = await tf.loadGraphModel(modelPath);
+      if (perf || perfCallback) {
+        const perfMetrics = await perfInfo(
+          async () => await tensorFlowIt(model)
+        );
+        if (perf) {
+          setPerfProps(perfMetrics);
         }
-        setIsTensorFlowReady(true);
-
-        (async () => {
-          if (perf || perfCallback) {
-            const perfMetrics = await perfInfo(tensorFlowIt);
-            if (perf) {
-              setPerfProps(perfMetrics);
-            }
-            if (perfCallback) {
-              perfCallback(perfMetrics);
-            }
-          } else {
-            tensorFlowIt();
-          }
-        })();
+        if (perfCallback) {
+          perfCallback(perfMetrics);
+        }
+      } else {
+        tensorFlowIt(model);
       }
+    };
+    if (imgDimensions.height > 0) {
+      setupTFJS();
     }
-  }, [model, imgDimensions, isTensorFlowReady]);
+  }, [imgDimensions.height]);
 
   return (
     <View
@@ -200,7 +173,6 @@ export const AILabNativeImage = ({
           style={{ height: 300, width: 400 }}
           {...props}
         />
-        {/* The bounding box is still showing only half initially */}
         <Canvas
           ref={canvasRef}
           style={{
@@ -214,11 +186,8 @@ export const AILabNativeImage = ({
           }}
         />
       </View>
-      <View style={{ marginTop: 10 }}>
-        {isModelReady && <Text>Model ready</Text>}
-      </View>
       <View>
-        {isTensorFlowReady && perf && !!drawingTime && perfProps && (
+        {perf && !!drawingTime && perfProps && (
           <Performance {...perfProps} drawingTime={drawingTime} />
         )}
       </View>
