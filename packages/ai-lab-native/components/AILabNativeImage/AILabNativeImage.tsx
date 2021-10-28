@@ -24,6 +24,7 @@ export const AILabNativeImage = ({
     y: 0,
   });
 
+  const [isTFReady, setIsTFReady] = useState(false);
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const canvasRef = useRef<Canvas>(null);
@@ -99,6 +100,7 @@ export const AILabNativeImage = ({
       justValues,
     ]);
 
+    // Drawing time measuring starts
     let start = performance.now();
 
     for (const detection of chosen) {
@@ -129,13 +131,16 @@ export const AILabNativeImage = ({
       ctx.fillStyle = '#000000';
       ctx.fillText(label, startX, startY);
     }
-
+    // Drawing time measuring ends
     setDrawingTime(performance.now() - start);
   };
 
   useEffect(() => {
+    tf.ready().then(() => setIsTFReady(true));
+  }, []);
+
+  useEffect(() => {
     const setupTFJS = async () => {
-      await tf.ready();
       const model = await tf.loadGraphModel(modelPath);
       if (perf || perfCallback) {
         const perfMetrics = await perfInfo(
@@ -151,10 +156,10 @@ export const AILabNativeImage = ({
         tensorFlowIt(model);
       }
     };
-    if (imgDimensions.height > 0) {
+    if (isTFReady) {
       setupTFJS();
     }
-  }, [imgDimensions.height]);
+  }, [isTFReady]);
 
   return (
     <View
