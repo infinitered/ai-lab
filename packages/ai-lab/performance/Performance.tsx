@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { ProfileInfo } from '@tensorflow/tfjs-core/dist/engine';
 import React from 'react';
-import { Memory } from '../Memory';
+import { Memory } from './Memory';
 
 const numberWithCommas = (x: number) =>
   x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
