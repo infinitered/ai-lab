@@ -4,7 +4,6 @@ AI-lab is a set of components and tools built on TensorFlow JS for React and Rea
 
 ## Quick Look
 
-<hr>
 
 <center>
 
@@ -16,7 +15,6 @@ AI-lab is a set of components and tools built on TensorFlow JS for React and Rea
 
 ## Example
 
-<hr>
 
 ### _AILabImage_
 
@@ -41,7 +39,6 @@ const MyAIComponent = ({ src }) => {
 
 ## Installation
 
-<hr>
 
 coming soon
 
@@ -49,7 +46,6 @@ coming soon
 
 ## Contributing
 
-<hr>
 
 ### _Stacks we use_ :
 
@@ -61,5 +57,5 @@ coming soon
 
 <br>
 
-<hr>
+  
 #### ⁉️ If you run into problems, first search the issues in this repository. Otherwise you can <a href="https://github.com/infinitered/ai-lab/issues">report the bug</a>.
