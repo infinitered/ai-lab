@@ -22,7 +22,7 @@ export const AILabImage = ({
 }: ImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [elapsed, setElapsed] = useState(0);
+  const [drawingTime, setDrawingTime] = useState(0);
   const [model, setModel] = useState<tf.GraphModel>();
   const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
@@ -92,19 +92,19 @@ export const AILabImage = ({
 
         const chosen = await nmsDetections.selectedIndices.data();
         // Mega Clean
-        tf.dispose([
-          results[0],
-          results[1],
-          model,
-          nmsDetections.selectedIndices,
-          nmsDetections.selectedScores,
-          prominentDetection.indices,
-          prominentDetection.values,
-          myTensor,
-          readyfied,
-          justBoxes,
-          justValues,
-        ]);
+        // tf.dispose([
+        //   results[0],
+        //   results[1],
+        //   model,
+        //   nmsDetections.selectedIndices,
+        //   nmsDetections.selectedScores,
+        //   prominentDetection.indices,
+        //   prominentDetection.values,
+        //   myTensor,
+        //   readyfied,
+        //   justBoxes,
+        //   justValues,
+        // ]);
 
         //Checking drawing start time
         let start = performance.now();
@@ -142,7 +142,10 @@ export const AILabImage = ({
           ctx.fillText(label, startX, startY);
 
           // Checking drawing end time
-          setElapsed(performance.now() - start);
+          setDrawingTime(performance.now() - start);
+
+          const tfmemory = tf.memory();
+          console.log({ tfmemory });
         });
       };
 
@@ -173,7 +176,7 @@ export const AILabImage = ({
       />
       {isTensorFlowReady && perf && perfProps && (
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-          <Performance {...perfProps} elapsed={elapsed} />
+          <Performance {...perfProps} drawingTime={drawingTime} />
         </div>
       )}
     </div>

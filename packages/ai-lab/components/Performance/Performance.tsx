@@ -1,6 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { ProfileInfo } from '@tensorflow/tfjs-core/dist/engine';
 import React from 'react';
+import { Memory } from '../Memory';
 
 const numberWithCommas = (x: number) =>
   x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -8,7 +9,7 @@ const numberWithCommas = (x: number) =>
 const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
 
 export type PerformanceInfo = ProfileInfo &
-  tf.TimingInfo & { elapsed?: number };
+  tf.TimingInfo & { drawingTime?: number };
 
 export const perfInfo = async (callback: () => void | Promise<void>) => {
   let timeInfo: tf.TimingInfo = { kernelMs: 0, wallMs: 0 };
@@ -24,16 +25,22 @@ export const Performance = ({
   newBytes,
   newTensors,
   kernelMs,
-  elapsed,
+  drawingTime,
 }: PerformanceInfo) => {
   return (
-    //checkout the bottom left corner
-    <div style={styles.container}>
-      <p>New Bytes: {formatKB(newBytes)} KB </p>
-      <p>New Tensors: {newTensors}</p>
-      <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
-      <p>Execution: {kernelMs} ms</p>
-      <p>Drawing Time: {elapsed.toFixed(2)} ms</p>
+    //checkout the bottom left corner on the screen to see the metrics boxes
+    <div>
+      <div style={styles.container}>
+        <p>New Bytes: {formatKB(newBytes)} KB </p>
+        <p>New Tensors: {newTensors}</p>
+        <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
+        <p>Execution: {kernelMs} ms</p>
+        {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
+        <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>
+      </div>
+      <div style={styles.container}>
+        <Memory pollingFrequency={3000} />
+      </div>
     </div>
   );
 };
