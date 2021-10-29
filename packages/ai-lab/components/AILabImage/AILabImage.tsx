@@ -3,15 +3,29 @@ import * as tf from '@tensorflow/tfjs';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { CLASSES } from './labels';
+import { Performance, PerformanceInfo, perfInfo } from '../Performance';
 
-export interface ImageProps {
-  src: string;
+export interface ImageProps
+  extends React.DetailedHTMLProps<
+    React.ImgHTMLAttributes<HTMLImageElement>,
+    HTMLImageElement
+  > {
+  perf?: boolean;
+  perfCallback?: (perf: PerformanceInfo) => any;
 }
 
-export const AILabImage = ({ src, ...props }: ImageProps) => {
+export const AILabImage = ({
+  perf,
+  perfCallback,
+  src,
+  ...props
+}: ImageProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [elapsed, setElapsed] = useState(0);
   const [model, setModel] = useState<tf.GraphModel>();
+  const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
+  const [perfProps, setPerfProps] = useState<PerformanceInfo>();
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
@@ -92,6 +106,9 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
           justValues,
         ]);
 
+        //Checking drawing start time
+        let start = performance.now();
+
         chosen.forEach((detection: string | number) => {
           ctx.strokeStyle = '#0F0';
           ctx.lineWidth = 4;
@@ -123,19 +140,42 @@ export const AILabImage = ({ src, ...props }: ImageProps) => {
           // Draw the text last to ensure it's on top.
           ctx.fillStyle = '#000000';
           ctx.fillText(label, startX, startY);
+
+          // Checking drawing end time
+          setElapsed(performance.now() - start);
         });
       };
-      tensorFlowIt();
+
+      setIsTensorFlowReady(true);
+
+      (async () => {
+        if (perf || perfCallback) {
+          const perfMetrics = await perfInfo(tensorFlowIt);
+          if (perf) {
+            setPerfProps(perfMetrics);
+          }
+          if (perfCallback) {
+            perfCallback(perfMetrics);
+          }
+        } else {
+          tensorFlowIt();
+        }
+      })();
     }
   }, [model]);
 
   return (
     <div style={{ position: 'relative' }}>
-      <img ref={imgRef} src={src} alt="image" />
+      <img ref={imgRef} src={src} alt="image" {...props} />
       <canvas
         ref={canvasRef}
         style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
       />
+      {isTensorFlowReady && perf && perfProps && (
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+          <Performance {...perfProps} elapsed={elapsed} />
+        </div>
+      )}
     </div>
   );
 };

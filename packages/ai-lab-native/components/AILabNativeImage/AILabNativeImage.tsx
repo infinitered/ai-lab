@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
-import {
-  View,
-  Image,
-  ImageSourcePropType,
-  Text,
-  LayoutRectangle,
-} from 'react-native';
+import { View, Image, ImageProps, Text, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
 import { CLASSES } from './labels';
+import { Performance, PerformanceInfo, perfInfo } from '../Performance';
 
-export interface ImageProps {
-  source: ImageSourcePropType;
+export interface AILabNativeImage extends ImageProps {
+  perf?: boolean;
+  perfCallback?: (perf: PerformanceInfo) => any;
 }
 
-export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
+export const AILabNativeImage = ({
+  perf,
+  perfCallback,
+  source,
+  ...props
+}: AILabNativeImage) => {
   const [imgDimensions, setImgDimensions] = useState<LayoutRectangle>({
     height: 0,
     width: 0,
@@ -23,9 +24,11 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
     y: 0,
   });
 
+  const [elapsed, setElapsed] = useState(0);
   const [isModelReady, setIsModelReady] = useState(false);
   const [isTensorFlowReady, setIsTensorFlowReady] = useState(false);
   const [model, setModel] = useState<tf.GraphModel>();
+  const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const canvasRef = useRef<Canvas>(null);
 
   const modelPath =
@@ -64,7 +67,7 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
 
           // SSD Mobilenet single batch
           const readyfied = tf.expandDims(myTensor, 0);
-          const results = await model.executeAsync(readyfied);
+          const results = await model!.executeAsync(readyfied);
           // Prep Canvas
           const detection = canvasRef.current!;
           const ctx = detection.getContext('2d');
@@ -80,7 +83,9 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
           const iouThreshold = 0.2;
           // set to 0.1 to bring only 1 unbrella with beach.jpeg file
           const maxBoxes = 20;
+          // @ts-ignore
           const prominentDetection = tf.topk(results[0]);
+          // @ts-ignore
           const justBoxes = results[1].squeeze();
           const justValues = prominentDetection.values.squeeze();
 
@@ -104,7 +109,9 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
           const chosen = await nmsDetections.selectedIndices.data();
           // Mega Clean
           // tf.dispose([
+          //   // @ts-ignore
           //   results[0],
+          //   // @ts-ignore
           //   results[1],
           //   model,
           //   nmsDetections.selectedIndices,
@@ -116,6 +123,8 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
           //   justBoxes,
           //   justValues,
           // ]);
+
+          let start = performance.now();
 
           chosen.forEach(async (detection: string | number) => {
             ctx.strokeStyle = '#0F0';
@@ -151,10 +160,26 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
             // Draw the text last to ensure it's on top.
             ctx.fillStyle = '#000000';
             ctx.fillText(label, startX, startY);
+
+            //@ts-ignore
+            setElapsed(performance.now() - start);
           });
         }
         setIsTensorFlowReady(true);
-        tensorFlowIt();
+
+        (async () => {
+          if (perf || perfCallback) {
+            const perfMetrics = await perfInfo(tensorFlowIt);
+            if (perf) {
+              setPerfProps(perfMetrics);
+            }
+            if (perfCallback) {
+              perfCallback(perfMetrics);
+            }
+          } else {
+            tensorFlowIt();
+          }
+        })();
       }
     }
   }, [model, imgDimensions, isTensorFlowReady]);
@@ -174,6 +199,7 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
           }}
           source={source}
           style={{ height: 300, width: 400 }}
+          {...props}
         />
         {/* The bounding box is still showing only half initially */}
         <Canvas
@@ -191,6 +217,11 @@ export const AILabNativeImage = ({ source, ...props }: ImageProps) => {
       </View>
       <View style={{ marginTop: 10 }}>
         {isModelReady && <Text>Model ready</Text>}
+      </View>
+      <View>
+        {isTensorFlowReady && perf && elapsed && perfProps && (
+          <Performance {...perfProps} elapsed={elapsed} />
+        )}
       </View>
     </View>
   );
