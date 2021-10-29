@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Memory } from '../Memory';
+import { Memory } from './Memory';
 
 export type PerformanceInfo = tf.TimingInfo & { drawingTime?: number };
 

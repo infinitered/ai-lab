@@ -15,12 +15,12 @@ export const Memory = ({ pollingFrequency = 1000 }: MemoryProps) => {
   }, [pollingFrequency]);
 
   return (
-    <>
+    <View>
       {Object.entries(memoryInfo).map(([key, value]) => {
         return (
           <Text key={key} style={{ color: '#fff' }}>{`${key}: ${value}`}</Text>
         );
       })}
-    </>
+    </View>
   );
 };
