@@ -1,8 +1,9 @@
 import * as tf from '@tensorflow/tfjs';
 import React from 'react';
 import { View, Text } from 'react-native';
+import { Memory } from '../Memory';
 
-export type PerformanceInfo = tf.TimingInfo & { elapsed?: number };
+export type PerformanceInfo = tf.TimingInfo & { drawingTime?: number };
 
 export const perfInfo = async (callback: () => void | Promise<void>) => {
   let timeInfo: tf.TimingInfo = { kernelMs: 0, wallMs: 0 };
@@ -14,17 +15,23 @@ export const perfInfo = async (callback: () => void | Promise<void>) => {
   return { ...timeInfo };
 };
 
-export const Performance = ({ elapsed, wallMs }: PerformanceInfo) => {
+export const Performance = ({ drawingTime, wallMs }: PerformanceInfo) => {
   return (
-    <View style={styles.container}>
-      {/* kernelMs returns an error : "WebGL query timers are not supported in
+    <View>
+      <View style={styles.container}>
+        {/* kernelMs returns an error : "WebGL query timers are not supported in
       this environment." So we used wallMs to measure excute time */}
-      <Text style={styles.metrics}>Execution: {wallMs.toFixed(2)} ms</Text>
-      {!!elapsed && (
-        <Text style={styles.metrics}>
-          Drawing Time: {elapsed.toFixed(2)} ms
-        </Text>
-      )}
+        <Text style={styles.textStyle}>Execution: {wallMs.toFixed(2)} ms</Text>
+        {!!drawingTime && (
+          <Text style={styles.textStyle}>
+            Drawing Time: {drawingTime.toFixed(2)} ms
+          </Text>
+        )}
+      </View>
+      <View style={styles.container}>
+        {/* The second metrics box on the screen */}
+        <Memory pollingFrequency={3000} />
+      </View>
     </View>
   );
 };
@@ -36,10 +43,9 @@ const styles = {
     borderColor: '#44475c',
     borderWidth: 1,
     backgroundColor: '#3f4255',
-    textAlign: 'center',
     fontSize: 16,
   },
-  metrics: {
+  textStyle: {
     color: '#fff',
   },
 };
