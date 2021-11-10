@@ -3,7 +3,7 @@ import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
 import { View, Image, ImageProps, Text, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
-import { CLASSES } from './labels';
+import { CLASSES } from '../labels';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 
 export interface AILabNativeImage extends ImageProps {
