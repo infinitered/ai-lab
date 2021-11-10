@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import { Performance, PerformanceProps } from '../../performance';
+import {
+  Performance,
+  PerformanceProps,
+  perfInfo,
+  PerformanceInfo,
+} from '../../performance';
 import { Devices } from './Devices';
 import { CLASSES } from '../labels';
 
@@ -11,15 +16,19 @@ export interface VideoProps
     >,
     PerformanceProps {}
 
+const delay = async (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
 export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
-  const mirror = useRef(null);
+  const myVideo = useRef(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [stream, setStream] = useState(null);
   const [devices, setDevices] = useState(null);
   const [currentDevice, setCurrentDevice] = useState(
     localStorage.getItem('currentDevice') || ''
   );
-  const [mirrored, setMirrored] = useState(true);
+  const [perfProps, setPerfProps] = useState<PerformanceInfo>();
+  const [drawingTime, setDrawingTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const modelPath =
@@ -28,10 +37,7 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
   const maxHeight = window.innerHeight;
   let video: HTMLVideoElement;
 
-  async function tensorFlowIt(video: HTMLVideoElement, model: tf.GraphModel) {
-    const cam = await tf.data.webcam(video);
-    const img = await cam.capture();
-    // img.print();
+  async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
     const readyfied = tf.expandDims(img, 0);
     const results = await model.executeAsync(readyfied);
 
@@ -45,7 +51,7 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
-    const iouThreshold = 0.5;
+    const iouThreshold = 0.4;
     const maxBoxes = 20;
     const prominentDetection = tf.topk(results[0]);
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
@@ -87,7 +93,7 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
     // ]);
 
     //Drawing starts
-    // let start = performance.now();
+    let start = performance.now();
 
     for (const detection of chosen) {
       ctx.strokeStyle = '#0F0';
@@ -117,7 +123,7 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
       ctx.fillText(label, startX, startY);
 
       // Drawing ends
-      // setDrawingTime(performance.now() - start);
+      setDrawingTime(performance.now() - start);
     }
   }
 
@@ -132,7 +138,7 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
       height: { ideal: maxHeight, max: maxHeight },
       facingMode: 'environment', // rear facing if possible options === user, environment, left and right
     };
-    video = mirror.current;
+    video = myVideo.current;
     video.width = maxWidth;
     video.height = maxHeight;
 
@@ -188,19 +194,33 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
   useEffect(() => {
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
-      // if (perf || perfCallback) {
-      //   const perfMetrics = await perfInfo(async () => {
-      //     await tensorFlowIt(model);
-      //   });
-      //   if (perf) {
-      //     setPerfProps(perfMetrics);
-      //   }
-      //   if (perfCallback) {
-      //     perfCallback(perfMetrics);
-      //   }
-      // } else {
-      tensorFlowIt(video, model);
-      // }
+      const cam = await tf.data.webcam(video);
+
+      if (perf || perfCallback) {
+        let handleDrawing: any;
+        while (true) {
+          cancelAnimationFrame(handleDrawing);
+          const perfMetrics = await perfInfo(async () => {
+            const img = await cam.capture();
+            handleDrawing = () => tensorFlowIt(img, model);
+            requestAnimationFrame(handleDrawing);
+            await delay(1000);
+          });
+
+          if (perf) {
+            setPerfProps(perfMetrics);
+          }
+          if (perfCallback) {
+            perfCallback(perfMetrics);
+          }
+        }
+      } else {
+        while (true) {
+          const img = await cam.capture();
+          requestAnimationFrame(() => tensorFlowIt(img, model));
+          await delay(1000);
+        }
+      }
     };
 
     if (isTFReady) {
@@ -213,27 +233,31 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
 
   return (
     <div>
-      <main style={{ position: 'relative' }}>
-        <video
-          ref={mirror}
-          id="mirror"
-          className={mirrored ? 'mirrored' : ''}
-          autoPlay
-        />
+      <div style={{ position: 'relative' }}>
+        <video ref={myVideo} autoPlay />
         <canvas
           ref={canvasRef}
-          style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
+          }}
         />
-      </main>
+        {perf && perfProps && !!drawingTime && (
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+            <Performance {...perfProps} drawingTime={drawingTime} />
+          </div>
+        )}
+      </div>
       <div>
-        <button onClick={() => setMirrored(m => !m)}>
-          {mirrored ? 'Mirrored' : 'Unmirrored'}
-        </button>
         <Devices
           select={currentDevice}
           devices={devices}
           onChange={changeDevice}
         />
+        <button onClick={() => console.log('click')}>Stop WebCam</button>
       </div>
     </div>
   );

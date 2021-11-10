@@ -48,8 +48,8 @@ export const AILabImage = ({
     ctx.textBaseline = 'top';
 
     // Get a clean tensor of top indices
-    const detectionThreshold = 0.8;
-    const iouThreshold = 0.8;
+    const detectionThreshold = 0.4;
+    const iouThreshold = 0.4;
     const maxBoxes = 20;
     const prominentDetection = tf.topk(results[0]);
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
