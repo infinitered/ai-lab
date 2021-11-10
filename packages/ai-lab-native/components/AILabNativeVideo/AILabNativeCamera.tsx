@@ -30,7 +30,7 @@ export const AILabNativeCamera = ({
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [predictionFound, setPredictionFound] = useState(false);
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState<boolean>();
 
   const canvasRef = useRef<Canvas>(null);
   const modelPath =
@@ -44,66 +44,90 @@ export const AILabNativeCamera = ({
       : { width: 1600, height: 1200 };
 
   //Fixed output tensor width and height (based on TF model).
-  const tensorDims = { width: 152, height: 200 };
+  const tensorDims = { width: 300, height: 200 };
 
-  async function getPermission() {
-    const { status } = await Camera.requestPermissionsAsync();
-    console.log(`permissions status: ${status}`);
-    setHasPermission(status === 'granted');
-  }
+  // async function getPermission() {
+  //   const { status } = await Camera.requestPermissionsAsync();
+  //   console.log(`permissions status: ${status}`);
+  //   setHasPermission(status === 'granted');
+  // }
 
-  const tensorFlowIt = async (img: tf.Tensor3D, model: tf.GraphModel) => {
-    if (!img) {
+  // const tensorFlowIt = async (img: tf.Tensor3D, model: tf.GraphModel) => {
+  //   if (!img) {
+  //     return;
+  //   }
+  //   const readyfied = tf.expandDims(img, 0);
+  //   const results = await model.executeAsync(readyfied);
+
+  //   // Prep Canvas
+  //   const canvas = canvasRef.current!;
+  //   const ctx = canvas.getContext('2d');
+  //   canvas.width = width;
+  //   canvas.height = height;
+  //   ctx.font = '16px sans-serif';
+  //   ctx.textBaseline = 'top';
+
+  //   // Get a clean tensor of top indices
+  //   const detectionThreshold = 0.4;
+  //   const iouThreshold = 0.4;
+  //   const maxBoxes = 20;
+  //   const prominentDetection = tf.topk(results[0]);
+  //   const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
+  //   const justValues = prominentDetection.values.squeeze<
+  //     tf.Tensor<tf.Rank.R1>
+  //   >();
+
+  //   // Move results back to JavaScript in parallel
+  //   const [maxIndices, scores, boxes] = await Promise.all([
+  //     prominentDetection.indices.data(),
+  //     justValues.array(),
+  //     justBoxes.array(),
+  //   ]);
+
+  //   // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
+  //   const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
+  //     justBoxes, // [numBoxes, 4]
+  //     justValues, // [numBoxes]
+  //     maxBoxes,
+  //     iouThreshold,
+  //     detectionThreshold,
+  //     1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
+  //   );
+
+  // if (results[0].probability > 0.3) {
+  //   cancelAnimationFrame(requestAnimationFrameId);
+  // }
+  // };
+
+  const getPrediction = async (
+    tensor:
+      | string
+      | number
+      | boolean
+      | tf.Tensor<tf.Rank>
+      | tf.TypedArray
+      | tf.RecursiveArray<number | tf.TypedArray | number[]>
+      | tf.RecursiveArray<boolean>
+      | tf.RecursiveArray<string>
+      | Uint8Array[]
+  ) => {
+    if (!tensor) {
       return;
     }
-    const readyfied = tf.expandDims(img, 0);
+    const model = await tf.loadGraphModel(modelPath);
+
+    const readyfied = tf.expandDims(tensor, 0);
     const results = await model.executeAsync(readyfied);
 
-    //   // Prep Canvas
-    //   const canvas = canvasRef.current!;
-    //   const ctx = canvas.getContext('2d');
-    //   canvas.width = width;
-    //   canvas.height = height;
-    //   ctx.font = '16px sans-serif';
-    //   ctx.textBaseline = 'top';
-
-    //   // Get a clean tensor of top indices
-    //   const detectionThreshold = 0.4;
-    //   const iouThreshold = 0.4;
-    //   const maxBoxes = 20;
-    //   const prominentDetection = tf.topk(results[0]);
-    //   const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
-    //   const justValues = prominentDetection.values.squeeze<
-    //     tf.Tensor<tf.Rank.R1>
-    //   >();
-
-    //   // Move results back to JavaScript in parallel
-    //   const [maxIndices, scores, boxes] = await Promise.all([
-    //     prominentDetection.indices.data(),
-    //     justValues.array(),
-    //     justBoxes.array(),
-    //   ]);
-
-    //   // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
-    //   const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
-    //     justBoxes, // [numBoxes, 4]
-    //     justValues, // [numBoxes]
-    //     maxBoxes,
-    //     iouThreshold,
-    //     detectionThreshold,
-    //     1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
-    //   );
-
-    if (results[0].probability > 0.3) {
-      cancelAnimationFrame(requestAnimationFrameId);
-    }
+    //stop looping!
+    cancelAnimationFrame(requestAnimationFrameId);
+    setPredictionFound(true);
   };
 
   const handleCameraStream = (img: IterableIterator<tf.Tensor3D>) => {
     const loop = async () => {
-      const model = await tf.loadGraphModel(modelPath);
       const nextImageTensor = await img.next().value;
-      await tensorFlowIt(nextImageTensor, model);
+      await getPrediction(nextImageTensor);
 
       // if autorender is false you need the following two lines.
       // updatePreview();
@@ -116,7 +140,7 @@ export const AILabNativeCamera = ({
 
   useEffect(() => {
     tf.ready().then(() => setIsTFReady(true));
-    getPermission();
+    // getPermission();
   }, []);
 
   // useEffect(() => {
@@ -159,9 +183,9 @@ export const AILabNativeCamera = ({
         resizeHeight={tensorDims.height}
         resizeWidth={tensorDims.width}
         resizeDepth={3}
-        onReady={image => handleCameraStream(image)}
+        onReady={img => handleCameraStream(img)}
         autorender={true}
-        useCustomShadersToResize={undefined}
+        useCustomShadersToResize={false}
       />
     </View>
   );
