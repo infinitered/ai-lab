@@ -199,7 +199,6 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       async function handleDrawing() {
         const img = await cam.capture();
         tensorFlowIt(img, model);
-        await delay(1000);
       }
 
       if (perf || perfCallback) {
@@ -208,6 +207,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
           if (perf) {
             setPerfProps(perfMetrics);
+            await delay(1000);
           }
           if (perfCallback) {
             perfCallback(perfMetrics);
@@ -216,6 +216,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       } else {
         while (true) {
           await handleDrawing();
+          await delay(1000);
         }
       }
     };
@@ -223,7 +224,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       setupTFJS();
       setupVideo(currentDevice);
       // cleanup is returned
-      return killVideo;
+      // return killVideo;
     }
   }, [isTFReady]);
 
