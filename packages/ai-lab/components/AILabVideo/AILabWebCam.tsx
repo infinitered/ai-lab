@@ -19,7 +19,7 @@ export interface VideoProps
 const delay = async (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
-export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
+export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   const myVideo = useRef(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [stream, setStream] = useState(null);
@@ -77,20 +77,6 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
     );
 
     const chosen = await nmsDetections.selectedIndices.data();
-    // Mega Clean
-    // tf.dispose([
-    //   results[0],
-    //   results[1],
-    //   model,
-    //   nmsDetections.selectedIndices,
-    //   nmsDetections.selectedScores,
-    //   prominentDetection.indices,
-    //   prominentDetection.values,
-    //   tensor,
-    //   readyfied,
-    //   justBoxes,
-    //   justValues,
-    // ]);
 
     //Drawing starts
     let start = performance.now();
@@ -125,6 +111,21 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
       // Drawing ends
       setDrawingTime(performance.now() - start);
     }
+
+    //Preventing memory leak when it's repainted over and over
+    tf.dispose([
+      results[0],
+      results[1],
+      // model,
+      nmsDetections.selectedIndices,
+      nmsDetections.selectedScores,
+      prominentDetection.indices,
+      prominentDetection.values,
+      img,
+      readyfied,
+      justBoxes,
+      justValues,
+    ]);
   }
 
   async function setupVideo(useDevice: string) {
@@ -195,17 +196,15 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
       const cam = await tf.data.webcam(video);
+      async function handleDrawing() {
+        const img = await cam.capture();
+        tensorFlowIt(img, model);
+        await delay(1000);
+      }
 
       if (perf || perfCallback) {
-        let handleDrawing: any;
         while (true) {
-          cancelAnimationFrame(handleDrawing);
-          const perfMetrics = await perfInfo(async () => {
-            const img = await cam.capture();
-            handleDrawing = () => tensorFlowIt(img, model);
-            requestAnimationFrame(handleDrawing);
-            await delay(1000);
-          });
+          const perfMetrics = await perfInfo(handleDrawing);
 
           if (perf) {
             setPerfProps(perfMetrics);
@@ -216,13 +215,10 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
         }
       } else {
         while (true) {
-          const img = await cam.capture();
-          requestAnimationFrame(() => tensorFlowIt(img, model));
-          await delay(1000);
+          await handleDrawing();
         }
       }
     };
-
     if (isTFReady) {
       setupTFJS();
       setupVideo(currentDevice);
@@ -257,7 +253,6 @@ export const AILabVideo = ({ perf, perfCallback, ...props }: VideoProps) => {
           devices={devices}
           onChange={changeDevice}
         />
-        <button onClick={() => console.log('click')}>Stop WebCam</button>
       </div>
     </div>
   );

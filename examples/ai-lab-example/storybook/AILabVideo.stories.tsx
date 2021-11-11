@@ -1,12 +1,12 @@
 import React from 'react';
-import { AILabVideo } from 'ai-lab';
+import { AILabWebCam } from 'ai-lab';
 
 export default {
   title: 'Example/AILabVideo',
-  component: AILabVideo,
+  component: AILabWebCam,
 };
 
 export const withAWebcam = () => (
   // add  `perf` to show performance metrics
-  <AILabVideo />
+  <AILabWebCam perf />
 );
