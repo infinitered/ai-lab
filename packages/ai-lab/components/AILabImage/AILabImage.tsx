@@ -1,18 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
-import { CLASSES } from './labels';
-import { Performance, PerformanceInfo, perfInfo } from '../../performance';
+import { CLASSES } from '../labels';
+import {
+  Performance,
+  PerformanceInfo,
+  perfInfo,
+  PerformanceProps,
+} from '../../performance';
 
 export interface ImageProps
   extends React.DetailedHTMLProps<
-    React.ImgHTMLAttributes<HTMLImageElement>,
-    HTMLImageElement
-  > {
-  perf?: boolean;
-  perfCallback?: (perf: PerformanceInfo) => any;
-}
+      React.ImgHTMLAttributes<HTMLImageElement>,
+      HTMLImageElement
+    >,
+    PerformanceProps {}
 
 export const AILabImage = ({
   perf,
@@ -48,7 +49,7 @@ export const AILabImage = ({
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
-    const iouThreshold = 0.5;
+    const iouThreshold = 0.4;
     const maxBoxes = 20;
     const prominentDetection = tf.topk(results[0]);
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
@@ -131,9 +132,9 @@ export const AILabImage = ({
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
       if (perf || perfCallback) {
-        const perfMetrics = await perfInfo(
-          async () => await tensorFlowIt(model)
-        );
+        const perfMetrics = await perfInfo(async () => {
+          await tensorFlowIt(model);
+        });
         if (perf) {
           setPerfProps(perfMetrics);
         }
