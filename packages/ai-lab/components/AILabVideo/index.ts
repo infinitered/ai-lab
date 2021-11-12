@@ -1,1 +1,1 @@
-export * from './AILabVideo';
+export * from './AILabWebCam';
