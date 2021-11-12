@@ -43,7 +43,7 @@ export const Performance = ({
         {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
       </div>
       <div style={styles.container}>
-        <Memory pollingFrequency={3000} />
+        <Memory pollingFrequency={1000} />
       </div>
     </div>
   );
