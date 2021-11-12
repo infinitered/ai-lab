@@ -11,6 +11,11 @@ const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
 export type PerformanceInfo = ProfileInfo &
   tf.TimingInfo & { drawingTime?: number };
 
+export interface PerformanceProps {
+  perf?: boolean;
+  perfCallback?: (perf: PerformanceInfo) => any;
+}
+
 export const perfInfo = async (callback: () => void | Promise<void>) => {
   let timeInfo: tf.TimingInfo = { kernelMs: 0, wallMs: 0 };
   const profileInfo = await tf.profile(async () => {
@@ -36,10 +41,9 @@ export const Performance = ({
         <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
         <p>Execution: {kernelMs} ms</p>
         {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
-        <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>
       </div>
       <div style={styles.container}>
-        <Memory pollingFrequency={3000} />
+        <Memory pollingFrequency={1000} />
       </div>
     </div>
   );
