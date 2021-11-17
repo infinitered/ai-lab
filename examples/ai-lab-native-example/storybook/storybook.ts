@@ -6,7 +6,7 @@ import {getStorybookUI, configure} from '@storybook/react-native';
 // import stories
 configure(() => {
   require('./AILabNativeImage.stories');
-  require('./AILabNativeCamera.stories');
+  require('./AILabNativeVideo.stories');
 }, module);
 
 // Refer to https://github.com/storybookjs/storybook/tree/master/app/react-native#start-command-parameters
