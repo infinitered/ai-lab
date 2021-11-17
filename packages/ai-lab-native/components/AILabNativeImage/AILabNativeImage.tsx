@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
-import { View, Image, ImageProps, Text, LayoutRectangle } from 'react-native';
+import { View, Image, ImageProps, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
 import { CLASSES } from '../labels';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
+// import { performance } from 'perf_hooks';
 
 export interface AILabNativeImage extends ImageProps {
   perf?: boolean;
@@ -87,9 +88,9 @@ export const AILabNativeImage = ({
 
     // Mega Clean
     tf.dispose([
-      results[0],
-      results[1],
-      model,
+      // results[0],
+      // results[1],
+      // model,
       nmsDetections.selectedIndices,
       nmsDetections.selectedScores,
       prominentDetection.indices,

@@ -13,12 +13,7 @@ import {
   PerformanceProps,
 } from '../../performance';
 
-export interface VideoProps
-  extends React.DetailedHTMLProps<
-      React.VideoHTMLAttributes<HTMLVideoElement>,
-      HTMLVideoElement
-    >,
-    PerformanceProps {}
+export interface VideoProps extends PerformanceProps {}
 
 export const AILabNativeCamera = ({
   perf,
@@ -26,6 +21,7 @@ export const AILabNativeCamera = ({
   ...props
 }: VideoProps) => {
   const [isTFReady, setIsTFReady] = useState(false);
+  const [model, setModel] = useState<tf.GraphModel>();
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [predictionFound, setPredictionFound] = useState(false);
@@ -42,7 +38,7 @@ export const AILabNativeCamera = ({
       : { width: 1600, height: 1200 };
 
   //Fixed output tensor width and height (based on TF model).
-  const tensorDims = { width: 300, height: 200 };
+  const tensorDims = { width: 350, height: 300 };
 
   // async function getPermission() {
   //   const { status } = await Camera.requestPermissionsAsync();
@@ -50,12 +46,10 @@ export const AILabNativeCamera = ({
   //   setHasPermission(status === 'granted');
   // }
 
-  const tensorFlowIt = async (img: tf.Tensor3D) => {
+  const tensorFlowIt = async (img: tf.Tensor3D, model: tf.GraphModel) => {
     if (!img) {
       return;
     }
-    const model = await tf.loadGraphModel(modelPath);
-
     const readyfied = tf.expandDims(img, 0);
     const results = await model.executeAsync(readyfied);
 
@@ -111,7 +105,7 @@ export const AILabNativeCamera = ({
     // ]);
 
     // Drawing time measuring starts
-    let start = performance.now();
+    // let start = performance.now();
 
     for (const detection of chosen) {
       ctx.strokeStyle = '#0F0';
@@ -142,13 +136,15 @@ export const AILabNativeCamera = ({
       ctx.fillText(label, startX, startY);
     }
     // Drawing time measuring ends
-    setDrawingTime(performance.now() - start);
+    // setDrawingTime(performance.now() - start);
   };
 
   const handleCameraStream = (img: IterableIterator<tf.Tensor3D>) => {
     const loop = async () => {
       const nextImageTensor = await img.next().value;
-      await tensorFlowIt(nextImageTensor);
+      if (model) {
+        await tensorFlowIt(nextImageTensor, model);
+      }
 
       // if autorender is false you need the following two lines.
       // updatePreview();
@@ -160,28 +156,31 @@ export const AILabNativeCamera = ({
   };
 
   useEffect(() => {
-    tf.ready().then(() => setIsTFReady(true));
+    tf.ready().then(async () => {
+      const model = await tf.loadGraphModel(modelPath);
+      setModel(model);
+    });
     // getPermission();
   }, []);
 
   // useEffect(() => {
   //   const setupTFJS = async () => {
   //     const model = await tf.loadGraphModel(modelPath);
-  //     // if (perf || perfCallback) {
-  //     //   const perfMetrics = await perfInfo(async () => {
-  //     //     await tensorFlowIt(model);
-  //     //   });
-  //     //   if (perf) {
-  //     //     setPerfProps(perfMetrics);
+  //     //   if (perf || perfCallback) {
+  //     //     const perfMetrics = await perfInfo(async () => {
+  //     //       await tensorFlowIt(model);
+  //     //     });
+  //     //     if (perf) {
+  //     //       setPerfProps(perfMetrics);
+  //     //     }
+  //     //     if (perfCallback) {
+  //     //       perfCallback(perfMetrics);
+  //     //     }
+  //     //   } else {
+  //     //     tensorFlowIt(video, model);
   //     //   }
-  //     //   if (perfCallback) {
-  //     //     perfCallback(perfMetrics);
-  //     //   }
-  //     // } else {
-  //     // tensorFlowIt(video, model);
-  //     // }
+  //     // };
   //   };
-
   //   if (isTFReady) {
   //     setupTFJS();
   //   }
@@ -195,11 +194,11 @@ export const AILabNativeCamera = ({
         // zoom={0}
         cameraTextureHeight={textureDims.height}
         cameraTextureWidth={textureDims.width}
-        resizeHeight={200}
-        resizeWidth={300}
+        resizeHeight={textureDims.height}
+        resizeWidth={textureDims.width}
         resizeDepth={3}
         onReady={img => handleCameraStream(img)}
-        autorender={true}
+        autorender
         useCustomShadersToResize={false}
       />
     </View>
@@ -212,13 +211,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
     borderWidth: 0,
     borderRadius: 0,
+    alignSelf: 'center',
   },
   cameraView: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
+    justifyContent: 'center',
     width: '100%',
     height: '100%',
     paddingTop: 10,
