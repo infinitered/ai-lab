@@ -1,12 +1,15 @@
 import React from 'react';
-import { AILabWebCam } from 'ai-lab';
+import { AILabWebCam, AILabLocalVideo } from 'ai-lab';
+//@ts-ignore
+import animals from './animals.mp4';
 
 export default {
   title: 'Example/AILabVideo',
-  component: AILabWebCam,
+  component: [AILabWebCam, AILabLocalVideo],
 };
 
 export const withAWebcam = () => (
   // add  `perf` to show performance metrics
   <AILabWebCam perf />
 );
+export const withALocalVideo = () => <AILabLocalVideo perf src={animals} />;
