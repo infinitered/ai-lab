@@ -25,11 +25,11 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     const results = await model.executeAsync(readyfied);
 
     // Prep Canvas
-    const canvas = canvasRef.current;
+    const canvas: HTMLCanvasElement = canvasRef.current;
+    console.log(canvas);
+    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
     canvas.width = maxWidth;
     canvas.height = maxHeight;
-
-    const ctx = canvas.getContext('2d');
     ctx.font = '16px sans-serif';
     ctx.textBaseline = 'top';
 
@@ -105,14 +105,16 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
       nmsDetections.selectedScores,
       prominentDetection.indices,
       prominentDetection.values,
-      // img,
+      tensor,
       readyfied,
       justBoxes,
       justValues,
     ]);
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    tf.ready().then(() => setIsTFReady(true));
+  }, []);
 
   useEffect(() => {
     const setupTFJS = async () => {
@@ -147,16 +149,6 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   return (
     <div>
       <div style={{ position: 'relative' }}>
-        <canvas
-          ref={canvasRef}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            top: 0,
-          }}
-        />
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <Performance {...perfProps} drawingTime={drawingTime} />
@@ -168,8 +160,17 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
           width={maxWidth}
           height={maxHeight}
           controls={true}
-          onLoadedData={() => {
-            tf.ready().then(() => setIsTFReady(true));
+          onLoadedData={() => console.log('loading')}
+        />
+        <canvas
+          id="canvas"
+          ref={canvasRef}
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            top: 0,
           }}
         />
       </div>

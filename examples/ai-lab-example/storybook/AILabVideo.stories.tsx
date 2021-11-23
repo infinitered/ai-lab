@@ -8,8 +8,8 @@ export default {
   component: [AILabWebCam, AILabLocalVideo],
 };
 
+export const withALocalVideo = () => <AILabLocalVideo perf src={animals} />;
 export const withAWebcam = () => (
   // add  `perf` to show performance metrics
   <AILabWebCam perf />
 );
-export const withALocalVideo = () => <AILabLocalVideo perf src={animals} />;

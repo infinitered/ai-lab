@@ -129,17 +129,20 @@ export const AILabImage = ({
   }, []);
 
   useEffect(() => {
+    let mounted = true;
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
       if (perf || perfCallback) {
-        const perfMetrics = await perfInfo(async () => {
-          await tensorFlowIt(model);
-        });
-        if (perf) {
-          setPerfProps(perfMetrics);
-        }
-        if (perfCallback) {
-          perfCallback(perfMetrics);
+        if (mounted) {
+          const perfMetrics = await perfInfo(async () => {
+            await tensorFlowIt(model);
+          });
+          if (perf) {
+            setPerfProps(perfMetrics);
+          }
+          if (perfCallback) {
+            perfCallback(perfMetrics);
+          }
         }
       } else {
         tensorFlowIt(model);
@@ -149,6 +152,9 @@ export const AILabImage = ({
     if (isTFReady) {
       setupTFJS();
     }
+    return () => {
+      mounted = false;
+    };
   }, [isTFReady]);
 
   return (
