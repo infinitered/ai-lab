@@ -20,6 +20,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
 
   async function tensorFlowIt(model: tf.GraphModel) {
     const video = document.getElementById('video') as HTMLVideoElement;
+    if (!video) return;
     const tensor = tf.browser.fromPixels(video);
     const readyfied = tf.expandDims(tensor, 0);
     const results = await model.executeAsync(readyfied);
@@ -116,35 +117,35 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     tf.ready().then(() => setIsTFReady(true));
   }, []);
 
-  useEffect(() => {
-    const setupTFJS = async () => {
-      const model = await tf.loadGraphModel(modelPath);
+  // useEffect(() => {
+  const setupTFJS = async () => {
+    const model = await tf.loadGraphModel(modelPath);
 
-      if (perf || perfCallback) {
-        while (true) {
-          const perfMetrics = await perfInfo(async () => {
-            await tensorFlowIt(model);
-          });
-
-          if (perf) {
-            setPerfProps(perfMetrics);
-            await delay(1000);
-          }
-          if (perfCallback) {
-            perfCallback(perfMetrics);
-          }
-        }
-      } else {
-        while (true) {
+    if (perf || perfCallback) {
+      while (true) {
+        const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
+        });
+
+        if (perf) {
+          setPerfProps(perfMetrics);
           await delay(1000);
         }
+        if (perfCallback) {
+          perfCallback(perfMetrics);
+        }
       }
-    };
-    if (isTFReady) {
-      setupTFJS();
+    } else {
+      while (true) {
+        await tensorFlowIt(model);
+        await delay(1000);
+      }
     }
-  }, [isTFReady]);
+  };
+  //   if (isTFReady) {
+  //     setupTFJS();
+  //   }
+  // }, [isTFReady]);
 
   return (
     <div>
@@ -154,14 +155,6 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
             <Performance {...perfProps} drawingTime={drawingTime} />
           </div>
         )}
-        <video
-          id="video"
-          src={src}
-          width={maxWidth}
-          height={maxHeight}
-          controls={true}
-          onLoadedData={() => console.log('loading')}
-        />
         <canvas
           id="canvas"
           ref={canvasRef}
@@ -172,6 +165,14 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
             bottom: 0,
             top: 0,
           }}
+        />
+        <video
+          id="video"
+          src={src}
+          width={maxWidth}
+          height={maxHeight}
+          controls={true}
+          onLoadedData={setupTFJS}
         />
       </div>
     </div>

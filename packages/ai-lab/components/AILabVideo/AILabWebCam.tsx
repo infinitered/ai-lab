@@ -12,32 +12,40 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
   const stream = useRef(null);
   const tfCamera = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isTFReady, setIsTFReady] = useState(false);
-  // const [stream, setStream] = useState(null);
   const [devices, setDevices] = useState(null);
   const [currentDevice, setCurrentDevice] = useState(
     localStorage.getItem('currentDevice') || ''
   );
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
   const maxWidth = window.innerWidth - 18; // subtract scrollbar
   const maxHeight = window.innerHeight;
 
+  function prepCanvas() {
+    // Prep Canvas
+    console.log('canvas');
+    const ctx = canvasRef.current.getContext('2d');
+    canvasRef.current.width = maxWidth;
+    canvasRef.current.height = maxHeight;
+    ctx.font = '16px sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.strokeStyle = '#0F0';
+    ctx.lineWidth = 4;
+    ctx.globalCompositeOperation = 'destination-over';
+    return ctx;
+  }
+
   async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
     const readyfied = tf.expandDims(img, 0);
     const results = await model.executeAsync(readyfied);
 
-    // Prep Canvas
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    canvas.width = maxWidth;
-    canvas.height = maxHeight;
-    ctx.font = '16px sans-serif';
-    ctx.textBaseline = 'top';
+    const ctx = prepCanvas();
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
@@ -69,12 +77,9 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     const chosen = await nmsDetections.selectedIndices.data();
 
     //Drawing starts
-    let start = performance.now();
+    // let start = performance.now();
 
     for (const detection of chosen) {
-      ctx.strokeStyle = '#0F0';
-      ctx.lineWidth = 4;
-      ctx.globalCompositeOperation = 'destination-over';
       const detectedIndex = maxIndices[detection];
       const detectedClass = CLASSES[detectedIndex];
       const detectedScore = scores[detection];
@@ -99,7 +104,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       ctx.fillText(label, startX, startY);
 
       // Drawing ends
-      setDrawingTime(performance.now() - start);
+      // setDrawingTime(performance.now() - start);
     }
 
     //Preventing memory leak when it's repainted over and over
@@ -139,10 +144,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
         audio: false,
         video: videoConstraints,
       });
-      // setStream(vidStream); // store for cleanup
       stream.current = vidStream;
-
-      // const videoInputs = vidStream.getVideoTracks();
 
       if ('srcObject' in myVideo.current) {
         myVideo.current.srcObject = vidStream;
@@ -160,12 +162,14 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   function killVideo() {
     stream.current?.getTracks().forEach(track => {
-      console.log('hello', track);
       track.stop();
     });
     if (myVideo.current) myVideo.current.srcObject = null;
     stream.current = null;
     tfCamera.current?.stop();
+    canvasRef.current
+      .getContext('2d')
+      .clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
   }
 
   async function listMediaDevices() {
@@ -188,23 +192,23 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   useEffect(() => {
     let mounted = true;
+
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
       tfCamera.current = await tf.data.webcam(myVideo.current);
       async function handleDrawing() {
         if (!tfCamera.current) return;
-
         const img = await tfCamera.current.capture();
         tensorFlowIt(img, model);
       }
 
       if (perf || perfCallback) {
-        while (true) {
+        while (stream.current) {
           if (mounted) {
             const perfMetrics = await perfInfo(handleDrawing);
 
             if (perf) {
-              setPerfProps(perfMetrics);
+              // setPerfProps(perfMetrics);
             }
             if (perfCallback) {
               perfCallback(perfMetrics);
@@ -213,7 +217,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
           }
         }
       } else {
-        while (true) {
+        while (stream.current) {
           await handleDrawing();
           await delay(1000);
         }
@@ -228,7 +232,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       mounted = false;
     };
   }, [isTFReady]);
-
+  console.log('rendered');
   return (
     <div>
       <div style={{ position: 'relative' }}>
