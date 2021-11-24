@@ -12,27 +12,33 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
   const maxWidth = window.innerWidth - 18; // subtract scrollbar
   const maxHeight = window.innerHeight;
 
+  function prepCanvas() {
+    // Prep Canvas
+    const ctx = canvasRef.current.getContext('2d');
+    canvasRef.current.width = maxWidth;
+    canvasRef.current.height = maxHeight;
+    ctx.font = '16px sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.strokeStyle = '#0F0';
+    ctx.lineWidth = 4;
+    ctx.globalCompositeOperation = 'destination-over';
+    return ctx;
+  }
+
   async function tensorFlowIt(model: tf.GraphModel) {
-    const video = document.getElementById('video') as HTMLVideoElement;
-    if (!video) return;
-    const tensor = tf.browser.fromPixels(video);
+    if (!videoRef.current) return;
+    const tensor = tf.browser.fromPixels(videoRef.current);
     const readyfied = tf.expandDims(tensor, 0);
     const results = await model.executeAsync(readyfied);
 
-    // Prep Canvas
-    const canvas: HTMLCanvasElement = canvasRef.current;
-    console.log(canvas);
-    const ctx: CanvasRenderingContext2D = canvas.getContext('2d');
-    canvas.width = maxWidth;
-    canvas.height = maxHeight;
-    ctx.font = '16px sans-serif';
-    ctx.textBaseline = 'top';
+    const ctx = prepCanvas();
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
@@ -117,35 +123,38 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     tf.ready().then(() => setIsTFReady(true));
   }, []);
 
-  // useEffect(() => {
   const setupTFJS = async () => {
+    if (!isTFReady) return;
     const model = await tf.loadGraphModel(modelPath);
-
     if (perf || perfCallback) {
-      while (true) {
+      while (!videoRef.current.paused) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
         });
 
         if (perf) {
           setPerfProps(perfMetrics);
-          await delay(1000);
+          await delay(500);
         }
         if (perfCallback) {
           perfCallback(perfMetrics);
         }
       }
     } else {
-      while (true) {
+      while (!videoRef.current.paused) {
         await tensorFlowIt(model);
-        await delay(1000);
+        await delay(500);
       }
     }
   };
-  //   if (isTFReady) {
-  //     setupTFJS();
-  //   }
-  // }, [isTFReady]);
+
+  function stopTFJS() {
+    if (!videoRef.current) return;
+    videoRef.current.pause();
+    const ctx = prepCanvas();
+    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    setPerfProps(null);
+  }
 
   return (
     <div>
@@ -168,11 +177,13 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
         />
         <video
           id="video"
+          ref={videoRef}
           src={src}
           width={maxWidth}
           height={maxHeight}
           controls={true}
-          onLoadedData={setupTFJS}
+          onEnded={stopTFJS}
+          onPlay={setupTFJS}
         />
       </div>
     </div>

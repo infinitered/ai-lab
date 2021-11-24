@@ -45,7 +45,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     const results = await model.executeAsync(readyfied);
 
     const ctx = prepCanvas();
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    // ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
