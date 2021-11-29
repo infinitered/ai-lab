@@ -134,7 +134,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
 
         if (perf) {
           setPerfProps(perfMetrics);
-          await delay(500);
+          await delay(1000);
         }
         if (perfCallback) {
           perfCallback(perfMetrics);
