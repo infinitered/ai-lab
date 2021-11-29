@@ -12,7 +12,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
@@ -164,6 +164,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
             <Performance {...perfProps} drawingTime={drawingTime} />
           </div>
         )}
+
         <canvas
           id="canvas"
           ref={canvasRef}
@@ -176,12 +177,13 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
           }}
         />
         <video
+          crossOrigin="anonymous"
           id="video"
-          ref={videoRef}
           src={src}
+          ref={videoRef}
           width={maxWidth}
           height={maxHeight}
-          controls={true}
+          controls
           onEnded={stopTFJS}
           onPlay={setupTFJS}
         />
