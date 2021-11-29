@@ -28,7 +28,6 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   function prepCanvas() {
     // Prep Canvas
-    console.log('canvas');
     const ctx = canvasRef.current.getContext('2d');
     canvasRef.current.width = maxWidth;
     canvasRef.current.height = maxHeight;
@@ -77,7 +76,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     const chosen = await nmsDetections.selectedIndices.data();
 
     //Drawing starts
-    // let start = performance.now();
+    let start = performance.now();
 
     for (const detection of chosen) {
       const detectedIndex = maxIndices[detection];
@@ -104,7 +103,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       ctx.fillText(label, startX, startY);
 
       // Drawing ends
-      // setDrawingTime(performance.now() - start);
+      setDrawingTime(performance.now() - start);
     }
 
     //Preventing memory leak when it's repainted over and over
@@ -208,7 +207,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
             const perfMetrics = await perfInfo(handleDrawing);
 
             if (perf) {
-              // setPerfProps(perfMetrics);
+              setPerfProps(perfMetrics);
             }
             if (perfCallback) {
               perfCallback(perfMetrics);
