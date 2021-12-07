@@ -148,6 +148,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       if ('srcObject' in myVideo.current) {
         myVideo.current.srcObject = vidStream;
       } else {
+        // @ts-ignore
         myVideo.current.src = window.URL.createObjectURL(vidStream);
       }
     } catch (e) {

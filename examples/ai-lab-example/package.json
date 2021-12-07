@@ -7,7 +7,8 @@
     "start": "parcel index.html",
     "build": "parcel build index.html",
     "storybook": "start-storybook -p 6006 -c storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test": "jest"
   },
   "dependencies": {
     "react-app-polyfill": "^1.0.0"
@@ -19,6 +20,8 @@
     "scheduler/tracing": "../../node_modules/scheduler/tracing-profiling"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
+    "@babel/preset-react": "^7.16.0",
     "@parcel/transformer-image": "2.0.0-rc.0",
     "@storybook/addon-actions": "^6.3.12",
     "@storybook/addon-essentials": "^6.3.12",
@@ -27,10 +30,15 @@
     "@storybook/react": "^6.3.12",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.8.4",
+    "jest": "^27.4.3",
     "parcel": "2.0.0-rc.0",
+    "react-test-renderer": "^17.0.2",
+    "ts-jest": "^27.1.0",
     "typescript": "^3.4.5"
   },
   "resolutions": {
-    "react": "17.0.2"
+    "react": "17.0.2",
+    "@storybook/react": "^6.3.12",
+    "source-map-support": "0.5.21"
   }
 }

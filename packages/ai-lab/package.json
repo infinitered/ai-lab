@@ -2,7 +2,7 @@
   "name": "ai-lab",
   "version": "0.0.1",
   "description": "A set of components for AI in React",
-  "main": "dist/index.js",
+  "main": "index.ts",
   "module": "dist/index.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
