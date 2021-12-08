@@ -8,12 +8,7 @@ import {
   PerformanceProps,
 } from '../../performance';
 
-export interface ImageProps
-  extends React.DetailedHTMLProps<
-      React.ImgHTMLAttributes<HTMLImageElement>,
-      HTMLImageElement
-    >,
-    PerformanceProps {}
+export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> & PerformanceProps
 
 export const AILabImage = ({
   perf,
@@ -32,8 +27,8 @@ export const AILabImage = ({
 
   const tensorFlowIt = async (model: tf.GraphModel) => {
     const image = imgRef.current;
-    const { height, width } = image;
-    const tensor = tf.browser.fromPixels(image);
+    const { height, width } = image!;
+    const tensor = tf.browser.fromPixels(image!);
 
     // SSD Mobilenet single batch
     const readyfied = tf.expandDims(tensor, 0);
@@ -41,18 +36,18 @@ export const AILabImage = ({
 
     // Prep Canvas
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    canvas.width = width;
-    canvas.height = height;
-    ctx.font = '16px sans-serif';
-    ctx.textBaseline = 'top';
+    const ctx = canvas?.getContext('2d');
+    canvas!.width = width;
+    canvas!.height = height;
+    ctx!.font = '16px sans-serif';
+    ctx!.textBaseline = 'top';
 
     // Get a clean tensor of top indices
     const detectionThreshold = 0.4;
     const iouThreshold = 0.4;
     const maxBoxes = 20;
-    const prominentDetection = tf.topk(results[0]);
-    const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
+    const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
+    const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<tf.Tensor<tf.Rank.R2>>();
     const justValues =
       prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
@@ -92,10 +87,10 @@ export const AILabImage = ({
     //Drawing starts
     let start = performance.now();
 
-    for (const detection of chosen) {
-      ctx.strokeStyle = '#0F0';
-      ctx.lineWidth = 4;
-      ctx.globalCompositeOperation = 'destination-over';
+    for (const detection of chosen as any) {
+      ctx!.strokeStyle = '#0F0';
+      ctx!.lineWidth = 4;
+      ctx!.globalCompositeOperation = 'destination-over';
       const detectedIndex = maxIndices[detection];
       const detectedClass = CLASSES[detectedIndex];
       const detectedScore = scores[detection];
@@ -106,18 +101,18 @@ export const AILabImage = ({
       const startX = dBox[1] > 0 ? dBox[1] * width : 0;
       const boxHeight = (dBox[2] - dBox[0]) * height;
       const boxWidth = (dBox[3] - dBox[1]) * width;
-      ctx.strokeRect(startX, startY, boxWidth, boxHeight);
+      ctx!.strokeRect(startX, startY, boxWidth, boxHeight);
       // Draw the label background.
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = '#0B0';
+      ctx!.globalCompositeOperation = 'source-over';
+      ctx!.fillStyle = '#0B0';
       const textHeight = 16;
       const textPad = 4;
       const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
-      const textWidth = ctx.measureText(label).width;
-      ctx.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
+      const textWidth = ctx!.measureText(label).width;
+      ctx!.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
       // Draw the text last to ensure it's on top.
-      ctx.fillStyle = '#000000';
-      ctx.fillText(label, startX, startY);
+      ctx!.fillStyle = '#000000';
+      ctx!.fillText(label, startX, startY);
 
       // Drawing ends
       setDrawingTime(performance.now() - start);

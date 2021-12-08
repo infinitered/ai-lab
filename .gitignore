@@ -1,7 +1,7 @@
-node_modules
+.parcel-cache
 dist
+node_modules
 .DS_Store
-package-lock.json
-yarn-error.log
-.parcel-cache/
 .env
+package-lock.json
+pnpm-debug.log

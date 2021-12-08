@@ -1,7 +1,7 @@
 {
-  "name": "ai-lab-native-example",
-  "version": "0.0.1",
+  "name": "@ai-lab/rn-example",
   "private": true,
+  "version": "0.0.1",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
