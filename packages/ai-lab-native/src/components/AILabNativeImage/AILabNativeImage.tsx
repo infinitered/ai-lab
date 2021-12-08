@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
-import { View, Image, ImageProps, Text, LayoutRectangle } from 'react-native';
+import { View, Image, ImageProps, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
 import { CLASSES } from './labels';
@@ -87,9 +87,9 @@ export const AILabNativeImage = ({
 
     // Mega Clean
     tf.dispose([
-      results[0],
-      results[1],
-      model,
+      (results as tf.Tensor<tf.Rank>[])[0],
+      (results  as tf.Tensor<tf.Rank>[])[1],
+      model as any,
       nmsDetections.selectedIndices,
       nmsDetections.selectedScores,
       prominentDetection.indices,
@@ -103,7 +103,7 @@ export const AILabNativeImage = ({
     // Drawing time measuring starts
     let start = performance.now();
 
-    for (const detection of chosen) {
+    for (const detection of chosen as any) {
       ctx.strokeStyle = '#0F0';
       ctx.lineWidth = 4;
       ctx.globalCompositionOperation = 'destination-over';

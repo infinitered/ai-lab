@@ -35,15 +35,15 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
   const maxWidth = window.innerWidth - 18; // subtract scrollbar
   const maxHeight = window.innerHeight;
-  let video: HTMLVideoElement;
+  let video: HTMLVideoElement | undefined = void 0;
 
   async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
     const readyfied = tf.expandDims(img, 0);
-    const results = await model.executeAsync(readyfied);
+    const results = (await model.executeAsync(readyfied)) as tf.Tensor<tf.Rank>[];
 
     // Prep Canvas
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const canvas = canvasRef.current!;
+    const ctx = canvas.getContext('2d')!;
     canvas.width = maxWidth;
     canvas.height = maxHeight;
     ctx.font = '16px sans-serif';
@@ -81,7 +81,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     //Drawing starts
     let start = performance.now();
 
-    for (const detection of chosen) {
+    for (const detection of chosen as any) {
       ctx.strokeStyle = '#0F0';
       ctx.lineWidth = 4;
       ctx.globalCompositeOperation = 'destination-over';
@@ -139,7 +139,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       height: { ideal: maxHeight, max: maxHeight },
       facingMode: 'environment', // rear facing if possible options === user, environment, left and right
     };
-    video = myVideo.current;
+    video = myVideo.current as unknown as HTMLVideoElement;
     video.width = maxWidth;
     video.height = maxHeight;
 
@@ -147,8 +147,8 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       const vidStream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: videoConstraints,
-      });
-      setStream(vidStream); // store for cleanup
+      } as any);
+      setStream(vidStream as any); // store for cleanup
 
       const videoInputs = vidStream.getVideoTracks();
       console.log(`The video device you are using is ${videoInputs[0].label}`);
@@ -156,7 +156,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       if ('srcObject' in video) {
         video.srcObject = vidStream;
       } else {
-        video.src = window.URL.createObjectURL(vidStream);
+        (video as HTMLVideoElement).src = window.URL.createObjectURL(vidStream);
       }
     } catch (e) {
       localStorage.clear();
@@ -168,8 +168,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   }
 
   function killVideo() {
-    stream &&
-      stream.getTracks().forEach(track => {
+      (stream as any)?.getTracks().forEach((track: any) => {
         track.stop();
       });
   }
@@ -177,10 +176,10 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   async function listMediaDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(dev => dev.kind === 'videoinput');
-    setDevices(videoDevices);
+    setDevices(videoDevices as any);
   }
 
-  async function changeDevice(dd) {
+  async function changeDevice(dd: any) {
     setCurrentDevice(dd);
     // store for next time
     localStorage.setItem('currentDevice', dd);
