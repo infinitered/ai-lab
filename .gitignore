@@ -1,6 +1,7 @@
 .parcel-cache
 dist
 node_modules
+storybook-static
 .DS_Store
 .env
 package-lock.json
