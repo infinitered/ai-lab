@@ -71,7 +71,7 @@ Once install completes, development can begin.
 
 [storybook](https://storybook.js.org/)
 
-[pnpm](https://https://pnpm.io/)
+[pnpm](https://pnpm.io/)
 
 <br>
 
