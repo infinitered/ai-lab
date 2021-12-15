@@ -11,6 +11,11 @@ target 'example' do
   config = use_native_modules!
   use_modular_headers!
 
+  pod 'DoubleConversion', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'glog', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
+  pod 'Folly', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/Folly.podspec', :modular_headers => false
+
+
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
