@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
   stories: ['*.stories.mdx', '*.stories.@(js|jsx|ts|tsx)'],
   addons: [
@@ -8,8 +6,8 @@ module.exports = {
     {
       name: '@storybook/preset-create-react-app',
       options: {
-        scriptsPackageName: 'react-scripts'
-      }
-    }
-  ]
+        scriptsPackageName: 'react-scripts',
+      },
+    },
+  ],
 };

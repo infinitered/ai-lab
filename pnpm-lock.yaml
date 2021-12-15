@@ -80,9 +80,9 @@ importers:
       '@types/react-test-renderer': ^17.0.1
       babel-jest: ^26.6.3
       eslint: ^7.14.0
-      expo-camera: ^11.2.2
-      expo-gl: ^10.4.2
-      expo-gl-cpp: ^10.4.1
+      expo-camera: ^12.0.3
+      expo-gl: ^11.0.3
+      expo-gl-cpp: ^11.0.1
       jest: ^26.6.3
       jpeg-js: ^0.4.3
       metro-react-native-babel-preset: ^0.66.0
@@ -95,9 +95,9 @@ importers:
       react-test-renderer: 17.0.2
       typescript: ^3.8.3
     dependencies:
-      expo-camera: 11.3.1_react@17.0.2
-      expo-gl: 10.4.2
-      expo-gl-cpp: 10.4.1
+      expo-camera: 12.0.3_react@17.0.2
+      expo-gl: 11.0.3
+      expo-gl-cpp: 11.0.1
       jpeg-js: 0.4.3
       react: 17.0.2
       react-native: 0.63.2_react@17.0.2
@@ -165,6 +165,7 @@ importers:
       '@types/react': ^17.0.24
       '@types/react-native': ^0.66.1
       '@types/react-native-canvas': ^0.1.8
+      '@types/react-native-video': ^5.0.11
       '@types/regenerator-runtime': ^0.13.1
       babel-loader: ^8.2.2
       expo-camera: ^11.2.2
@@ -172,7 +173,9 @@ importers:
       expo-gl-cpp: ^10.4.1
       react-native-canvas: ^0.1.38
       react-native-fs: ^2.18.0
+      react-native-image-picker: ^4.6.0
       react-native-unimodules: ^0.14.8
+      react-native-video: ^5.2.0
       react-native-webview: ^11.14.0
     dependencies:
       '@tensorflow-models/mobilenet': 2.1.0
@@ -186,6 +189,7 @@ importers:
       '@types/react': 17.0.27
       '@types/react-native': 0.66.8
       '@types/react-native-canvas': 0.1.8
+      '@types/react-native-video': 5.0.11
       '@types/regenerator-runtime': 0.13.1
       babel-loader: 8.2.3_@babel+core@7.15.8
       expo-camera: 11.3.1_react@17.0.2
@@ -193,7 +197,9 @@ importers:
       expo-gl-cpp: 10.4.1
       react-native-canvas: 0.1.38_react-native-webview@11.15.0
       react-native-fs: 2.18.0
+      react-native-image-picker: 4.6.0_react@17.0.2
       react-native-unimodules: 0.14.10
+      react-native-video: 5.2.0
       react-native-webview: 11.15.0_react@17.0.2
 
 packages:
@@ -2836,11 +2842,38 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /@expo/config-plugins/4.0.13:
+    resolution: {integrity: sha512-yFcqqllAKz472UUdMRtcmfz8cHBT5VJ044cDY2E5JvaO/DQ9lfe4j/0soVUv7aeiHIWOheywJeefNfqpCo0glQ==}
+    dependencies:
+      '@expo/config-types': 43.0.1
+      '@expo/json-file': 8.2.34
+      '@expo/plist': 0.0.16
+      '@expo/sdk-runtime-versions': 1.0.0
+      '@react-native/normalize-color': 2.0.0
+      chalk: 4.1.2
+      debug: 4.3.2
+      find-up: 5.0.0
+      fs-extra: 9.0.0
+      getenv: 1.0.0
+      glob: 7.1.6
+      resolve-from: 5.0.0
+      semver: 7.3.5
+      slash: 3.0.0
+      xcode: 3.0.1
+      xml2js: 0.4.23
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@expo/config-types/41.0.0:
     resolution: {integrity: sha512-Ax0pHuY5OQaSrzplOkT9DdpdmNzaVDnq9VySb4Ujq7UJ4U4jriLy8u93W98zunOXpcu0iiKubPsqD6lCiq0pig==}
 
   /@expo/config-types/42.0.0:
     resolution: {integrity: sha512-Rj02OMZke2MrGa/1Y/EScmR7VuWbDEHPJyvfFyyLbadUt+Yv6isCdeFzDt71I7gJlPR9T4fzixeYLrtXXOTq0w==}
+
+  /@expo/config-types/43.0.1:
+    resolution: {integrity: sha512-EtllpCGDdB/UdwAIs5YXJwBLpbFQNdlLLrxIvoILA9cXrpQMWkeDCT9lQPJzFRMFcLUaMuGvkzX2tR4tx5EQFQ==}
+    dev: false
 
   /@expo/config/4.0.4:
     resolution: {integrity: sha512-O3xRlwMCidOgk1WHIy6eOjh2yp0h/kgBDRNKqPe21+YDiOufyTGGNvbWgHwoax8goa1iMg443WQO7GhvaH286g==}
@@ -2877,6 +2910,14 @@ packages:
       json5: 1.0.1
       write-file-atomic: 2.4.3
 
+  /@expo/json-file/8.2.34:
+    resolution: {integrity: sha512-ZxtBodAZGxdLtgKzmsC+8ViUxt1mhFW642Clu2OuG3f6PAyAFsU/SqEGag9wKFaD3x3Wt8VhL+3y5fMJmUFgPw==}
+    dependencies:
+      '@babel/code-frame': 7.10.4
+      json5: 1.0.1
+      write-file-atomic: 2.4.3
+    dev: false
+
   /@expo/plist/0.0.13:
     resolution: {integrity: sha512-zGPSq9OrCn7lWvwLLHLpHUUq2E40KptUFXn53xyZXPViI0k9lbApcR9KlonQZ95C+ELsf0BQ3gRficwK92Ivcw==}
     dependencies:
@@ -2890,6 +2931,18 @@ packages:
       '@xmldom/xmldom': 0.7.5
       base64-js: 1.5.1
       xmlbuilder: 14.0.0
+
+  /@expo/plist/0.0.16:
+    resolution: {integrity: sha512-yQMt2CTm2VNLiHv2/EqHYrHvfflI2mFJd+DZIQQy569hvpZle0CxMPGH1p2KatbrO8htxJNvwrlR/4TIwhQJ5w==}
+    dependencies:
+      '@xmldom/xmldom': 0.7.5
+      base64-js: 1.5.1
+      xmlbuilder: 14.0.0
+    dev: false
+
+  /@expo/sdk-runtime-versions/1.0.0:
+    resolution: {integrity: sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==}
+    dev: false
 
   /@gar/promisify/1.1.2:
     resolution: {integrity: sha512-82cpyJyKRoQoRi+14ibCeGPu0CwypgtBAdBhq1WfvagpCZNKqwXbKwXllYSMG91DhmG4jt9gN8eP6lGOtozuaw==}
@@ -3383,6 +3436,16 @@ packages:
       dequal: 1.0.1
       isoworker: 0.1.3
       react: 17.0.2
+    dev: true
+
+  /@koale/useworker/4.0.2_react@17.0.2:
+    resolution: {integrity: sha512-xPIPADtom8/3/4FLNj7MvNcBM/Z2FleH85Fdx2O869eoKW8+PoEgtSVvoxWjCWMA46Sm9A5/R1TyzNGc+yM0wg==}
+    peerDependencies:
+      react: ^16.8.0
+    dependencies:
+      dequal: 1.0.1
+      react: 17.0.2
+    dev: false
 
   /@mdx-js/loader/1.6.22_react@17.0.2:
     resolution: {integrity: sha512-9CjGwy595NaxAYp0hF9B/A0lH6C8Rms97e2JS9d3jVUtILn6pT5i5IV965ra3lIWc7Rs1GG1tBdVF7dCowYe6Q==}
@@ -4570,6 +4633,10 @@ packages:
   /@react-native-community/eslint-plugin/1.1.0:
     resolution: {integrity: sha512-W/J0fNYVO01tioHjvYWQ9m6RgndVtbElzYozBq1ZPrHO/iCzlqoySHl4gO/fpCl9QEFjvJfjPgtPMTMlsoq5DQ==}
     dev: true
+
+  /@react-native/normalize-color/2.0.0:
+    resolution: {integrity: sha512-Wip/xsc5lw8vsBlmY2MO/gFLp3MvuZ2baBZjDeTjjndMgM0h5sxz7AZR62RDPGgstp8Np7JzjvVqVT7tpFZqsw==}
+    dev: false
 
   /@rnx-kit/babel-preset-metro-react-native/1.0.17_64e579ff6c96179d4cc6862841c88c5b:
     resolution: {integrity: sha512-x/7InOIrE2+3p8bDYBQw2OdLulgYtM79HBuACqCd5PkQJoWxVYHSbjJWkO6NiBg1XUrbGPikngi3MQu9wo145w==}
@@ -6942,6 +7009,13 @@ packages:
 
   /@types/react-native-canvas/0.1.8:
     resolution: {integrity: sha512-t355KzHR3WcxrgQ5gBUJ8U3Lq49dV+xZp+JqD0xeJALGpbBF7N3d4/bgCd7nwQCRc9zlDJcWBlYnOXCJ/BoJug==}
+    dependencies:
+      '@types/react': 17.0.27
+      '@types/react-native': 0.66.8
+    dev: true
+
+  /@types/react-native-video/5.0.11:
+    resolution: {integrity: sha512-FYd7QgsiytmUdK8F7F2ZIfu0AzV6/mBULWJZb/y1zyE/kmuEs0BEvsyMtpEdL0mxPGD1EDzAOXd8OsFwZY+TkQ==}
     dependencies:
       '@types/react': 17.0.27
       '@types/react-native': 0.66.8
@@ -10218,6 +10292,10 @@ packages:
       minimalistic-crypto-utils: 1.0.1
     dev: true
 
+  /eme-encryption-scheme-polyfill/2.0.3:
+    resolution: {integrity: sha512-44CNFMsqzHdKHrzWxlS7xZ8KUHn5XutBqpmCuWzNIynmAyFInHrrD3ozv/RvK9ZhgV6QY6Easx8EWAmxteNodg==}
+    dev: true
+
   /emittery/0.7.2:
     resolution: {integrity: sha512-A8OG5SR/ij3SsJdWDJdkkSYUjQdCUx6APQXem0SaEePBSRg4eymGYwBkKo1Y6DU+af/Jn2dBQqDBvjnr9Vi8nQ==}
     engines: {node: '>=10'}
@@ -11125,6 +11203,19 @@ packages:
     transitivePeerDependencies:
       - react
       - supports-color
+    dev: true
+
+  /expo-camera/12.0.3_react@17.0.2:
+    resolution: {integrity: sha512-0u0e7ia3+GrJtmpxDQxQ8kp2hSw3eTN0Qt2+w9d6GxLsGaEZY+1/wFp906KGbRXmvJqg6YsjIv/pDoV+BQpwgg==}
+    dependencies:
+      '@expo/config-plugins': 4.0.13
+      '@koale/useworker': 4.0.2_react@17.0.2
+      expo-modules-core: 0.4.9
+      invariant: 2.2.4
+    transitivePeerDependencies:
+      - react
+      - supports-color
+    dev: false
 
   /expo-constants/11.0.2:
     resolution: {integrity: sha512-CVjM+FbOMe/nFOSly5lnj0seMAYsjjc6+q3X8nIXG+gtw9iNBLwMX3Fz308rxiaPRJw+TBdd5/mcGJdNfoS+ew==}
@@ -11146,6 +11237,11 @@ packages:
 
   /expo-gl-cpp/10.4.1:
     resolution: {integrity: sha512-KdXVcSOaQXPzElZI0uHNnsswQh52OhsJZ3b6OgeouNmGo46Vug0V1DACWxmyFONl9cmLX9JQAhaoQ+ZtbSCM4w==}
+    dev: true
+
+  /expo-gl-cpp/11.0.1:
+    resolution: {integrity: sha512-+h0OVlJVtZRPHCU8ZF/owplMo1Kn8ixKnwTHOD9cAZht1dM/q7xLJBncxy1ItbGvC3LqfT7Dm+Vet7LnI3mo+g==}
+    dev: false
 
   /expo-gl/10.4.2:
     resolution: {integrity: sha512-n71r9D9uMFEui4p3kUjKEQXeJ09fewKBAQtFPXIYovRug2msSDeRoIU1w5ati7PjF/fv/drPCP25cY62TuU7oA==}
@@ -11153,6 +11249,15 @@ packages:
       expo-gl-cpp: 10.4.1
       expo-modules-core: 0.2.0
       invariant: 2.2.4
+    dev: true
+
+  /expo-gl/11.0.3:
+    resolution: {integrity: sha512-dIVQh4T4IY++jFs+wepx4xA9F3e7pwwWPpuRHh/BaMGPEHb1bITD8sgJENP6iFTD1IlV6308+q4PQcdq7w+4Jg==}
+    dependencies:
+      expo-gl-cpp: 11.0.1
+      expo-modules-core: 0.4.9
+      invariant: 2.2.4
+    dev: false
 
   /expo-image-loader/2.2.0:
     resolution: {integrity: sha512-kTs/lW8LUXYFQ5t8wkdJs0A41zd7dIB8uRRC0a9L0EurSGUvQWiVTbHQoLo/GYWL7nM85OaPAe2qkHfcz5KeyA==}
@@ -11169,6 +11274,13 @@ packages:
 
   /expo-modules-core/0.2.0:
     resolution: {integrity: sha512-inpfZ5X/BaTtbj2wG9PA9AC0MN8VyId6KSRlVuEg7+ziurHBy/kKDFxpOddUokhwiln2uhoYPSStJjR/tKypdw==}
+
+  /expo-modules-core/0.4.9:
+    resolution: {integrity: sha512-yuwYoEQMZNSysufsYgJVmncpeGopNi8Q3y5Q7MM05PT90Sc5CGqbYwJMYomF7MprTZAxCvayoRBCKgOlzutWog==}
+    dependencies:
+      compare-versions: 3.6.0
+      invariant: 2.2.4
+    dev: false
 
   /express/4.17.1:
     resolution: {integrity: sha512-mHJ9O79RqluphRrcw2X/GTh3k9tVv8YcoyY4Kkh4WDMUYKRZUq0h1o0w2rrrxBqM7VoeUVqgb27xlEMXTnYt4g==}
@@ -13195,6 +13307,7 @@ packages:
 
   /isoworker/0.1.3:
     resolution: {integrity: sha512-NmguMXzoa/ixeQv373vIf+zYgqvZMqEFpMSysAQWfdNAf+TvjZQH7ZiQEk9ZKHkktfPqH74GSab4IVXda71hbw==}
+    dev: true
 
   /isstream/0.1.2:
     resolution: {integrity: sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=}
@@ -14512,6 +14625,10 @@ packages:
   /junk/3.1.0:
     resolution: {integrity: sha512-pBxcB3LFc8QVgdggvZWyeys+hnrNWg4OcZIU/1X59k5jQdLBlCsYGRQaz234SqoRLTCgMH00fY0xRJH+F9METQ==}
     engines: {node: '>=8'}
+    dev: true
+
+  /keymirror/0.1.1:
+    resolution: {integrity: sha1-kYiJ6hP40KQufFVyUO7nE63JXDU=}
     dev: true
 
   /kind-of/1.1.0:
@@ -17519,6 +17636,15 @@ packages:
       utf8: 3.0.0
     dev: false
 
+  /react-native-image-picker/4.6.0_react@17.0.2:
+    resolution: {integrity: sha512-Kb0GbPlHm0zAjJpI0vJ/41WSS0mHfbn851cwvn61myse+eMJCku1nixqPlCp4SbpM0lMZIGJgXqZBkqalZnWjg==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+    dependencies:
+      react: 17.0.2
+    dev: true
+
   /react-native-swipe-gestures/1.0.5:
     resolution: {integrity: sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw==}
     dev: true
@@ -17540,6 +17666,14 @@ packages:
       unimodules-task-manager-interface: 6.2.0
     transitivePeerDependencies:
       - supports-color
+
+  /react-native-video/5.2.0:
+    resolution: {integrity: sha512-5SK1lxyzrCkZF+WuxUxLR1Pt65E0rsWB1w1GrGxSLdC9zWYBumcmuHl+wPJ7UQvznjaH2Ze7uU1R3arejI7+WQ==}
+    dependencies:
+      keymirror: 0.1.1
+      prop-types: 15.7.2
+      shaka-player: 2.5.23
+    dev: true
 
   /react-native-webview/11.15.0_react-native@0.63.2+react@17.0.2:
     resolution: {integrity: sha512-0Wv+8qu8XuACx1xZwzc2Yfl+rOvxUouLcPxUKdkhaMVNpwoM5/ePpczCQZ3LpiRnSoEtjaUkfyQHbJQ+x4dDJQ==}
@@ -18494,6 +18628,12 @@ packages:
     dependencies:
       inherits: 2.0.4
       safe-buffer: 5.2.1
+    dev: true
+
+  /shaka-player/2.5.23:
+    resolution: {integrity: sha512-3MC9k0OXJGw8AZ4n/ZNCZS2yDxx+3as5KgH6Tx4Q5TRboTBBCu6dYPI5vp1DxKeyU12MBN1Zcbs7AKzXv2EnCg==}
+    dependencies:
+      eme-encryption-scheme-polyfill: 2.0.3
     dev: true
 
   /shallow-clone/3.0.1:

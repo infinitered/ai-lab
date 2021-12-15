@@ -1,51 +1,65 @@
 import * as tf from '@tensorflow/tfjs';
+import { ProfileInfo } from '@tensorflow/tfjs-core/dist/engine';
 import React from 'react';
-import { View, Text } from 'react-native';
 import { Memory } from './Memory';
 
-export type PerformanceInfo = tf.TimingInfo & { drawingTime?: number };
+const numberWithCommas = (x: number) =>
+  x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
+
+export type PerformanceInfo = ProfileInfo &
+  tf.TimingInfo & { drawingTime?: number };
+
+export interface PerformanceProps {
+  perf?: boolean;
+  perfCallback?: (perf: PerformanceInfo) => any;
+}
 
 export const perfInfo = async (callback: () => void | Promise<void>) => {
   let timeInfo: tf.TimingInfo = { kernelMs: 0, wallMs: 0 };
-  timeInfo = await tf.time(callback);
+  const profileInfo = await tf.profile(async () => {
+    timeInfo = await tf.time(callback);
+  });
 
-  // profileInfo isn't set since tf.time and tf.profile can not be nested and they both take callbacks.
-  // const profileInfo = await tf.profile(callback)
-
-  return { ...timeInfo };
+  return { ...profileInfo, ...timeInfo };
 };
 
-export const Performance = ({ drawingTime, wallMs }: PerformanceInfo) => {
+export const Performance = ({
+  peakBytes,
+  newBytes,
+  newTensors,
+  kernelMs,
+  drawingTime,
+}: PerformanceInfo) => {
   return (
-    <View>
-      <View style={styles.container}>
-        {/* kernelMs returns an error : "WebGL query timers are not supported in
-      this environment." So we used wallMs to measure excute time */}
-        <Text style={styles.textStyle}>Execution: {wallMs.toFixed(2)} ms</Text>
-        {!!drawingTime && (
-          <Text style={styles.textStyle}>
-            Drawing Time: {drawingTime.toFixed(2)} ms
-          </Text>
-        )}
-      </View>
-      <View style={styles.container}>
-        {/* The second metrics box on the screen */}
-        <Memory pollingFrequency={3000} />
-      </View>
-    </View>
+    //checkout the bottom left corner on the screen to see the metrics boxes
+    <div>
+      <div style={styles.container}>
+        <p>New Bytes: {formatKB(newBytes)} KB </p>
+        <p>New Tensors: {newTensors}</p>
+        <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
+        <p>Execution: {kernelMs} ms</p>
+        {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
+      </div>
+      <div style={styles.container}>
+        <Memory pollingFrequency={1000} />
+      </div>
+    </div>
   );
 };
 
 const styles = {
   container: {
-    margin: 20,
-    padding: 10,
+    backgroundColor: '#3f4255',
     borderColor: '#44475c',
     borderWidth: 1,
-    backgroundColor: '#3f4255',
-    fontSize: 16,
-  },
-  textStyle: {
     color: '#fff',
+    fontSize: 16,
+    margin: 20,
+    opacity: '0.8',
+    padding: 10,
+    width: '20%',
+    fontFamily: 'sans-serif',
   },
 };

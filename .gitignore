@@ -5,4 +5,4 @@ storybook-static
 .DS_Store
 .env
 package-lock.json
-pnpm-debug.log
+.pnpm-debug.log

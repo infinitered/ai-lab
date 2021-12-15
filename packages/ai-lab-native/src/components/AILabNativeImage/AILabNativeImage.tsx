@@ -3,7 +3,7 @@ import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
 import { View, Image, ImageProps, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
-import { CLASSES } from './labels';
+import { CLASSES } from '../labels';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 
 export interface AILabNativeImage extends ImageProps {
@@ -88,7 +88,7 @@ export const AILabNativeImage = ({
     // Mega Clean
     tf.dispose([
       (results as tf.Tensor<tf.Rank>[])[0],
-      (results  as tf.Tensor<tf.Rank>[])[1],
+      (results as tf.Tensor<tf.Rank>[])[1],
       model as any,
       nmsDetections.selectedIndices,
       nmsDetections.selectedScores,
