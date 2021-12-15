@@ -1,6 +1,7 @@
 package com.example;
 
 import com.facebook.react.ReactActivity;
+import expo.modules.ReactActivityDelegateWrapper;
 
 public class MainActivity extends ReactActivity {
 
@@ -11,5 +12,18 @@ public class MainActivity extends ReactActivity {
   @Override
   protected String getMainComponentName() {
     return "example";
+  }
+
+  @Override
+  protected ReactActivityDelegate createReactActivityDelegate() {
+    return new ReactActivityDelegateWrapper(
+      this,
+      new ReactActivityDelegate(this, getMainComponentName()) {
+        @Override
+        protected ReactRootView createRootView() {
+          return new RNGestureHandlerEnabledRootView(MainActivity.this);
+        }
+      }
+    );
   }
 }

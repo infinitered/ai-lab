@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* exampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* exampleTests.m */; };
+		0FFD37412108F37BD7300D53 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFFBD9F0E75D1F44C855AA4F /* ExpoModulesProvider.swift */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -15,6 +16,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		99B4FA98E03437C0B82ED30F /* libPods-example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4778B74157C69590A7F216F /* libPods-example.a */; };
 		B0C0D54226FE7DDC0067B8FE /* BridgingFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C0D54126FE7DDC0067B8FE /* BridgingFile.swift */; };
+		C85A4E5D6994FCC9B7C9D831 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04578F0B6CBCD4B9803A17D /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,9 +46,11 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = example/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B0C0D54026FE7DDB0067B8FE /* example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "example-Bridging-Header.h"; sourceTree = "<group>"; };
 		B0C0D54126FE7DDC0067B8FE /* BridgingFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgingFile.swift; sourceTree = "<group>"; };
+		C04578F0B6CBCD4B9803A17D /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-example/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		C4778B74157C69590A7F216F /* libPods-example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4783F21D5890085E9C05D0B /* libPods-example-exampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-example-exampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		EFFBD9F0E75D1F44C855AA4F /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-example-exampleTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +103,14 @@
 			name = example;
 			sourceTree = "<group>";
 		};
+		14B01F042BB17772F0C0BDFD /* exampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				EFFBD9F0E75D1F44C855AA4F /* ExpoModulesProvider.swift */,
+			);
+			name = exampleTests;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -107,6 +119,14 @@
 				C4783F21D5890085E9C05D0B /* libPods-example-exampleTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5FCC91E574BBC9AD455C9E1A /* example */ = {
+			isa = PBXGroup;
+			children = (
+				C04578F0B6CBCD4B9803A17D /* ExpoModulesProvider.swift */,
+			);
+			name = example;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -127,6 +147,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				E233CBF5F47BEE60B243DCF8 /* Pods */,
 				B0C0D54026FE7DDB0067B8FE /* example-Bridging-Header.h */,
+				FCF0F655E8E8D6F39A3C3586 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -151,6 +172,15 @@
 				2A2771A56FD395CCD8833D86 /* Pods-example-exampleTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		FCF0F655E8E8D6F39A3C3586 /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				5FCC91E574BBC9AD455C9E1A /* example */,
+				14B01F042BB17772F0C0BDFD /* exampleTests */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -372,6 +402,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* exampleTests.m in Sources */,
+				0FFD37412108F37BD7300D53 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,6 +413,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				B0C0D54226FE7DDC0067B8FE /* BridgingFile.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				C85A4E5D6994FCC9B7C9D831 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,7 +439,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = exampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -436,7 +468,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = exampleTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -572,7 +604,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -630,7 +662,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
