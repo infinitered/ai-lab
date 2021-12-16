@@ -4,7 +4,7 @@ AI-lab is a set of components and tools built on TensorFlow JS for React and Rea
 
 ## Requirements
 
-The packages in this repository require Node v14+.
+The packages in this repository require Node v14+ and `pnpm`.
 
 ## Quick Look
 
@@ -17,7 +17,6 @@ The packages in this repository require Node v14+.
 </center>
 
 ## Examples
-
 
 ### _AILabImage_
 
@@ -42,8 +41,48 @@ const MyAIComponent = ({ src }) => {
 
 ## Installation
 
+### Check Requirements
 
-coming soon
+_Assure Node > v14 Installed_
+
+```shell
+node -v
+```
+
+_Assure TypeScript Installed_
+
+```shell
+tsc -v
+```
+
+_Assure/Install PNPM_
+
+```shell
+npm install -g pnpm
+```
+
+If you ran yarn/npm - delete all `node_modules` from those and start fresh.
+
+**Install project code at project root**
+
+```shell
+pnpm install
+```
+
+> **Windows Users**: The package tsconfig files are symlinks. If you're looking for a quick fix, you can copy the contents of the `shared/tsconfig.json` to these files as a temporary fix. These should not be committed like this, and should be reverted or linked in Windows.
+
+```shell
+pnpm build
+```
+
+Now you can run example projects that are depending on
+
+_E.G. of running the `ai-lab-example` example_
+
+```shell
+cd examples/ai-lab-example
+pnpm start
+```
 
 <br>
 
@@ -71,9 +110,8 @@ Once install completes, development can begin.
 
 [storybook](https://storybook.js.org/)
 
-[lerna](https://lerna.js.org/)
+[pnpm](https://pnpm.io/)
 
 <br>
 
-  
 #### ⁉️ If you run into problems, first search the issues in this repository. Otherwise you can <a href="https://github.com/infinitered/ai-lab/issues">report the bug</a>.

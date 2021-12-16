@@ -10,19 +10,13 @@ target 'example' do
   use_expo_modules!
   config = use_native_modules!
 
-  pod 'React-Core', :path => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/', :modular_headers => true
+  pod 'React-Core', :path => '../../../node_modules/.pnpm/react-native@0.66.3_react@17.0.2/node_modules/react-native/', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
     :hermes_enabled => false
   )
-
-
-  target 'exampleTests' do
-    inherit! :complete
-    # Pods for testing
-  end
 
   # Enables Flipper.
   #

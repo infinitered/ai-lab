@@ -29,7 +29,7 @@
     "@react-native-community/eslint-config": "^0.0.5",
     "@types/core-js": "^2.5.5",
     "@types/react": "^17.0.24",
-    "@types/react-native": "^0.66.1",
+    "@types/react-native": "^0.66.4",
     "@types/react-native-canvas": "^0.1.8",
     "@types/react-native-video": "^5.0.11",
     "@types/regenerator-runtime": "^0.13.1",
@@ -46,13 +46,13 @@
   "peerDependencies": {
     "@react-native-async-storage/async-storage": "^1.15.9",
     "expo-camera": "^12.0.3",
-    "expo-gl": "^11.0.3",
     "expo-gl-cpp": "^11.0.1",
+    "expo-gl": "^11.0.3",
+    "expo-permissions": "^13.0.3",
     "react": "^17.0.2",
-    "react-native": "^0.63.2",
+    "react-native": "^0.66.3",
     "react-native-canvas": "^0.1.38",
     "react-native-fs": "^2.18.0",
-    "react-native-unimodules": "^0.14.8",
     "react-native-webview": "^11.14.0"
   }
 }
