@@ -10,8 +10,8 @@ const delay = async (ms: number) =>
 
 export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
-  const stream = useRef(null);
-  const tfCamera = useRef(null);
+  const stream: React.MutableRefObject<MediaStream | null> = useRef<MediaStream>(null);
+  const tfCamera: React.MutableRefObject<any>  = useRef(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [devices, setDevices] = useState(null);
@@ -28,9 +28,9 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   function prepCanvas() {
     // Prep Canvas
-    const ctx = canvasRef.current.getContext('2d');
-    canvasRef.current.width = maxWidth;
-    canvasRef.current.height = maxHeight;
+    const ctx = canvasRef.current!.getContext('2d')!;
+    canvasRef.current!.width = maxWidth;
+    canvasRef.current!.height = maxHeight;
     ctx.font = '16px sans-serif';
     ctx.textBaseline = 'top';
     ctx.strokeStyle = '#0F0';
@@ -41,7 +41,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
     const readyfied = tf.expandDims(img, 0);
-    const results = await model.executeAsync(readyfied);
+    const results = (await model.executeAsync(readyfied)) as tf.Tensor<tf.Rank>[];
 
     const ctx = prepCanvas();
     // ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -78,7 +78,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     //Drawing starts
     let start = performance.now();
 
-    for (const detection of chosen) {
+    for (const detection of chosen as any) {
       const detectedIndex = maxIndices[detection];
       const detectedClass = CLASSES[detectedIndex];
       const detectedScore = scores[detection];
@@ -127,7 +127,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
     listMediaDevices();
 
-    const deviceId = useDevice ? { exact: useDevice } : null;
+    const deviceId = useDevice ? { exact: useDevice } : undefined;
 
     const videoConstraints = {
       deviceId,
@@ -135,8 +135,8 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       height: { ideal: maxHeight, max: maxHeight },
       facingMode: 'user', // rear facing if possible options === user, environment, left and right
     };
-    myVideo.current.width = maxWidth;
-    myVideo.current.height = maxHeight;
+    myVideo.current!.width = maxWidth;
+    myVideo.current!.height = maxHeight;
 
     try {
       const vidStream = await navigator.mediaDevices.getUserMedia({
@@ -145,10 +145,10 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       });
       stream.current = vidStream;
 
-      if ('srcObject' in myVideo.current) {
-        myVideo.current.srcObject = vidStream;
+      if ('srcObject' in myVideo.current!) {
+        myVideo.current!.srcObject = vidStream;
       } else {
-        myVideo.current.src = window.URL.createObjectURL(vidStream);
+        myVideo.current!.src = window.URL.createObjectURL(vidStream as any);
       }
     } catch (e) {
       localStorage.clear();
@@ -166,18 +166,16 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     if (myVideo.current) myVideo.current.srcObject = null;
     stream.current = null;
     tfCamera.current?.stop();
-    canvasRef.current
-      .getContext('2d')
-      .clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
   }
 
   async function listMediaDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(dev => dev.kind === 'videoinput');
-    setDevices(videoDevices);
+    setDevices(videoDevices as any);
   }
 
-  async function changeDevice(dd) {
+  async function changeDevice(dd: any) {
     setCurrentDevice(dd);
     // store for next time
     localStorage.setItem('currentDevice', dd);
@@ -194,7 +192,7 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
     const setupTFJS = async () => {
       const model = await tf.loadGraphModel(modelPath);
-      tfCamera.current = await tf.data.webcam(myVideo.current);
+      tfCamera.current = await tf.data.webcam(myVideo.current!);
       async function handleDrawing() {
         if (!tfCamera.current) return;
         const img = await tfCamera.current.capture();

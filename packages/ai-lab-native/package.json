@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "A set of components for AI in React Native",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "react-native": "index.tsx",
-  "typings": "dist/index.d.ts",
+  "module": "dist/ai-lab-native.esm.js",
+  "react-native": "src/index.tsx",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],

@@ -2,8 +2,11 @@
 
 AI-lab is a set of components and tools built on TensorFlow JS for React and React Native!
 
-## Quick Look
+## Requirements
 
+The packages in this repository require Node v14+.
+
+## Quick Look
 
 <center>
 
@@ -13,7 +16,7 @@ AI-lab is a set of components and tools built on TensorFlow JS for React and Rea
 
 </center>
 
-## Example
+## Examples
 
 
 ### _AILabImage_
@@ -46,6 +49,21 @@ coming soon
 
 ## Contributing
 
+Working within this repository requires Node v14. A Node Version Manager is recommended, such as [`nvm`](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+This repository is a monorepo, and managed by [`pnpm`](https://pnpm.io). To install it, run:
+
+```console
+$ npm install pnpm -g
+```
+
+From the repository root directory, run the following command to install all dependencies:
+
+```console
+$ pnpm install
+```
+
+Once install completes, development can begin.
 
 ### _Stacks we use_ :
 
@@ -53,7 +71,7 @@ coming soon
 
 [storybook](https://storybook.js.org/)
 
-[lerna](https://lerna.js.org/)
+[pnpm](https://pnpm.io/)
 
 <br>
 

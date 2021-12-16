@@ -1,5 +1,6 @@
 {
-  "name": "ai-lab",
+  "name": "@ai-lab/repo",
+  "private": true,
   "description": "A set of components for AI in React",
   "version": "0.0.1",
   "license": "MIT",
@@ -14,9 +15,9 @@
   },
   "scripts": {
     "start": "tsdx watch",
-    "build": "lerna run build",
+    "build": "pnpm build -r",
     "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
+    "lint": "tsdx lint && pnpm lint -r",
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why"
@@ -66,7 +67,6 @@
     "@types/react": "^17.0.22",
     "@types/react-dom": "^17.0.9",
     "husky": "^7.0.2",
-    "lerna": "^4.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "size-limit": "^5.0.3",

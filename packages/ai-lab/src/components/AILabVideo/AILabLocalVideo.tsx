@@ -12,7 +12,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
@@ -21,9 +21,9 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
 
   function prepCanvas() {
     // Prep Canvas
-    const ctx = canvasRef.current.getContext('2d');
-    canvasRef.current.width = maxWidth;
-    canvasRef.current.height = maxHeight;
+    const ctx = canvasRef.current!.getContext('2d')!;
+    canvasRef.current!.width = maxWidth;
+    canvasRef.current!.height = maxHeight;
     ctx.font = '16px sans-serif';
     ctx.textBaseline = 'top';
     ctx.strokeStyle = '#0F0';
@@ -44,7 +44,9 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     const detectionThreshold = 0.4;
     const iouThreshold = 0.4;
     const maxBoxes = 20;
+    // @ts-ignore
     const prominentDetection = tf.topk(results[0]);
+    // @ts-ignore
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
     const justValues = prominentDetection.values.squeeze<
       tf.Tensor<tf.Rank.R1>
@@ -72,7 +74,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     //Drawing starts
     let start = performance.now();
 
-    for (const detection of chosen) {
+    for (const detection of chosen as any) {
       ctx.strokeStyle = '#0F0';
       ctx.lineWidth = 4;
       ctx.globalCompositeOperation = 'destination-over';
@@ -105,7 +107,9 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
 
     //Preventing memory leak when it's repainted over and over
     tf.dispose([
+      // @ts-ignore
       results[0],
+      // @ts-ignore
       results[1],
       // model,
       nmsDetections.selectedIndices,
@@ -127,7 +131,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     if (!isTFReady) return;
     const model = await tf.loadGraphModel(modelPath);
     if (perf || perfCallback) {
-      while (!videoRef.current.paused) {
+      while (!videoRef.current!.paused) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
         });
@@ -141,7 +145,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
         }
       }
     } else {
-      while (!videoRef.current.paused) {
+      while (!videoRef.current!.paused) {
         await tensorFlowIt(model);
         await delay(500);
       }
@@ -152,8 +156,8 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     if (!videoRef.current) return;
     videoRef.current.pause();
     const ctx = prepCanvas();
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    setPerfProps(null);
+    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    setPerfProps(undefined);
   }
 
   return (

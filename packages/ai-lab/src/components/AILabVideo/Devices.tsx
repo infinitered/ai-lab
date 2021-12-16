@@ -1,10 +1,10 @@
 import React from 'react';
 
-export const Devices = props => {
+export const Devices = (props: any) => {
   const devices = props.devices;
   const optionItems =
     devices &&
-    devices.map(device => (
+    devices.map((device: any) => (
       <option key={device.deviceId} value={device.deviceId}>
         {device.label}
       </option>

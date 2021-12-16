@@ -1,42 +1,43 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Platform, StyleSheet } from 'react-native';
-import * as tf from '@tensorflow/tfjs';
-import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
-import { Camera } from 'expo-camera';
-import Canvas from 'react-native-canvas';
-import { CLASSES } from '../labels';
+import React, { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
+// import * as tf from '@tensorflow/tfjs';
+// import { cameraWithTensors } from '@tensorflow/tfjs-react-native';
+// import { Camera } from 'expo-camera';
+// import Canvas from 'react-native-canvas';
+// import { CLASSES } from '../labels';
 
 import {
-  Performance,
-  PerformanceInfo,
+  // Performance,
+  // PerformanceInfo,
   PerformanceProps,
 } from '../../performance';
 
 export interface VideoProps extends PerformanceProps {}
 
 export const AILabNativeCamera = ({
-  perf,
-  perfCallback,
+  // perf,
+  // perfCallback,
   ...props
 }: VideoProps) => {
-  const [isTFReady, setIsTFReady] = useState(false);
-  const [model, setModel] = useState<tf.GraphModel>();
-  const [drawingTime, setDrawingTime] = useState(0);
-  const [perfProps, setPerfProps] = useState<PerformanceInfo>();
-  const [predictionFound, setPredictionFound] = useState(false);
+  props.perf;
+  // const [isTFReady, setIsTFReady] = useState(false);
+  // const [model, setModel] = useState<tf.GraphModel>();
+  // const [drawingTime, setDrawingTime] = useState(0);
+  // const [perfProps, setPerfProps] = useState<PerformanceInfo>();
+  // const [predictionFound, setPredictionFound] = useState(false);
 
-  const canvasRef = useRef<Canvas>(null);
-  const modelPath =
-    'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
-  const TensorCamera = cameraWithTensors(Camera);
+  // const canvasRef = useRef<Canvas>(null);
+  // const modelPath =
+  //   'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
+  // const TensorCamera = cameraWithTensors(Camera);
 
-  const textureDims =
-    Platform.OS === 'ios'
-      ? { width: 1080, height: 1920 }
-      : { width: 1600, height: 1200 };
+  // const textureDims =
+  //   Platform.OS === 'ios'
+  //     ? { width: 1080, height: 1920 }
+  //     : { width: 1600, height: 1200 };
 
   //Fixed output tensor width and height (based on TF model).
-  const tensorDims = { width: 350, height: 300 };
+  // const tensorDims = { width: 350, height: 300 };
 
   // const tensorFlowIt = async (img: tf.Tensor3D, model: tf.GraphModel) => {
   //   if (!img) {
@@ -147,13 +148,13 @@ export const AILabNativeCamera = ({
   //   loop();
   // };
 
-  // useEffect(() => {
-  //   tf.ready().then(async () => {
-  //     const model = await tf.loadGraphModel(modelPath);
-  //     setModel(model);
-  //   });
-  //   // getPermission();
-  // }, []);
+  useEffect(() => {
+    // tf.ready().then(async () => {
+    //   const model = await tf.loadGraphModel(modelPath);
+    //   setModel(model);
+    // });
+    // getPermission();
+  }, []);
 
   // useEffect(() => {
   //   const setupTFJS = async () => {
