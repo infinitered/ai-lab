@@ -15,6 +15,11 @@ export const perfInfo = async (callback: () => void | Promise<void>) => {
   return { ...timeInfo };
 };
 
+export interface PerformanceProps {
+  perf?: boolean;
+  perfCallback?: (perf: PerformanceInfo) => any;
+}
+
 export const Performance = ({ drawingTime, wallMs }: PerformanceInfo) => {
   return (
     <View>

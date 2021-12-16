@@ -3,6 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Added permissions -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Optional permissions to record videos with audio-->
+    <!-- <uses-permission android:name="android.permission.RECORD_AUDIO" /> -->
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"

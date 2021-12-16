@@ -49,6 +49,8 @@ export const Performance = ({
   );
 };
 
+Performance.perfInfo = perfInfo;
+
 const styles = {
   container: {
     backgroundColor: '#3f4255',
