@@ -9,12 +9,8 @@ podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {
 target 'example' do
   use_expo_modules!
   config = use_native_modules!
-  use_modular_headers!
 
-  pod 'DoubleConversion', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/glog.podspec', :modular_headers => false
-  pod 'Folly', :podspec => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/third-party-podspecs/Folly.podspec', :modular_headers => false
-
+  pod 'React-Core', :path => '../../../node_modules/.pnpm/react-native@0.63.2_react@17.0.2/node_modules/react-native/', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -36,7 +32,7 @@ target 'example' do
   #use_flipper!()
 
   post_install do |installer|
-   # react_native_post_install(installer)
+    # react_native_post_install(installer)
 
     # Workaround `Cycle inside FBReactNativeSpec` error for react-native 0.64
     # Reference: https://github.com/software-mansion/react-native-screens/issues/842#issuecomment-812543933
