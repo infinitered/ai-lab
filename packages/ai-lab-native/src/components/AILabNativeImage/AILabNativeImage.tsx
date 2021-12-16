@@ -3,8 +3,9 @@ import { fetch, decodeJpeg } from '@tensorflow/tfjs-react-native';
 import { View, Image, ImageProps, LayoutRectangle } from 'react-native';
 import Canvas from 'react-native-canvas';
 import * as tf from '@tensorflow/tfjs';
-import { CLASSES } from './labels';
+import { CLASSES } from '../labels';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
+// import { performance } from 'perf_hooks';
 
 export interface AILabNativeImage extends ImageProps {
   perf?: boolean;
@@ -88,7 +89,7 @@ export const AILabNativeImage = ({
     // Mega Clean
     tf.dispose([
       (results as tf.Tensor<tf.Rank>[])[0],
-      (results  as tf.Tensor<tf.Rank>[])[1],
+      (results as tf.Tensor<tf.Rank>[])[1],
       model as any,
       nmsDetections.selectedIndices,
       nmsDetections.selectedScores,
@@ -141,7 +142,7 @@ export const AILabNativeImage = ({
 
   useEffect(() => {
     const setupTFJS = async () => {
-      const model = await tf.loadGraphModel(modelPath);
+      const model = await tf.loadGraphModel(modelPath, { fromTFHub: true });
       if (perf || perfCallback) {
         const perfMetrics = await perfInfo(
           async () => await tensorFlowIt(model)
