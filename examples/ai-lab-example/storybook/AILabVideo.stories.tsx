@@ -9,12 +9,19 @@ export default {
 };
 
 export const withALocalVideo = () => (
+  <AILabLocalVideo src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" />
+);
+
+export const withALocalVideoPerf = () => (
   <AILabLocalVideo
     perf
     src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
   />
 );
-export const withAWebcam = () => (
+
+export const withAWebcam = () => <AILabWebCam />;
+
+export const withAWebcamPerf = () => (
   // add  `perf` to show performance metrics
   <AILabWebCam perf />
 );
