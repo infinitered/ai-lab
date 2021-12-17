@@ -1,10 +1,10 @@
 {
-  "name": "@ai-lab/node-example",
+  "name": "@ai-lab/web-example",
   "private": true,
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "pnpm storybook",
+    "start": "cd../../ && pnpm build --filter ai-lab && pnpm build --filter @ai-lab/web-example && cd examples/ai-lab-example && pnpm storybook",
     "build": "parcel build index.html",
     "storybook": "start-storybook -p 6006 -c storybook",
     "build-storybook": "build-storybook"

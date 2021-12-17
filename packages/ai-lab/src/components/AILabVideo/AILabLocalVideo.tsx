@@ -4,15 +4,13 @@ import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { CLASSES } from '../labels';
 import { VideoProps } from './types';
 
-const delay = async (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
-
 export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   const [isTFReady, setIsTFReady] = useState(false);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [curModel, setCurModel] = useState<tf.GraphModel | null>(null);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
@@ -32,11 +30,11 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     return ctx;
   }
 
-  async function tensorFlowIt(model: tf.GraphModel) {
+  async function tensorFlowIt(model: tf.GraphModel | null) {
     if (!videoRef.current) return;
     const tensor = tf.browser.fromPixels(videoRef.current);
     const readyfied = tf.expandDims(tensor, 0);
-    const results = await model.executeAsync(readyfied);
+    const results = await model!.executeAsync(readyfied);
 
     const ctx = prepCanvas();
 
@@ -124,33 +122,36 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   }
 
   useEffect(() => {
-    tf.ready().then(() => setIsTFReady(true));
+    tf.ready().then(() => {
+      setIsTFReady(true);
+      setupTFJS();
+    });
   }, []);
 
   const setupTFJS = async () => {
-    if (!isTFReady) return;
     const model = await tf.loadGraphModel(modelPath);
-    if (perf || perfCallback) {
-      while (!videoRef.current!.paused) {
-        const perfMetrics = await perfInfo(async () => {
-          await tensorFlowIt(model);
-        });
+    setCurModel(model);
+  };
 
-        if (perf) {
-          setPerfProps(perfMetrics);
-          await delay(1000);
-        }
-        if (perfCallback) {
-          perfCallback(perfMetrics);
-        }
+  async function runInference() {
+    if (!isTFReady) return;
+    if (perf || perfCallback) {
+      const perfMetrics = await perfInfo(async () => {
+        await tensorFlowIt(curModel);
+      });
+
+      if (perf) {
+        setPerfProps(perfMetrics);
+      } else if (perfCallback) {
+        perfCallback(perfMetrics);
       }
     } else {
-      while (!videoRef.current!.paused) {
-        await tensorFlowIt(model);
-        await delay(500);
-      }
+      await tensorFlowIt(curModel);
     }
-  };
+
+    // Loop unless paused
+    if (!videoRef.current!.paused) requestAnimationFrame(runInference);
+  }
 
   function stopTFJS() {
     if (!videoRef.current) return;
@@ -189,7 +190,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
           height={maxHeight}
           controls
           onEnded={stopTFJS}
-          onPlay={setupTFJS}
+          onPlay={runInference}
         />
       </div>
     </div>
