@@ -31,6 +31,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   }
 
   async function tensorFlowIt(model: tf.GraphModel | null) {
+    console.log('TFIt Called');
     if (!videoRef.current) return;
     const tensor = tf.browser.fromPixels(videoRef.current);
     const readyfied = tf.expandDims(tensor, 0);
@@ -150,7 +151,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     }
 
     // Loop unless paused
-    if (!videoRef.current!.paused) requestAnimationFrame(runInference);
+    if (videoRef.current!.paused === false) requestAnimationFrame(runInference);
   }
 
   function stopTFJS() {
