@@ -6,7 +6,25 @@ export default {
   component: AILabImage,
 };
 
-export const withAnImage = () => (
-  // add  `perf` to show performance metrics
-  <AILabImage perf src={require('./dinner.jpg')} />
-);
+// @ts-ignore
+const imageStory = args => {
+  const theImage = require('./dinner.jpg');
+  return (
+    <AILabImage perf={args.perf} src={theImage} style={{ width: '100%' }} />
+  );
+};
+
+export const withAnImage = imageStory.bind({});
+// @ts-ignore
+withAnImage.args = {
+  perf: true,
+  // restrain: false,
+  // modelInfo: {
+  //   model: 'this is the model',
+  //   objectDetection: true,
+  //   labels: ['dog', 'cat'],
+  //   threshold: 0.4,
+  //   max: 20,
+  //   IOU: 0.5,
+  // },
+};

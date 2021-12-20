@@ -80,15 +80,15 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     const chosen = await nmsDetections.selectedIndices.data();
 
     // clear previous
-    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    ctx!.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
 
     //Drawing starts
     let start = performance.now();
 
     for (const detection of chosen as any) {
-      ctx.strokeStyle = '#0F0';
-      ctx.lineWidth = 4;
-      ctx.globalCompositeOperation = 'destination-over';
+      ctx!.strokeStyle = '#0F0';
+      ctx!.lineWidth = 4;
+      ctx!.globalCompositeOperation = 'destination-over';
       const detectedIndex = maxIndices[detection];
       const detectedClass = CLASSES[detectedIndex];
       const detectedScore = scores[detection];
@@ -99,24 +99,25 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
       const startX = dBox[1] > 0 ? dBox[1] * maxWidth : 0;
       const boxHeight = (dBox[2] - dBox[0]) * maxHeight;
       const boxWidth = (dBox[3] - dBox[1]) * maxWidth;
-      ctx.strokeRect(startX, startY, boxWidth, boxHeight);
+      ctx!.strokeRect(startX, startY, boxWidth, boxHeight);
       // Draw the label background.
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = '#0B0';
+      ctx!.globalCompositeOperation = 'source-over';
+      ctx!.fillStyle = '#0B0';
       const textHeight = 16;
       const textPad = 4;
       const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
-      const textWidth = ctx.measureText(label).width;
-      ctx.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
+      const textWidth = ctx!.measureText(label).width;
+      ctx!.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
       // Draw the text last to ensure it's on top.
-      ctx.fillStyle = '#000000';
-      ctx.fillText(label, startX, startY);
+      ctx!.fillStyle = '#000000';
+      ctx!.fillText(label, startX, startY);
 
       // Drawing ends
       setDrawingTime(performance.now() - start);
     }
 
     //Preventing memory leak when it's repainted over and over
+    // Some of these should possibly be kept between loops for greater perf.
     tf.dispose([
       // @ts-ignore
       results[0],
@@ -182,7 +183,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     if (!videoRef.current) return;
     videoRef.current.pause();
     const ctx = curCtx;
-    ctx.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    ctx!.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
     setPerfProps(undefined);
   }
 

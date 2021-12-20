@@ -8,20 +8,22 @@ export default {
   component: [AILabWebCam, AILabLocalVideo],
 };
 
-export const withALocalVideo = () => (
-  <AILabLocalVideo src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" />
-);
+const controlArgs = {
+  perf: true,
+};
 
-export const withALocalVideoPerf = () => (
+const withALocalVideoStory = args => (
   <AILabLocalVideo
-    perf
+    perf={args.perf}
     src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
   />
 );
 
-export const withAWebcam = () => <AILabWebCam />;
+export const withALocalVideo = withALocalVideoStory.bind({});
+// @ts-ignore
+withALocalVideo.args = controlArgs;
 
-export const withAWebcamPerf = () => (
-  // add  `perf` to show performance metrics
-  <AILabWebCam perf />
-);
+const withAWebcamStory = args => <AILabWebCam perf={args.perf} />;
+export const withAWebcam = withAWebcamStory.bind({});
+// @ts-ignore
+withAWebcam.args = controlArgs;
