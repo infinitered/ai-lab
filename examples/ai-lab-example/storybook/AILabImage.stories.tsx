@@ -26,10 +26,8 @@ const gimmeImage = (src: string) => {
   switch (src) {
     case 'dinner':
       return require('./dinner.jpg');
-      break;
     case 'cat':
       return require('./cat.jpeg');
-      break;
     default:
       return require('./beach.jpeg');
   }
