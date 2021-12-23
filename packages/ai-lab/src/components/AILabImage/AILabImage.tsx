@@ -8,11 +8,32 @@ import {
   PerformanceProps,
 } from '../../performance';
 
-export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> & PerformanceProps
+export interface ImageLabProps {
+  model: tf.GraphModel;
+  modelInfo?: {
+    modelType: 'classification' | 'ssd',
+    threshold?: number,
+    maxBoxes?: number,
+    iouThreshold?: number,
+    nmsActive?: Boolean
+  };
+}
+
+export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> & PerformanceProps & ImageLabProps
+
+const defaultModelConfig = {
+  modelType: 'ssd',
+  threshold: 0.4,
+  maxBoxes: 20,
+  iouThreshold: 0.5,
+  nmsActive: true
+}
 
 export const AILabImage = ({
+  model,
   perf,
   perfCallback,
+  modelInfo,
   src,
   ...props
 }: ImageProps) => {
@@ -22,8 +43,8 @@ export const AILabImage = ({
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
 
-  const modelPath =
-    'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
+  // const modelPath =
+  //   'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
 
   const tensorFlowIt = async (model: tf.GraphModel) => {
     const image = imgRef.current;
@@ -42,10 +63,9 @@ export const AILabImage = ({
     ctx!.font = '16px sans-serif';
     ctx!.textBaseline = 'top';
 
+    // Merge defaults & props
+    const {threshold:detectionThreshold, maxBoxes, iouThreshold, nmsActive} = {...defaultModelConfig, ...modelInfo};
     // Get a clean tensor of top indices
-    const detectionThreshold = 0.4;
-    const iouThreshold = 0.4;
-    const maxBoxes = 20;
     const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
     const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<tf.Tensor<tf.Rank.R2>>();
     const justValues =
@@ -60,29 +80,31 @@ export const AILabImage = ({
 
     // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
     const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
-      justBoxes, // [numBoxes, 4]
-      justValues, // [numBoxes]
+      justBoxes,
+      justValues,
       maxBoxes,
       iouThreshold,
       detectionThreshold,
-      1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
+      nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
     );
 
     const chosen = await nmsDetections.selectedIndices.data();
     // Mega Clean
-    // tf.dispose([
-    //   results[0],
-    //   results[1],
-    //   model,
-    //   nmsDetections.selectedIndices,
-    //   nmsDetections.selectedScores,
-    //   prominentDetection.indices,
-    //   prominentDetection.values,
-    //   tensor,
-    //   readyfied,
-    //   justBoxes,
-    //   justValues,
-    // ]);
+    tf.dispose([
+      //@ts-ignore
+      results[0],
+       //@ts-ignore
+      results[1],
+      model,
+      nmsDetections.selectedIndices,
+      nmsDetections.selectedScores,
+      prominentDetection.indices,
+      prominentDetection.values,
+      tensor,
+      readyfied,
+      justBoxes,
+      justValues,
+    ]);
 
     //Drawing starts
     let start = performance.now();
@@ -125,7 +147,6 @@ export const AILabImage = ({
 
   useEffect(() => {
     const setupTFJS = async () => {
-      const model = await tf.loadGraphModel(modelPath);
       if (perf || perfCallback) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
@@ -148,7 +169,7 @@ export const AILabImage = ({
 
   return (
     <div style={{ position: 'relative' }}>
-      <img ref={imgRef} src={src} alt="image" {...props} />
+      <img ref={imgRef} src={src} {...props} />
       <canvas
         ref={canvasRef}
         style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
