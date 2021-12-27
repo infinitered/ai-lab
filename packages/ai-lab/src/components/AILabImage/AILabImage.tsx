@@ -42,34 +42,16 @@ export const AILabImage = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
+  const [detectionResults, setDetectionResults] = useState({})
 
-  // const modelPath =
-  //   'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
-
-  const tensorFlowIt = async (model: tf.GraphModel) => {
-    const image = imgRef.current;
-    const { height, width } = image!;
-    const tensor = tf.browser.fromPixels(image!);
-
-    // SSD Mobilenet single batch
-    const readyfied = tf.expandDims(tensor, 0);
-    const results = await model.executeAsync(readyfied);
-
-    // Prep Canvas
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    canvas!.width = width;
-    canvas!.height = height;
-    ctx!.font = '16px sans-serif';
-    ctx!.textBaseline = 'top';
+  async function drawDetections() {
+    if (!isTFReady) return
+    //@ts-ignore
+    const {prominentDetection, justBoxes, justValues} = detectionResults
 
     // Merge defaults & props
-    const {threshold:detectionThreshold, maxBoxes, iouThreshold, nmsActive} = {...defaultModelConfig, ...modelInfo};
-    // Get a clean tensor of top indices
-    const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
-    const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<tf.Tensor<tf.Rank.R2>>();
-    const justValues =
-      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
+    //@ts-ignore
+    const {threshold, maxBoxes, iouThreshold, nmsActive} = {...defaultModelConfig, ...modelInfo};
 
     // Move results back to JavaScript in parallel
     const [maxIndices, scores, boxes] = await Promise.all([
@@ -84,26 +66,28 @@ export const AILabImage = ({
       justValues,
       maxBoxes,
       iouThreshold,
-      detectionThreshold,
+      threshold,
       nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
     );
 
     const chosen = await nmsDetections.selectedIndices.data();
-    // Mega Clean
+
+    const image = imgRef.current;
+    const { height, width } = image!;
+
+    // TODO: This canvas is getting redrawn every time.  That's why it's erasing old detections.
+    // This should be optimized so that the same canvas is preserved and the canvas is cleared in code, rather than reloads
+    // Prep Canvas
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+    canvas!.width = width;
+    canvas!.height = height;
+    ctx!.font = '16px sans-serif';
+    ctx!.textBaseline = 'top';
+
     tf.dispose([
-      //@ts-ignore
-      results[0],
-       //@ts-ignore
-      results[1],
-      model,
       nmsDetections.selectedIndices,
       nmsDetections.selectedScores,
-      prominentDetection.indices,
-      prominentDetection.values,
-      tensor,
-      readyfied,
-      justBoxes,
-      justValues,
     ]);
 
     //Drawing starts
@@ -139,11 +123,44 @@ export const AILabImage = ({
       // Drawing ends
       setDrawingTime(performance.now() - start);
     }
+  }
+
+  const tensorFlowIt = async (model: tf.GraphModel) => {
+    const image = imgRef.current;
+    const tensor = tf.browser.fromPixels(image!);
+
+    // SSD Mobilenet single batch
+    const readyfied = tf.expandDims(tensor, 0);
+    const results = await model.executeAsync(readyfied);
+
+    // Get a clean tensor of top indices
+    const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
+    const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<tf.Tensor<tf.Rank.R2>>();
+    const justValues =
+      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
+
+    // Store Box Detections
+    setDetectionResults({prominentDetection, justBoxes, justValues})
+
+    // Small Cleanup
+    tf.dispose([
+      //@ts-ignore
+      results[0],
+      //@ts-ignore
+      results[1],
+      tensor,
+      readyfied,
+    ]);
   };
 
   useEffect(() => {
-    tf.ready().then(() => setIsTFReady(true));
+    tf.ready().then(() => {
+      setIsTFReady(true)
+    });
   }, []);
+
+  // @ts-ignore
+  useEffect(drawDetections, [detectionResults, modelInfo?.modelType, modelInfo?.threshold, modelInfo?.maxBoxes, modelInfo?.iouThreshold, modelInfo?.nmsActive]);
 
   useEffect(() => {
     const setupTFJS = async () => {
@@ -162,10 +179,17 @@ export const AILabImage = ({
       }
     };
 
+    // Only go if everything is ready
     if (isTFReady) {
-      setupTFJS();
+      const activeImage = imgRef.current;
+      if (activeImage?.complete) {
+        setupTFJS();
+      } else {
+        activeImage!.onload = setupTFJS;
+      }
     }
-  }, [isTFReady]);
+  // This should listen for model changes, but that causes re-render issues
+  }, [src, isTFReady]);
 
   return (
     <div style={{ position: 'relative' }}>
