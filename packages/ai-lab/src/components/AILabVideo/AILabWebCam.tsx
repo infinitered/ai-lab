@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { Devices } from './Devices';
 import { CLASSES } from '../labels';
-import { VideoProps } from './types';
+import { VideoProps } from '../../types';
 
 const delay = async (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));

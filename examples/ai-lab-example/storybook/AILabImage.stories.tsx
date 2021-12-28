@@ -48,6 +48,7 @@ const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
     />
   );
 };
+
 export const withAnImageDefaults = imageStory.bind({});
 // @ts-ignore
 withAnImageDefaults.args = {
@@ -78,6 +79,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         nmsActive: args.nmsActive,
         maxBoxes: args.maxBoxes,
       }}
+      visual={args.visual}
     />
   );
 };
@@ -89,6 +91,7 @@ withImageAndCustomizedSettings.args = {
   iouThreshold: 0.5,
   maxBoxes: 20,
   nmsActive: true,
+  visual: true,
 };
 
 withImageAndCustomizedSettings.parameters = {
@@ -100,6 +103,7 @@ withImageAndCustomizedSettings.parameters = {
       'nmsActive',
       'maxBoxes',
       'iouThreshold',
+      'visual',
     ],
   },
 };
