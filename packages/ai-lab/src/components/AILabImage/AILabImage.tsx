@@ -102,11 +102,15 @@ export const AILabImage = ({
           detectionResults={detectionResults}
           height={imgRef.current?.height ?? 0}
           modelInfo={{ ...defaultModelConfig, ...modelInfo }}
-          onDrawComplete={setDrawingTime}
+          onDrawComplete={(durationMs) => {
+            if (!drawingTime) {
+              setDrawingTime(durationMs);
+            }
+          }}
           width={imgRef.current?.width ?? 0}
         />
       )}
-      {perf && perfProps && !!drawingTime && (
+      {perf && perfProps && (
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
           <Performance {...perfProps} drawingTime={drawingTime} />
         </div>
