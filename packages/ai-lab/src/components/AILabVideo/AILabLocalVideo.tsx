@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { CLASSES } from '../labels';
-import { VideoProps } from './types';
+import { VideoProps } from '../../types';
 
 let activeInfer = false;
 

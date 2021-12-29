@@ -1,11 +1,19 @@
 import React from 'react';
-import { AILabImage } from 'ai-lab';
+import {
+  AILabImage,
+  AILabObjectDetectionUI,
+  SimpleObjectDetectionUI,
+} from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 export default {
   title: 'Example/AILabImage/SSD Model',
   component: AILabImage,
   argTypes: {
+    objectDetectionUI: {
+      options: ['ai-lab', 'simple'],
+      control: { type: 'select' },
+    },
     imageSource: {
       options: ['dinner', 'cat', 'beach'],
       control: { type: 'select' },
@@ -48,9 +56,11 @@ const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
     />
   );
 };
+
 export const withAnImageDefaults = imageStory.bind({});
 // @ts-ignore
 withAnImageDefaults.args = {
+  //@ts-ignore
   imageSource: 'cat',
 };
 withAnImageDefaults.parameters = {
@@ -68,38 +78,52 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
   const theImage = gimmeImage(args.imageSource);
   return (
     <AILabImage
+      ObjectDetectionUI={
+        args.objectDetectionUI === 'simple'
+          ? SimpleObjectDetectionUI
+          : AILabObjectDetectionUI
+      }
       model={loaded.SSDModel}
       perf={args.perf}
       src={theImage}
       style={{ height: '100%' }}
       modelInfo={{
         modelType: 'ssd',
+        //@ts-ignore
         threshold: args.threshold,
+        //@ts-ignore
         nmsActive: args.nmsActive,
+        //@ts-ignore
         maxBoxes: args.maxBoxes,
       }}
+      visual={args.visual}
     />
   );
 };
 export const withImageAndCustomizedSettings = imageParamsStory.bind({});
 withImageAndCustomizedSettings.args = {
-  perf: true,
+  //@ts-ignore
   imageSource: 'dinner',
-  threshold: 0.4,
   iouThreshold: 0.5,
   maxBoxes: 20,
   nmsActive: true,
+  objectDetectionUI: 'ai-lab',
+  perf: true,
+  threshold: 0.4,
+  visual: true,
 };
 
 withImageAndCustomizedSettings.parameters = {
   controls: {
     include: [
-      'threshold',
       'imageSource',
-      'perf',
-      'nmsActive',
-      'maxBoxes',
       'iouThreshold',
+      'maxBoxes',
+      'nmsActive',
+      'objectDetectionUI',
+      'perf',
+      'threshold',
+      'visual',
     ],
   },
 };
