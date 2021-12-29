@@ -15,7 +15,7 @@ const defaultModelConfig: ModelInfo = {
 export const AILabImage = ({
   model,
   modelInfo,
-  // ObjectDetectionUI = AILabObjectDetectionUI,
+  ObjectDetectionUI = AILabObjectDetectionUI,
   perf,
   perfCallback,
   src,
@@ -99,7 +99,7 @@ export const AILabImage = ({
     <div style={{ position: 'relative' }}>
       <img ref={imgRef} src={src} {...props} />
       {visual && (
-        <AILabObjectDetectionUI
+        <ObjectDetectionUI
           detectionResults={detectionResults}
           height={imgRef.current?.height ?? 0}
           modelInfo={{ ...defaultModelConfig, ...modelInfo }}
