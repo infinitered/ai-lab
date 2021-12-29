@@ -1,6 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 import React, { useEffect, useRef } from 'react';
-import { ModelInfo } from '..';
+import { ObjectDetectionUIProps } from '../types';
 import { CLASSES } from './labels';
 
 export const AILabObjectDetectionUI = ({
@@ -9,20 +9,7 @@ export const AILabObjectDetectionUI = ({
   modelInfo,
   onDrawComplete,
   width,
-}: {
-  detectionResults: {
-    prominentDetection: {
-      values: tf.Tensor<tf.Rank>;
-      indices: tf.Tensor<tf.Rank>;
-    };
-    justBoxes: tf.Tensor<tf.Rank.R2>;
-    justValues: tf.Tensor<tf.Rank.R1>;
-  };
-  height: number;
-  modelInfo: ModelInfo;
-  onDrawComplete?: (durationMs: number) => void;
-  width: number;
-}) => {
+}: ObjectDetectionUIProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   async function drawDetections() {
@@ -98,6 +85,7 @@ export const AILabObjectDetectionUI = ({
   useEffect(() => {
     tf.ready().then(() => {
       drawDetections();
+      console.log('called');
     });
   }, [detectionResults, height, modelInfo, width]);
 

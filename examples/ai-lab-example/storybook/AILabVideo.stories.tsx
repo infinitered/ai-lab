@@ -12,7 +12,7 @@ const controlArgs = {
   perf: true,
 };
 
-const withALocalVideoStory = args => (
+const withALocalVideoStory = (args: { perf: any }) => (
   <AILabLocalVideo
     perf={args.perf}
     src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"
@@ -23,7 +23,9 @@ export const withALocalVideo = withALocalVideoStory.bind({});
 // @ts-ignore
 withALocalVideo.args = controlArgs;
 
-const withAWebcamStory = args => <AILabWebCam perf={args.perf} />;
+const withAWebcamStory = (args: { perf: any }) => (
+  <AILabWebCam perf={args.perf} />
+);
 export const withAWebcam = withAWebcamStory.bind({});
 // @ts-ignore
 withAWebcam.args = controlArgs;

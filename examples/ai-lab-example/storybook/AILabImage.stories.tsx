@@ -52,6 +52,7 @@ const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
 export const withAnImageDefaults = imageStory.bind({});
 // @ts-ignore
 withAnImageDefaults.args = {
+  //@ts-ignore
   imageSource: 'cat',
 };
 withAnImageDefaults.parameters = {
@@ -69,14 +70,21 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
   const theImage = gimmeImage(args.imageSource);
   return (
     <AILabImage
+      // ObjectDetectionUI={props => {
+      //   console.log({ props });
+      //   return <AILabObjectDetectionUI {...props} />;
+      // }}
       model={loaded.SSDModel}
       perf={args.perf}
       src={theImage}
       style={{ height: '100%' }}
       modelInfo={{
         modelType: 'ssd',
+        //@ts-ignore
         threshold: args.threshold,
+        //@ts-ignore
         nmsActive: args.nmsActive,
+        //@ts-ignore
         maxBoxes: args.maxBoxes,
       }}
       visual={args.visual}
@@ -86,6 +94,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
 export const withImageAndCustomizedSettings = imageParamsStory.bind({});
 withImageAndCustomizedSettings.args = {
   perf: true,
+  //@ts-ignore
   imageSource: 'dinner',
   threshold: 0.4,
   iouThreshold: 0.5,

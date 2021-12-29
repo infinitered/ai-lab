@@ -4,5 +4,5 @@
     "rootDir": "."
   },
   "extends": "../../shared/tsconfig.base.json",
-  "include": [".", "../../packages/ai-lab/src"]
+  "include": ["."]
 }

@@ -14,9 +14,10 @@ const defaultModelConfig: ModelInfo = {
 
 export const AILabImage = ({
   model,
+  modelInfo,
+  // ObjectDetectionUI = AILabObjectDetectionUI,
   perf,
   perfCallback,
-  modelInfo,
   src,
   visual,
   ...props
@@ -40,9 +41,8 @@ export const AILabImage = ({
     const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<
       tf.Tensor<tf.Rank.R2>
     >();
-    const justValues = prominentDetection.values.squeeze<
-      tf.Tensor<tf.Rank.R1>
-    >();
+    const justValues =
+      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
     // Store Box Detections
     setDetectionResults({ prominentDetection, justBoxes, justValues });
@@ -103,8 +103,9 @@ export const AILabImage = ({
           detectionResults={detectionResults}
           height={imgRef.current?.height ?? 0}
           modelInfo={{ ...defaultModelConfig, ...modelInfo }}
-          onDrawComplete={durationMs => {
+          onDrawComplete={(durationMs) => {
             if (!drawingTime) {
+              console.log({ drawingTime });
               setDrawingTime(durationMs);
             }
           }}
