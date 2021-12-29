@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { ModelInfo } from '..';
 import { CLASSES } from './labels';
 
-export const DrawDetections = ({
+export const AILabObjectDetectionUI = ({
   detectionResults,
   height,
   modelInfo,

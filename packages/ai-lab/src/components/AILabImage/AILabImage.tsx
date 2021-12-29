@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 import { ImageProps, ModelInfo } from '../../types';
-import { DrawDetections } from '../DrawDetections';
+import { AILabObjectDetectionUI } from '../AILabObjectDetectionUI';
 
 const defaultModelConfig: ModelInfo = {
   modelType: 'ssd',
@@ -40,8 +40,9 @@ export const AILabImage = ({
     const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<
       tf.Tensor<tf.Rank.R2>
     >();
-    const justValues =
-      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
+    const justValues = prominentDetection.values.squeeze<
+      tf.Tensor<tf.Rank.R1>
+    >();
 
     // Store Box Detections
     setDetectionResults({ prominentDetection, justBoxes, justValues });
@@ -98,11 +99,11 @@ export const AILabImage = ({
     <div style={{ position: 'relative' }}>
       <img ref={imgRef} src={src} {...props} />
       {visual && (
-        <DrawDetections
+        <AILabObjectDetectionUI
           detectionResults={detectionResults}
           height={imgRef.current?.height ?? 0}
           modelInfo={{ ...defaultModelConfig, ...modelInfo }}
-          onDrawComplete={(durationMs) => {
+          onDrawComplete={durationMs => {
             if (!drawingTime) {
               setDrawingTime(durationMs);
             }
