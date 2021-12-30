@@ -3,10 +3,16 @@ import React from 'react';
 import { PerformanceProps } from './performance';
 
 export interface ModelInfo {
+  // The the allowed area for intersection over union (IOU)
+  // between the bounding box with other bounding boxes.
   iouThreshold?: number;
+  // The number of boxes to keep after applying NMS.
   maxBoxes: number;
+  // The model type, which identifies the output structure to expect.
   modelType: 'classification' | 'ssd';
+  // The soft NMS Sigma that allows overlapping of strong object confidence.
   nmsActive?: boolean;
+  // The score threshold to identify if a value is returned.
   threshold?: number;
 }
 

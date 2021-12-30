@@ -14,7 +14,8 @@
     "start": "tsdx watch --verbose --noClean",
     "build": "tsdx build",
     "lint": "tsdx lint",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "doc": "node document.js"
   },
   "author": "Gant Laborde",
   "license": "MIT",
@@ -27,6 +28,7 @@
     "babel-loader": "^8.2.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "typejuice": "^0.0.1",
     "typescript": "^4.4.3"
   },
   "dependencies": {
