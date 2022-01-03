@@ -5,6 +5,7 @@ import {
   SimpleObjectDetectionUI,
 } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 
 export default {
   title: 'Example/AILabImage/SSD Model',
@@ -83,6 +84,8 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
           ? SimpleObjectDetectionUI
           : AILabObjectDetectionUI
       }
+      onInference={action('onInference', args.onInference)}
+      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.SSDModel}
       perf={args.perf}
       src={theImage}

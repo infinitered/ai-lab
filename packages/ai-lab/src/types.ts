@@ -12,9 +12,10 @@ export interface ModelInfo {
 
 export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
   PerformanceProps & {
-    model: tf.GraphModel;
+    model: tf.GraphModel | tf.LayersModel;
     modelInfo?: ModelInfo;
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
+    onInference?: (inferenceData: any) => void;
     visual?: boolean;
   };
 
@@ -27,12 +28,10 @@ export interface VideoProps
 
 export interface ObjectDetectionUIProps {
   detectionResults: {
-    prominentDetection: {
-      values: tf.Tensor<tf.Rank>;
-      indices: tf.Tensor<tf.Rank>;
-    };
-    justBoxes: tf.Tensor<tf.Rank.R2>;
-    justValues: tf.Tensor<tf.Rank.R1>;
+    detections: Float32Array | Int32Array | Uint8Array;
+    maxIndices: Float32Array | Int32Array | Uint8Array;
+    scores: number[];
+    boxes: number[][];
   };
   height: number;
   modelInfo: ModelInfo;

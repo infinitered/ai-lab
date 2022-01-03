@@ -13,27 +13,7 @@ export const AILabObjectDetectionUI = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   async function drawDetections() {
-    const { prominentDetection, justBoxes, justValues } = detectionResults;
-    const { threshold, maxBoxes, iouThreshold, nmsActive } = modelInfo;
-
-    // Move results back to JavaScript in parallel
-    const [maxIndices, scores, boxes] = await Promise.all([
-      prominentDetection.indices.data(),
-      justValues.array(),
-      justBoxes.array(),
-    ]);
-
-    // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
-    const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
-      justBoxes,
-      justValues,
-      maxBoxes,
-      iouThreshold,
-      threshold,
-      nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
-    );
-
-    const chosen = await nmsDetections.selectedIndices.data();
+    const { detections, maxIndices, scores, boxes } = detectionResults;
 
     // TODO: This canvas is getting redrawn every time.  That's why it's erasing old detections.
     // This should be optimized so that the same canvas is preserved and the canvas is cleared in code, rather than reloads
@@ -45,12 +25,10 @@ export const AILabObjectDetectionUI = ({
     ctx!.font = '16px sans-serif';
     ctx!.textBaseline = 'top';
 
-    tf.dispose([nmsDetections.selectedIndices, nmsDetections.selectedScores]);
-
     // Drawing starts
     let start = performance.now();
 
-    for (const detection of chosen as any) {
+    for (const detection of detections) {
       ctx!.strokeStyle = '#0F0';
       ctx!.lineWidth = 4;
       ctx!.globalCompositeOperation = 'destination-over';
@@ -85,7 +63,6 @@ export const AILabObjectDetectionUI = ({
   useEffect(() => {
     tf.ready().then(() => {
       drawDetections();
-      console.log('called');
     });
   }, [detectionResults, height, modelInfo, width]);
 

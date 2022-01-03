@@ -3,6 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
 import { ImageProps, ModelInfo } from '../../types';
 import { AILabObjectDetectionUI } from '../AILabObjectDetectionUI';
+import { CLASSES } from '../labels';
 
 const defaultModelConfig: ModelInfo = {
   modelType: 'ssd',
@@ -16,6 +17,7 @@ export const AILabImage = ({
   model,
   modelInfo,
   ObjectDetectionUI = AILabObjectDetectionUI,
+  onInference,
   perf,
   perfCallback,
   src,
@@ -28,13 +30,25 @@ export const AILabImage = ({
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [detectionResults, setDetectionResults] = useState<any>({});
 
-  const tensorFlowIt = async (model: tf.GraphModel) => {
+  const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
     const tensor = tf.browser.fromPixels(image!);
+    console.log(
+      typeof model === typeof tf.LayersModel
+        ? //@ts-ignore
+          model.layers.map((l) => l.name)
+        : null
+    );
+
+    // typeof model === typeof tf.LayersModel &&
+    //   (model as tf.LayersModel).layers.find((l) => console.log(l.name));
 
     // SSD Mobilenet single batch
     const readyfied = tf.expandDims(tensor, 0);
-    const results = await model.executeAsync(readyfied);
+    const results = model.predict(readyfied);
+    model.hasOwnProperty('layers')
+      ? model.predict(readyfied)
+      : await (model as tf.GraphModel).executeAsync(readyfied);
 
     // Get a clean tensor of top indices
     const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
@@ -44,8 +58,42 @@ export const AILabImage = ({
     const justValues =
       prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
+    const { threshold, maxBoxes, iouThreshold, nmsActive } = {
+      ...defaultModelConfig,
+      ...modelInfo,
+    };
+
+    // Move results back to JavaScript in parallel
+    const [maxIndices, scores, boxes] = await Promise.all([
+      prominentDetection.indices.data(),
+      justValues.array(),
+      justBoxes.array(),
+    ]);
+
+    // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
+    const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
+      justBoxes,
+      justValues,
+      maxBoxes,
+      iouThreshold,
+      threshold,
+      nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
+    );
+
+    const detections = await nmsDetections.selectedIndices.data();
+
+    tf.dispose([nmsDetections.selectedIndices, nmsDetections.selectedScores]);
+
     // Store Box Detections
-    setDetectionResults({ prominentDetection, justBoxes, justValues });
+    setDetectionResults({ detections, maxIndices, scores, boxes });
+
+    //@ts-ignored
+    onInference?.(
+      Array.from(detections).map((d) => ({
+        detectedClass: CLASSES[maxIndices[d]],
+        detectedScore: scores[d],
+      }))
+    );
 
     // Small Cleanup
     tf.dispose([
@@ -105,7 +153,6 @@ export const AILabImage = ({
           modelInfo={{ ...defaultModelConfig, ...modelInfo }}
           onDrawComplete={(durationMs) => {
             if (!drawingTime) {
-              console.log({ drawingTime });
               setDrawingTime(durationMs);
             }
           }}
