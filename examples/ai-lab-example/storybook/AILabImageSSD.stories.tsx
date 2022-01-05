@@ -22,7 +22,7 @@ export default {
     threshold: {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
     },
-    maxBoxes: {
+    maxResults: {
       control: { type: 'range', min: 0, max: 50, step: 1 },
     },
     iouThreshold: {
@@ -97,7 +97,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         //@ts-ignore
         nmsActive: args.nmsActive,
         //@ts-ignore
-        maxBoxes: args.maxBoxes,
+        maxResults: args.maxResults,
       }}
       visual={args.visual}
     />
@@ -108,7 +108,7 @@ withImageAndCustomizedSettings.args = {
   //@ts-ignore
   imageSource: 'dinner',
   iouThreshold: 0.5,
-  maxBoxes: 20,
+  maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
   perf: true,
@@ -121,7 +121,7 @@ withImageAndCustomizedSettings.parameters = {
     include: [
       'imageSource',
       'iouThreshold',
-      'maxBoxes',
+      'maxResults',
       'nmsActive',
       'objectDetectionUI',
       'perf',

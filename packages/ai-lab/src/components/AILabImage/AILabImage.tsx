@@ -8,7 +8,7 @@ import { CLASSES } from '../labels';
 const defaultModelConfig: ModelInfo = {
   modelType: 'ssd',
   threshold: 0.4,
-  maxBoxes: 20,
+  maxResults: 20,
   iouThreshold: 0.5,
   nmsActive: true,
 };
@@ -21,6 +21,7 @@ export const AILabImage = ({
   perf,
   perfCallback,
   src,
+  size = 224,
   visual,
   ...props
 }: ImageProps) => {
@@ -33,32 +34,34 @@ export const AILabImage = ({
   const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
     const tensor = tf.browser.fromPixels(image!);
-    console.log(
-      typeof model === typeof tf.LayersModel
-        ? //@ts-ignore
-          model.layers.map((l) => l.name)
-        : null
-    );
 
-    // typeof model === typeof tf.LayersModel &&
-    //   (model as tf.LayersModel).layers.find((l) => console.log(l.name));
+    // SSD Mobilenet single batch & Classification
+    const readyfied = model.hasOwnProperty('layers')
+      ? tf.zeros([1, size, size, 3])
+      : tf.expandDims(tensor, 0);
 
-    // SSD Mobilenet single batch
-    const readyfied = tf.expandDims(tensor, 0);
-    const results = model.predict(readyfied);
-    model.hasOwnProperty('layers')
+    const results = model.hasOwnProperty('layers')
       ? model.predict(readyfied)
       : await (model as tf.GraphModel).executeAsync(readyfied);
 
     // Get a clean tensor of top indices
-    const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
+    const prominentDetection = Array.isArray(results)
+      ? tf.topk((results as tf.Tensor<tf.Rank>[])[0])
+      : tf.topk(results as tf.Tensor2D);
+
     const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<
       tf.Tensor<tf.Rank.R2>
     >();
+
     const justValues =
       prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
-    const { threshold, maxBoxes, iouThreshold, nmsActive } = {
+    const {
+      threshold,
+      maxResults = 20,
+      iouThreshold,
+      nmsActive,
+    } = {
       ...defaultModelConfig,
       ...modelInfo,
     };
@@ -74,7 +77,7 @@ export const AILabImage = ({
     const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
       justBoxes,
       justValues,
-      maxBoxes,
+      maxResults,
       iouThreshold,
       threshold,
       nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
@@ -89,12 +92,13 @@ export const AILabImage = ({
 
     //@ts-ignored
     onInference?.(
-      Array.from(detections).map((d) => ({
-        detectedClass: CLASSES[maxIndices[d]],
-        detectedScore: scores[d],
-      }))
+      modelInfo?.modelType === 'ssd'
+        ? Array.from(detections).map((d) => ({
+            detectedClass: CLASSES[maxIndices[d]],
+            detectedScore: scores[d],
+          }))
+        : prominentDetection.values
     );
-
     // Small Cleanup
     tf.dispose([
       //@ts-ignore
@@ -141,7 +145,7 @@ export const AILabImage = ({
       }
     }
     // This should listen for model changes, but that causes re-render issues
-  }, [src, isTFReady]);
+  }, [src, isTFReady, model]);
 
   return (
     <div style={{ position: 'relative' }}>

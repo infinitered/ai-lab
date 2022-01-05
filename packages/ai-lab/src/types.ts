@@ -4,7 +4,7 @@ import { PerformanceProps } from './performance';
 
 export interface ModelInfo {
   iouThreshold?: number;
-  maxBoxes: number;
+  maxResults?: number;
   modelType: 'classification' | 'ssd';
   nmsActive?: boolean;
   threshold?: number;
@@ -16,6 +16,7 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
     modelInfo?: ModelInfo;
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
     onInference?: (inferenceData: any) => void;
+    size?: number;
     visual?: boolean;
   };
 
