@@ -39,3 +39,8 @@ export interface ObjectDetectionUIProps {
   onDrawComplete?: (durationMs: number) => void;
   width: number;
 }
+
+export type Results =
+  | tf.Tensor<tf.Rank>
+  | tf.Tensor<tf.Rank>[]
+  | tf.NamedTensorMap;
