@@ -90,7 +90,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
       perf={args.perf}
       src={theImage}
       style={{ height: '100%' }}
-      modelInfo={{
+      modelConfig={{
         modelType: 'ssd',
         //@ts-ignore
         threshold: args.threshold,

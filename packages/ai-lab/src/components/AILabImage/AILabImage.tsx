@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, PerformanceInfo, perfInfo } from '../../performance';
-import { ImageProps, ModelInfo, Results } from '../../types';
+import { ImageProps, ModelConfig, Results } from '../../types';
 import { AILabObjectDetectionUI } from '../AILabObjectDetectionUI';
 import { CLASSES } from '../labels';
 
-const defaultModelConfig: ModelInfo = {
+const defaultModelConfig: ModelConfig = {
   modelType: 'ssd',
   threshold: 0.4,
   maxResults: 20,
@@ -13,7 +13,7 @@ const defaultModelConfig: ModelInfo = {
   nmsActive: true,
 };
 
-async function ssdModelDetection(results: Results, config: ModelInfo) {
+async function ssdModelDetection(results: Results, config: ModelConfig) {
   // Get a clean tensor of top indices
   const prominentDetection = Array.isArray(results)
     ? tf.topk((results as tf.Tensor<tf.Rank>[])[0])
@@ -53,7 +53,7 @@ async function ssdModelDetection(results: Results, config: ModelInfo) {
 
 export const AILabImage = ({
   model,
-  modelInfo,
+  modelConfig: modelConfig,
   ObjectDetectionUI = AILabObjectDetectionUI,
   onInference,
   perf,
@@ -75,7 +75,7 @@ export const AILabImage = ({
 
     // SSD Mobilenet single batch & Classification
     const readyfied =
-      modelInfo?.modelType === 'classification'
+      modelConfig?.modelType === 'classification'
         ? tensor.toFloat().div(255)
         : tf.expandDims(tensor, 0);
 
@@ -92,14 +92,14 @@ export const AILabImage = ({
     const batched = resized.reshape([1, size, size, 3]);
 
     const results =
-      modelInfo?.modelType === 'classification'
+      modelConfig?.modelType === 'classification'
         ? model.predict(batched)
         : await (model as tf.GraphModel).executeAsync(readyfied);
 
-    if (modelInfo?.modelType === 'ssd') {
+    if (modelConfig?.modelType === 'ssd') {
       const { detections, maxIndices, scores, boxes } = await ssdModelDetection(
         results,
-        { ...defaultModelConfig, ...modelInfo }
+        { ...defaultModelConfig, ...modelConfig }
       );
 
       // Store Box Detections
@@ -171,7 +171,7 @@ export const AILabImage = ({
         <ObjectDetectionUI
           detectionResults={detectionResults}
           height={imgRef.current?.height ?? 0}
-          modelInfo={{ ...defaultModelConfig, ...modelInfo }}
+          modelConfig={{ ...defaultModelConfig, ...modelConfig }}
           onDrawComplete={(durationMs) => {
             if (!drawingTime) {
               setDrawingTime(durationMs);

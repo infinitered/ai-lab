@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 import React from 'react';
 import { PerformanceProps } from './performance';
 
-export interface ModelInfo {
+export interface ModelConfig {
   iouThreshold?: number;
   maxResults?: number;
   modelType: 'classification' | 'ssd';
@@ -13,7 +13,7 @@ export interface ModelInfo {
 export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
   PerformanceProps & {
     model: tf.GraphModel | tf.LayersModel;
-    modelInfo?: ModelInfo;
+    modelConfig?: ModelConfig;
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
     onInference?: (inferenceData: any) => void;
     size?: number;
@@ -35,7 +35,7 @@ export interface ObjectDetectionUIProps {
     boxes: number[][];
   };
   height: number;
-  modelInfo: ModelInfo;
+  modelConfig: ModelConfig;
   onDrawComplete?: (durationMs: number) => void;
   width: number;
 }

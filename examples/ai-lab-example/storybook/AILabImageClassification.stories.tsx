@@ -75,7 +75,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
       size={224}
       src={theImage}
       style={{ height: '100%' }}
-      modelInfo={{
+      modelConfig={{
         modelType: 'classification',
         //@ts-ignore
         threshold: args.threshold,

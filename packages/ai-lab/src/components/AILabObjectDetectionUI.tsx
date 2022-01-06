@@ -6,7 +6,7 @@ import { CLASSES } from './labels';
 export const AILabObjectDetectionUI = ({
   detectionResults,
   height,
-  modelInfo,
+  modelConfig: modelConfig,
   onDrawComplete,
   width,
 }: ObjectDetectionUIProps) => {
@@ -64,7 +64,7 @@ export const AILabObjectDetectionUI = ({
     tf.ready().then(() => {
       drawDetections();
     });
-  }, [detectionResults, height, modelInfo, width]);
+  }, [detectionResults, height, modelConfig, width]);
 
   return (
     <canvas

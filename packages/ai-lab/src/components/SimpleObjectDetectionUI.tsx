@@ -5,7 +5,7 @@ import { ObjectDetectionUIProps } from '../types';
 export const SimpleObjectDetectionUI = ({
   detectionResults,
   height,
-  modelInfo,
+  modelConfig: modelConfig,
   onDrawComplete,
   width,
 }: ObjectDetectionUIProps) => {
@@ -49,7 +49,7 @@ export const SimpleObjectDetectionUI = ({
 
   useEffect(() => {
     tf.ready().then(drawDetections);
-  }, [detectionResults, height, modelInfo, width]);
+  }, [detectionResults, height, modelConfig, width]);
 
   return (
     <canvas
