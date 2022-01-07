@@ -11,13 +11,12 @@ const defaultModelConfig: ModelConfig = {
   maxResults: 20,
   iouThreshold: 0.5,
   nmsActive: true,
+  topK: 5,
 };
 
 async function ssdModelDetection(results: Results, config: ModelConfig) {
   // Get a clean tensor of top indices
-  const prominentDetection = Array.isArray(results)
-    ? tf.topk((results as tf.Tensor<tf.Rank>[])[0])
-    : tf.topk(results as tf.Tensor2D);
+  const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
 
   const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<
     tf.Tensor<tf.Rank.R2>
@@ -38,7 +37,7 @@ async function ssdModelDetection(results: Results, config: ModelConfig) {
   const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
     justBoxes,
     justValues,
-    maxResults,
+    maxResults, //maxBoxes
     iouThreshold,
     threshold,
     nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
@@ -51,15 +50,44 @@ async function ssdModelDetection(results: Results, config: ModelConfig) {
   return { detections, maxIndices, scores, boxes };
 }
 
+async function classificationModelDetection(
+  results: tf.Tensor2D,
+  config: ModelConfig
+) {
+  const values = await (results as tf.Tensor2D).data();
+  const valuesAndIndices = [];
+  for (let i = 0; i < values.length; i++) {
+    valuesAndIndices.push({ value: values[i], index: i });
+  }
+  valuesAndIndices.sort((a, b) => {
+    return b.value - a.value;
+  });
+  const topkValues = new Float32Array(config.topK!);
+  const topkIndices = new Int32Array(config.topK!);
+  for (let i = 0; i < config.topK!; i++) {
+    topkValues[i] = valuesAndIndices[i].value;
+    topkIndices[i] = valuesAndIndices[i].index;
+  }
+  const { threshold = 0.4, maxResults = config.topK! } = config;
+  const topClassesAndProbs = [];
+  for (let i = 0; i < maxResults; i++) {
+    topClassesAndProbs.push(topkValues[i]);
+  }
+
+  console.log({ topClassesAndProbs, threshold, maxResults });
+  return { topClassesAndProbs };
+}
+
 export const AILabImage = ({
   model,
-  modelConfig: modelConfig,
+  modelConfig,
   ObjectDetectionUI = AILabObjectDetectionUI,
   onInference,
   perf,
   perfCallback,
   src,
   size = 224,
+
   visual,
   ...props
 }: ImageProps) => {
@@ -111,7 +139,14 @@ export const AILabImage = ({
         }))
       );
     } else {
-      onInference?.((results as tf.Tensor<tf.Rank>).arraySync());
+      const { topClassesAndProbs } = await classificationModelDetection(
+        results as tf.Tensor2D,
+        {
+          ...defaultModelConfig,
+          ...modelConfig,
+        }
+      );
+      onInference?.(topClassesAndProbs);
     }
 
     //@ts-ignored

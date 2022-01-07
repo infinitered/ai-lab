@@ -8,6 +8,7 @@ export interface ModelConfig {
   modelType: 'classification' | 'ssd';
   nmsActive?: boolean;
   threshold?: number;
+  topK?: number;
 }
 
 export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &

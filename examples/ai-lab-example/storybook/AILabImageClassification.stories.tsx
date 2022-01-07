@@ -15,7 +15,7 @@ export default {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
     },
     maxResults: {
-      control: { type: 'range', min: 0, max: 50, step: 1 },
+      control: { type: 'range', min: 0, max: 5, step: 1 },
     },
   },
 } as ComponentMeta<typeof AILabImage>;
@@ -89,7 +89,7 @@ export const withImageAndCustomizedSettings = imageParamsStory.bind({});
 withImageAndCustomizedSettings.args = {
   //@ts-ignore
   imageSource: 'dinner',
-  maxResults: 20,
+  maxResults: 5, //topk
   perf: true,
   threshold: 0.4,
 };
