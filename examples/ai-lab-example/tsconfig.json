@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "ai-lab": ["../../packages/ai-lab/src/index.ts"],
+    }
   },
   "extends": "../../shared/tsconfig.base.json",
   "include": ["."]
