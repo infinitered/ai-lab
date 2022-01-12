@@ -2,25 +2,22 @@ import * as tf from '@tensorflow/tfjs';
 import React from 'react';
 import { PerformanceProps } from './performance';
 
-export interface ModelInfo {
-  // The the allowed area for intersection over union (IOU)
-  // between the bounding box with other bounding boxes.
+export interface ModelConfig {
   iouThreshold?: number;
-  // The number of boxes to keep after applying NMS.
-  maxBoxes: number;
-  // The model type, which identifies the output structure to expect.
+  maxResults?: number;
   modelType: 'classification' | 'ssd';
-  // The soft NMS Sigma that allows overlapping of strong object confidence.
   nmsActive?: boolean;
-  // The score threshold to identify if a value is returned.
   threshold?: number;
+  topK?: number;
 }
 
 export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
   PerformanceProps & {
-    model: tf.GraphModel;
-    modelInfo?: ModelInfo;
+    model: tf.GraphModel | tf.LayersModel;
+    modelConfig?: ModelConfig;
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
+    onInference?: (inferenceData: any) => void;
+    size?: number;
     visual?: boolean;
   };
 
@@ -33,15 +30,19 @@ export interface VideoProps
 
 export interface ObjectDetectionUIProps {
   detectionResults: {
-    prominentDetection: {
-      values: tf.Tensor<tf.Rank>;
-      indices: tf.Tensor<tf.Rank>;
-    };
-    justBoxes: tf.Tensor<tf.Rank.R2>;
-    justValues: tf.Tensor<tf.Rank.R1>;
+    detections: Float32Array | Int32Array | Uint8Array;
+    maxIndices: Float32Array | Int32Array | Uint8Array;
+    scores: number[];
+    boxes: number[][];
   };
   height: number;
-  modelInfo: ModelInfo;
+  modelConfig: ModelConfig;
   onDrawComplete?: (durationMs: number) => void;
   width: number;
 }
+
+export type Results =
+  | tf.Tensor<tf.Rank>
+  | tf.Tensor<tf.Rank>[]
+  | tf.NamedTensorMap
+  | tf.Tensor2D;
