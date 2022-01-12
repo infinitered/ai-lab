@@ -81,7 +81,7 @@ async function classificationModelDetection(
     return r > threshold!;
   });
 
-  return { finalResults };
+  return finalResults;
 }
 
 async function predictSSD(
@@ -142,9 +142,18 @@ export const AILabImage = ({
     const tensor = tf.browser.fromPixels(image!);
 
     if (modelConfig?.modelType === 'ssd') {
+      if (results)
+        tf.dispose([
+          //@ts-ignore
+          results[0],
+          //@ts-ignore
+          results[1],
+        ]);
+
       const res = await predictSSD(tensor, model);
       setResults(res);
     } else {
+      if (results) tf.dispose(results);
       const res = await predictClassification(tensor, model, size);
       setResults(res);
     }
@@ -169,7 +178,7 @@ export const AILabImage = ({
 
       onInference?.(ssdInferData);
     } else {
-      const { finalResults } = await classificationModelDetection(res, {
+      const finalResults = await classificationModelDetection(res, {
         ...defaultModelConfig,
         ...modelConfig,
       });
@@ -189,7 +198,6 @@ export const AILabImage = ({
       if (perf || perfCallback) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
-          console.log('called');
         });
         if (perf) {
           //@ts-ignore
