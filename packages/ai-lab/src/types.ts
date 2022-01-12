@@ -44,4 +44,5 @@ export interface ObjectDetectionUIProps {
 export type Results =
   | tf.Tensor<tf.Rank>
   | tf.Tensor<tf.Rank>[]
-  | tf.NamedTensorMap;
+  | tf.NamedTensorMap
+  | tf.Tensor2D;

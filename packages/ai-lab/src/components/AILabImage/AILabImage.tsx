@@ -51,7 +51,7 @@ async function ssdModelDetection(results: Results, config: ModelConfig) {
 }
 
 async function classificationModelDetection(
-  results: tf.Tensor2D,
+  results: Results,
   config: ModelConfig
 ) {
   const values = await (results as tf.Tensor2D).data();
@@ -59,23 +59,63 @@ async function classificationModelDetection(
   for (let i = 0; i < values.length; i++) {
     valuesAndIndices.push({ value: values[i], index: i });
   }
+
   valuesAndIndices.sort((a, b) => {
     return b.value - a.value;
   });
+
   const topkValues = new Float32Array(config.topK!);
   const topkIndices = new Int32Array(config.topK!);
   for (let i = 0; i < config.topK!; i++) {
     topkValues[i] = valuesAndIndices[i].value;
     topkIndices[i] = valuesAndIndices[i].index;
   }
-  const { threshold = 0.4, maxResults = config.topK! } = config;
+
+  const { threshold, maxResults = config.topK! } = config;
   const topClassesAndProbs = [];
   for (let i = 0; i < maxResults; i++) {
     topClassesAndProbs.push(topkValues[i]);
   }
 
-  console.log({ topClassesAndProbs, threshold, maxResults });
-  return { topClassesAndProbs };
+  const finalResults = topClassesAndProbs.filter(function (r) {
+    return r > threshold!;
+  });
+
+  return { finalResults };
+}
+
+async function predictSSD(
+  tensor: tf.Tensor3D,
+  model: tf.GraphModel | tf.LayersModel
+) {
+  // SSD Mobilenet single batch
+
+  const readyfied = tf.expandDims(tensor, 0);
+  const res = await (model as tf.GraphModel).executeAsync(readyfied);
+
+  return res;
+}
+
+async function predictClassification(
+  tensor: tf.Tensor3D,
+  model: tf.GraphModel | tf.LayersModel,
+  size: number
+) {
+  const readyfied = tensor.toFloat().div(255);
+  let resized = readyfied;
+  if (tensor.shape[0] !== size || tensor.shape[1] !== size) {
+    const alignCorners = true;
+    resized = tf.image.resizeBilinear(
+      readyfied as tf.Tensor3D,
+      [size, size],
+      alignCorners
+    );
+  }
+  // Reshape to a single-element batch so we can pass it to predict.
+  const batched = resized.reshape([1, size, size, 3]);
+  const res = model.predict(batched);
+
+  return res;
 }
 
 export const AILabImage = ({
@@ -87,7 +127,6 @@ export const AILabImage = ({
   perfCallback,
   src,
   size = 224,
-
   visual,
   ...props
 }: ImageProps) => {
@@ -96,71 +135,48 @@ export const AILabImage = ({
   const [drawingTime, setDrawingTime] = useState(0);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [detectionResults, setDetectionResults] = useState<any>({});
+  const [results, setResults] = useState<Results>();
 
   const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
     const tensor = tf.browser.fromPixels(image!);
 
-    // SSD Mobilenet single batch & Classification
-    const readyfied =
-      modelConfig?.modelType === 'classification'
-        ? tensor.toFloat().div(255)
-        : tf.expandDims(tensor, 0);
-
-    let resized = readyfied;
-    if (tensor.shape[0] !== size || tensor.shape[1] !== size) {
-      const alignCorners = true;
-      resized = tf.image.resizeBilinear(
-        readyfied as tf.Tensor3D,
-        [size, size],
-        alignCorners
-      );
+    if (modelConfig?.modelType === 'ssd') {
+      const res = await predictSSD(tensor, model);
+      setResults(res);
+    } else {
+      const res = await predictClassification(tensor, model, size);
+      setResults(res);
     }
-    // Reshape to a single-element batch so we can pass it to predict.
-    const batched = resized.reshape([1, size, size, 3]);
+  };
 
-    const results =
-      modelConfig?.modelType === 'classification'
-        ? model.predict(batched)
-        : await (model as tf.GraphModel).executeAsync(readyfied);
-
+  async function getInferData(res: Results) {
+    // Store Box Detections
     if (modelConfig?.modelType === 'ssd') {
       const { detections, maxIndices, scores, boxes } = await ssdModelDetection(
-        results,
-        { ...defaultModelConfig, ...modelConfig }
-      );
-
-      // Store Box Detections
-      setDetectionResults({ detections, maxIndices, scores, boxes });
-      onInference?.(
-        Array.from(detections).map((d) => ({
-          detectedClass: CLASSES[maxIndices[d]],
-          detectedScore: scores[d],
-        }))
-      );
-    } else {
-      const { topClassesAndProbs } = await classificationModelDetection(
-        results as tf.Tensor2D,
+        res,
         {
           ...defaultModelConfig,
           ...modelConfig,
         }
       );
-      onInference?.(topClassesAndProbs);
+      setDetectionResults({ detections, maxIndices, scores, boxes });
+
+      const ssdInferData = Array.from(detections).map((d) => ({
+        detectedClass: CLASSES[maxIndices[d]],
+        detectedScore: scores[d],
+      }));
+
+      onInference?.(ssdInferData);
+    } else {
+      const { finalResults } = await classificationModelDetection(res, {
+        ...defaultModelConfig,
+        ...modelConfig,
+      });
+
+      onInference?.(finalResults);
     }
-
-    //@ts-ignored
-
-    // Small Cleanup
-    tf.dispose([
-      //@ts-ignore
-      results[0],
-      //@ts-ignore
-      results[1],
-      tensor,
-      readyfied,
-    ]);
-  };
+  }
 
   useEffect(() => {
     tf.ready().then(() => {
@@ -173,6 +189,7 @@ export const AILabImage = ({
       if (perf || perfCallback) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
+          console.log('called');
         });
         if (perf) {
           //@ts-ignore
@@ -183,7 +200,7 @@ export const AILabImage = ({
           perfCallback(perfMetrics);
         }
       } else {
-        tensorFlowIt(model);
+        await tensorFlowIt(model);
       }
     };
 
@@ -197,7 +214,13 @@ export const AILabImage = ({
       }
     }
     // This should listen for model changes, but that causes re-render issues
-  }, [src, isTFReady, model]);
+  }, [src, isTFReady]);
+
+  useEffect(() => {
+    if (results) {
+      getInferData(results);
+    }
+  }, [modelConfig, results]);
 
   return (
     <div style={{ position: 'relative' }}>
