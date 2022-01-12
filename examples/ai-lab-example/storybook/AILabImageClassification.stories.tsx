@@ -1,5 +1,9 @@
 import React from 'react';
-import { AILabImage } from 'ai-lab';
+import {
+  AILabImage,
+  AILabObjectDetectionUI,
+  SimpleObjectDetectionUI,
+} from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -7,6 +11,10 @@ export default {
   title: 'Example/AILabImage/Classification Model',
   component: AILabImage,
   argTypes: {
+    objectDetectionUI: {
+      options: ['ai-lab', 'simple'],
+      control: { type: 'select' },
+    },
     imageSource: {
       options: ['dinner', 'cat', 'beach'],
       control: { type: 'select' },
@@ -82,6 +90,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         //@ts-ignore
         maxResults: args.maxResults,
       }}
+      visual={args.visual}
     />
   );
 };

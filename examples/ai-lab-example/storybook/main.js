@@ -11,5 +11,11 @@ module.exports = {
         scriptsPackageName: 'react-scripts'
       }
     }
-  ]
+  ],
+  webpackFinal: async (config) => {
+    // We are an example and therefore we want to use the source because we can!
+    config.resolve.alias['ai-lab'] = path.resolve(__dirname, '../../../packages/ai-lab/src');
+
+    return config;
+  }
 };
