@@ -28,13 +28,15 @@ export interface VideoProps
     >,
     PerformanceProps {}
 
+export interface Detections {
+  detections: Float32Array | Int32Array | Uint8Array;
+  maxIndices: Float32Array | Int32Array | Uint8Array;
+  scores: number[];
+  boxes: number[][];
+}
+
 export interface ObjectDetectionUIProps {
-  detectionResults: {
-    detections: Float32Array | Int32Array | Uint8Array;
-    maxIndices: Float32Array | Int32Array | Uint8Array;
-    scores: number[];
-    boxes: number[][];
-  };
+  detectionResults: Detections;
   height: number;
   modelConfig: ModelConfig;
   onDrawComplete?: (durationMs: number) => void;
