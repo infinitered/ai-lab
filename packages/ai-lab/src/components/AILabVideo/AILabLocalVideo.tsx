@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
-import { CLASSES } from '../labels';
+import { CLASSES } from '../../lib/labels';
 import { VideoProps } from '../../types';
 
 let activeInfer = false;
@@ -56,9 +56,8 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     const prominentDetection = tf.topk(results[0]);
     // @ts-ignore
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
-    const justValues = prominentDetection.values.squeeze<
-      tf.Tensor<tf.Rank.R1>
-    >();
+    const justValues =
+      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
     // Move results back to JavaScript in parallel
     const [maxIndices, scores, boxes] = await Promise.all([
