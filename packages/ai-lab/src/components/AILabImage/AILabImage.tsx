@@ -8,7 +8,7 @@ import {
   getModelDetections,
   predictClassification,
   predictSSD,
-} from '../helpers';
+} from '../../lib/helpers';
 
 const defaultModelConfig: ModelConfig = {
   modelType: 'ssd',

@@ -2,16 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { Devices } from './Devices';
-import { CLASSES } from '../labels';
+import { CLASSES } from '../../lib/labels';
 import { VideoProps } from '../../types';
 
 const delay = async (ms: number) =>
-  new Promise(resolve => setTimeout(resolve, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
-  const stream: React.MutableRefObject<MediaStream | null> = useRef<MediaStream>(null);
-  const tfCamera: React.MutableRefObject<any>  = useRef(null);
+  const stream: React.MutableRefObject<MediaStream | null> =
+    useRef<MediaStream>(null);
+  const tfCamera: React.MutableRefObject<any> = useRef(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [devices, setDevices] = useState(null);
@@ -41,7 +42,9 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
 
   async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
     const readyfied = tf.expandDims(img, 0);
-    const results = (await model.executeAsync(readyfied)) as tf.Tensor<tf.Rank>[];
+    const results = (await model.executeAsync(
+      readyfied
+    )) as tf.Tensor<tf.Rank>[];
 
     const ctx = prepCanvas();
     // ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
@@ -52,9 +55,8 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     const maxBoxes = 20;
     const prominentDetection = tf.topk(results[0]);
     const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
-    const justValues = prominentDetection.values.squeeze<
-      tf.Tensor<tf.Rank.R1>
-    >();
+    const justValues =
+      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
     // Move results back to JavaScript in parallel
     const [maxIndices, scores, boxes] = await Promise.all([
@@ -160,18 +162,20 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   }
 
   function killVideo() {
-    stream.current?.getTracks().forEach(track => {
+    stream.current?.getTracks().forEach((track) => {
       track.stop();
     });
     if (myVideo.current) myVideo.current.srcObject = null;
     stream.current = null;
     tfCamera.current?.stop();
-    canvasRef.current?.getContext('2d')?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    canvasRef.current
+      ?.getContext('2d')
+      ?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
   }
 
   async function listMediaDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(dev => dev.kind === 'videoinput');
+    const videoDevices = devices.filter((dev) => dev.kind === 'videoinput');
     setDevices(videoDevices as any);
   }
 
