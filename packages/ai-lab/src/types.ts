@@ -4,6 +4,7 @@ import { PerformanceProps } from './performance';
 
 export interface ModelConfig {
   iouThreshold?: number;
+  labels?: string[];
   maxResults?: number;
   modelType: 'classification' | 'ssd';
   nmsActive?: boolean;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { Devices } from './Devices';
-import { CLASSES } from '../../lib/labels';
+import { CLASSES } from '../labels';
 import { VideoProps } from '../../types';
 
 const delay = async (ms: number) =>

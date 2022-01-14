@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import React, { useEffect, useRef } from 'react';
 import { ObjectDetectionUIProps } from '../types';
-import { CLASSES } from '../lib/labels';
+import { CLASSES } from './labels';
 
 export const AILabObjectDetectionUI = ({
   detectionResults,

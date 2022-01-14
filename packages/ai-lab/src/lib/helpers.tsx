@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { Detections } from '..';
 import { ModelConfig, Results } from '../types';
-import { CLASSES } from './labels';
+import { CLASSES } from '../components/labels';
 
 const defaultModelConfig: ModelConfig = {
   modelType: 'ssd',
@@ -10,6 +10,7 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
+  labels: CLASSES,
 };
 
 export async function ssdModelDetection(results: Results, config: ModelConfig) {
@@ -133,12 +134,30 @@ export async function getModelDetections(
   }
 }
 
-export async function getInferenceData(results: number[] | Detections) {
-  if (Array.isArray(results)) return results;
+export async function getInferenceData(
+  results: number[] | Detections,
+  modelConfig: ModelConfig = defaultModelConfig
+) {
+  const { labels = CLASSES } = modelConfig;
+
+  // Classification model does not need to label the detection
+  if (Array.isArray(results)) {
+    const res = results.map((data, key) => ({
+      class: key,
+      classLabel:
+        maxIndices && labels ? labels[maxIndices[data]] : `class ${key}`,
+      score: data,
+    }));
+    return res;
+  }
+
+  // SSD model requires labels
   const { detections, maxIndices, scores } = results;
-  const ssdInferData = Array.from(detections).map((d) => ({
-    detectedClass: CLASSES[maxIndices[d]],
-    detectedScore: scores[d],
+  const ssdInferData = Array.from(detections).map((data, key) => ({
+    class: key,
+    classLabel:
+      maxIndices && labels ? labels[maxIndices[data]] : `class ${key}`,
+    score: scores[data],
   }));
 
   return ssdInferData;
