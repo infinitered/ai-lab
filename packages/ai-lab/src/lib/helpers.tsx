@@ -138,9 +138,9 @@ export async function getInferenceData(
   results: number[] | Detections,
   modelConfig: ModelConfig = defaultModelConfig
 ) {
+  // setting CLASSES as default label. Without it ssdInferData will not return any labels in the Inference data results.
   const { labels = CLASSES } = modelConfig;
 
-  // Classification model does not need to label the detection
   if (Array.isArray(results)) {
     const res = results.map((data, key) => ({
       class: key,
@@ -151,7 +151,6 @@ export async function getInferenceData(
     return res;
   }
 
-  // SSD model requires labels
   const { detections, maxIndices, scores } = results;
   const ssdInferData = Array.from(detections).map((data, key) => ({
     class: key,
