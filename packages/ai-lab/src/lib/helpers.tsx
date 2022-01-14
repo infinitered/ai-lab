@@ -139,7 +139,7 @@ export async function getInferenceData(
   modelConfig: ModelConfig = defaultModelConfig
 ) {
   // setting CLASSES as default label. Without it ssdInferData will not return any labels in the Inference data results.
-  const { labels } = modelConfig;
+  const { labels = CLASSES } = modelConfig;
 
   if (Array.isArray(results)) {
     const res = results.map((data, key) => ({
