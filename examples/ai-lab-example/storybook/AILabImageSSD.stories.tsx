@@ -6,6 +6,7 @@ import {
 } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { CLASSES } from './labels';
 
 export default {
   title: 'Example/AILabImage/SSD Model',
@@ -27,6 +28,13 @@ export default {
     },
     iouThreshold: {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
+    },
+    labels: {
+      control: {
+        type: 'text',
+        defaultValue: CLASSES.join(', '),
+        description: 'Comma separated classification labels',
+      },
     },
   },
 } as ComponentMeta<typeof AILabImage>;
@@ -98,6 +106,8 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         nmsActive: args.nmsActive,
         //@ts-ignore
         maxResults: args.maxResults,
+        //@ts-ignore
+        labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
     />
@@ -108,6 +118,7 @@ withImageAndCustomizedSettings.args = {
   //@ts-ignore
   imageSource: 'dinner',
   iouThreshold: 0.5,
+  labels: CLASSES.join(', '),
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
@@ -121,6 +132,7 @@ withImageAndCustomizedSettings.parameters = {
     include: [
       'imageSource',
       'iouThreshold',
+      'labels',
       'maxResults',
       'nmsActive',
       'objectDetectionUI',

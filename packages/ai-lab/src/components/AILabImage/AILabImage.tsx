@@ -17,6 +17,7 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
+  labels: [],
 };
 
 export const AILabImage = ({
@@ -101,7 +102,7 @@ export const AILabImage = ({
     (async function () {
       if (results) {
         const detections = await getModelDetections(results, modelConfig);
-        const inferences = await getInferenceData(detections);
+        const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
         onInference?.(inferences);
       }

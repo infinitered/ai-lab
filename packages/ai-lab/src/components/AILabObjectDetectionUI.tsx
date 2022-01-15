@@ -1,12 +1,11 @@
 import * as tf from '@tensorflow/tfjs';
 import React, { useEffect, useRef } from 'react';
 import { ObjectDetectionUIProps } from '../types';
-import { CLASSES } from '../lib/labels';
 
 export const AILabObjectDetectionUI = ({
   detectionResults,
   height,
-  modelConfig: modelConfig,
+  modelConfig,
   onDrawComplete,
   width,
 }: ObjectDetectionUIProps) => {
@@ -33,7 +32,7 @@ export const AILabObjectDetectionUI = ({
       ctx!.lineWidth = 4;
       ctx!.globalCompositeOperation = 'destination-over';
       const detectedIndex = maxIndices[detection];
-      const detectedClass = CLASSES[detectedIndex];
+      const detectedClass = modelConfig.labels?.[detectedIndex];
       const detectedScore = scores[detection];
       const dBox = boxes[detection];
 
@@ -43,17 +42,25 @@ export const AILabObjectDetectionUI = ({
       const boxHeight = (dBox[2] - dBox[0]) * height;
       const boxWidth = (dBox[3] - dBox[1]) * width;
       ctx!.strokeRect(startX, startY, boxWidth, boxHeight);
-      // Draw the label background.
-      ctx!.globalCompositeOperation = 'source-over';
-      ctx!.fillStyle = '#0B0';
-      const textHeight = 16;
-      const textPad = 4;
-      const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
-      const textWidth = ctx!.measureText(label).width;
-      ctx!.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
-      // Draw the text last to ensure it's on top.
-      ctx!.fillStyle = '#000000';
-      ctx!.fillText(label, startX, startY);
+
+      if (detectedClass) {
+        // Draw the label background.
+        ctx!.globalCompositeOperation = 'source-over';
+        ctx!.fillStyle = '#0B0';
+        const textHeight = 16;
+        const textPad = 4;
+        const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
+        const textWidth = ctx!.measureText(label).width;
+        ctx!.fillRect(
+          startX,
+          startY,
+          textWidth + textPad,
+          textHeight + textPad
+        );
+        // Draw the text last to ensure it's on top.
+        ctx!.fillStyle = '#000000';
+        ctx!.fillText(label, startX, startY);
+      }
 
       // Drawing ends
       onDrawComplete?.(performance.now() - start);
