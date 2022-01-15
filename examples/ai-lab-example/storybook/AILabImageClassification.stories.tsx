@@ -1,11 +1,9 @@
 import React from 'react';
-import {
-  AILabImage,
-  AILabObjectDetectionUI,
-  SimpleObjectDetectionUI,
-} from 'ai-lab';
+import { AILabImage } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+
+const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
 export default {
   title: 'Example/AILabImage/Classification Model',
@@ -24,6 +22,13 @@ export default {
     },
     maxResults: {
       control: { type: 'range', min: 0, max: 5, step: 1 },
+    },
+    labels: {
+      control: {
+        type: 'text',
+        defaultValue: CLASSES.join(', '),
+        description: 'Comma separated classification labels',
+      },
     },
   },
 } as ComponentMeta<typeof AILabImage>;
@@ -89,6 +94,8 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         threshold: args.threshold,
         //@ts-ignore
         maxResults: args.maxResults,
+        //@ts-ignore
+        labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
     />
@@ -101,10 +108,11 @@ withImageAndCustomizedSettings.args = {
   maxResults: 5, //topk
   perf: true,
   threshold: 0.4,
+  labels: CLASSES.join(', '),
 };
 
 withImageAndCustomizedSettings.parameters = {
   controls: {
-    include: ['imageSource', 'maxResults', 'perf', 'threshold'],
+    include: ['imageSource', 'maxResults', 'perf', 'threshold', 'labels'],
   },
 };

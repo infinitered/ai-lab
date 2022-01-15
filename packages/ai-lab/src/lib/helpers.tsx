@@ -1,7 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 import { Detections } from '..';
 import { ModelConfig, Results } from '../types';
-import { CLASSES } from '../components/labels';
 
 const defaultModelConfig: ModelConfig = {
   modelType: 'ssd',
@@ -10,7 +9,7 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
-  labels: CLASSES,
+  labels: [],
 };
 
 export async function ssdModelDetection(results: Results, config: ModelConfig) {
@@ -138,13 +137,12 @@ export async function getInferenceData(
   results: number[] | Detections,
   modelConfig: ModelConfig = defaultModelConfig
 ) {
-  // setting CLASSES as default label. Without it ssdInferData will not return any labels in the Inference data results.
-  const { labels = CLASSES } = modelConfig;
+  const { labels = [] } = modelConfig;
 
   if (Array.isArray(results)) {
     const res = results.map((data, key) => ({
       class: key,
-      classLabel: `class ${key}`,
+      classLabel: labels ? labels[key] : `class ${key}`,
       score: data,
     }));
     return res;
