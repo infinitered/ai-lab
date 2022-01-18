@@ -2,18 +2,42 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { Performance, perfInfo, PerformanceInfo } from '../../performance';
 import { Devices } from './Devices';
-import { CLASSES } from '../../lib/labels';
-import { VideoProps } from '../../types';
+import { VideoProps, ModelConfig, Results } from '../../types';
+import {
+  getInferenceData,
+  getModelDetections,
+  predictClassification,
+  predictSSD,
+} from '../../lib/helpers';
+import { AILabObjectDetectionUI } from '..';
+
+const defaultModelConfig: ModelConfig = {
+  modelType: 'ssd',
+  threshold: 0.4,
+  maxResults: 20,
+  iouThreshold: 0.5,
+  nmsActive: true,
+  topK: 5,
+  labels: [],
+};
 
 const delay = async (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
+export const AILabWebCam = ({
+  model,
+  modelConfig,
+  ObjectDetectionUI = AILabObjectDetectionUI,
+  onInference,
+  perf,
+  perfCallback,
+  size = 224,
+  visual,
+}: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
   const stream: React.MutableRefObject<MediaStream | null> =
     useRef<MediaStream>(null);
   const tfCamera: React.MutableRefObject<any> = useRef(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [devices, setDevices] = useState(null);
   const [currentDevice, setCurrentDevice] = useState(
@@ -21,107 +45,32 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
   );
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
+  const [detectionResults, setDetectionResults] = useState<any>({});
+  const [results, setResults] = useState<Results>();
 
-  const modelPath =
-    'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
   const maxWidth = window.innerWidth - 18; // subtract scrollbar
   const maxHeight = window.innerHeight;
 
-  function prepCanvas() {
-    // Prep Canvas
-    const ctx = canvasRef.current!.getContext('2d')!;
-    canvasRef.current!.width = maxWidth;
-    canvasRef.current!.height = maxHeight;
-    ctx.font = '16px sans-serif';
-    ctx.textBaseline = 'top';
-    ctx.strokeStyle = '#0F0';
-    ctx.lineWidth = 4;
-    ctx.globalCompositeOperation = 'destination-over';
-    return ctx;
-  }
+  async function tensorFlowIt(
+    tensor: tf.Tensor3D,
+    model: tf.GraphModel | tf.LayersModel
+  ) {
+    if (modelConfig?.modelType === 'ssd') {
+      if (results)
+        tf.dispose([
+          //@ts-ignore
+          results[0],
+          //@ts-ignore
+          results[1],
+        ]);
 
-  async function tensorFlowIt(img: tf.Tensor3D, model: tf.GraphModel) {
-    const readyfied = tf.expandDims(img, 0);
-    const results = (await model.executeAsync(
-      readyfied
-    )) as tf.Tensor<tf.Rank>[];
-
-    const ctx = prepCanvas();
-    // ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-    // Get a clean tensor of top indices
-    const detectionThreshold = 0.4;
-    const iouThreshold = 0.4;
-    const maxBoxes = 20;
-    const prominentDetection = tf.topk(results[0]);
-    const justBoxes = results[1].squeeze<tf.Tensor<tf.Rank.R2>>();
-    const justValues =
-      prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
-
-    // Move results back to JavaScript in parallel
-    const [maxIndices, scores, boxes] = await Promise.all([
-      prominentDetection.indices.data(),
-      justValues.array(),
-      justBoxes.array(),
-    ]);
-
-    // https://arxiv.org/pdf/1704.04503.pdf, use Async to keep visuals
-    const nmsDetections = await tf.image.nonMaxSuppressionWithScoreAsync(
-      justBoxes, // [numBoxes, 4]
-      justValues, // [numBoxes]
-      maxBoxes,
-      iouThreshold,
-      detectionThreshold,
-      1 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
-    );
-
-    const chosen = await nmsDetections.selectedIndices.data();
-
-    //Drawing starts
-    let start = performance.now();
-
-    for (const detection of chosen as any) {
-      const detectedIndex = maxIndices[detection];
-      const detectedClass = CLASSES[detectedIndex];
-      const detectedScore = scores[detection];
-      const dBox = boxes[detection];
-
-      // No negative values for start positions
-      const startY = dBox[0] > 0 ? dBox[0] * maxHeight : 0;
-      const startX = dBox[1] > 0 ? dBox[1] * maxWidth : 0;
-      const boxHeight = (dBox[2] - dBox[0]) * maxHeight;
-      const boxWidth = (dBox[3] - dBox[1]) * maxWidth;
-      ctx.strokeRect(startX, startY, boxWidth, boxHeight);
-      // Draw the label background.
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = '#0B0';
-      const textHeight = 16;
-      const textPad = 4;
-      const label = `${detectedClass} ${Math.round(detectedScore * 100)}%`;
-      const textWidth = ctx.measureText(label).width;
-      ctx.fillRect(startX, startY, textWidth + textPad, textHeight + textPad);
-      // Draw the text last to ensure it's on top.
-      ctx.fillStyle = '#000000';
-      ctx.fillText(label, startX, startY);
-
-      // Drawing ends
-      setDrawingTime(performance.now() - start);
+      const res = await predictSSD(tensor, model);
+      setResults(res);
+    } else {
+      if (results) tf.dispose(results);
+      const res = await predictClassification(tensor, model, size);
+      setResults(res);
     }
-
-    //Preventing memory leak when it's repainted over and over
-    tf.dispose([
-      results[0],
-      results[1],
-      // model,
-      nmsDetections.selectedIndices,
-      nmsDetections.selectedScores,
-      prominentDetection.indices,
-      prominentDetection.values,
-      img,
-      readyfied,
-      justBoxes,
-      justValues,
-    ]);
   }
 
   async function setupVideo(useDevice: string) {
@@ -168,9 +117,9 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     if (myVideo.current) myVideo.current.srcObject = null;
     stream.current = null;
     tfCamera.current?.stop();
-    canvasRef.current
-      ?.getContext('2d')
-      ?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
+    // canvasRef.current
+    //   ?.getContext('2d')
+    //   ?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
   }
 
   async function listMediaDevices() {
@@ -195,12 +144,11 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
     let mounted = true;
 
     const setupTFJS = async () => {
-      const model = await tf.loadGraphModel(modelPath);
       tfCamera.current = await tf.data.webcam(myVideo.current!);
       async function handleDrawing() {
         if (!tfCamera.current) return;
-        const img = await tfCamera.current.capture();
-        tensorFlowIt(img, model);
+        const tensor = await tfCamera.current.capture();
+        tensorFlowIt(tensor, model);
       }
 
       if (perf || perfCallback) {
@@ -233,26 +181,39 @@ export const AILabWebCam = ({ perf, perfCallback }: VideoProps) => {
       mounted = false;
     };
   }, [isTFReady]);
-  console.log('rendered');
+
+  useEffect(() => {
+    (async function () {
+      if (results) {
+        const detections = await getModelDetections(results, modelConfig);
+        const inferences = await getInferenceData(detections, modelConfig);
+        setDetectionResults(detections);
+        onInference?.(inferences);
+      }
+    })();
+  }, [modelConfig, results]);
+
   return (
     <div>
       <div style={{ position: 'relative' }}>
-        <video ref={myVideo} autoPlay />
-        <canvas
-          id="canvas"
-          ref={canvasRef}
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            bottom: 0,
-            top: 0,
-          }}
-        />
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <Performance {...perfProps} drawingTime={drawingTime} />
           </div>
+        )}
+        <video ref={myVideo} autoPlay />
+        {visual && (
+          <ObjectDetectionUI
+            detectionResults={detectionResults}
+            height={myVideo.current?.height ?? 0}
+            modelConfig={{ ...defaultModelConfig, ...modelConfig }}
+            onDrawComplete={(durationMs) => {
+              if (!drawingTime) {
+                setDrawingTime(durationMs);
+              }
+            }}
+            width={myVideo.current?.width ?? 0}
+          />
         )}
       </div>
       <div>
