@@ -118,7 +118,8 @@ export const AILabLocalVideo = ({
 
       if (perf) {
         setPerfProps(perfMetrics);
-      } else if (perfCallback) {
+      }
+      if (perfCallback) {
         perfCallback(perfMetrics);
       }
     } else {
