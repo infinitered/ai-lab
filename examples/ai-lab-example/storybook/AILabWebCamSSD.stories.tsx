@@ -60,11 +60,14 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
     perf={args.perf}
     model={loaded.SSDModel}
     ObjectDetectionUI={
+      //@ts-ignore
       args.objectDetectionUI === 'simple'
         ? SimpleObjectDetectionUI
         : AILabObjectDetectionUI
     }
+    //@ts-ignore
     onInference={action('onInference', args.onInference)}
+    //@ts-ignore
     perfCallback={action('perfCallback', args.perfCallback)}
     style={{ height: '100%' }}
     modelConfig={{

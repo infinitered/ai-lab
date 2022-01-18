@@ -33,6 +33,7 @@ export interface VideoProps
   ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
   onInference?: (inferenceData: any) => void;
   size?: number;
+  src?: string;
   visual?: boolean;
 }
 

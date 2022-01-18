@@ -77,7 +77,9 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
   const theImage = gimmeImage(args.imageSource);
   return (
     <AILabImage
+      //@ts-ignore
       onInference={action('onInference', args.onInference)}
+      //@ts-ignore
       perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.ClassificationModel}
       perf={args.perf}

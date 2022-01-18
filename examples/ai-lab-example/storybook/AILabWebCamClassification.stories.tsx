@@ -55,7 +55,9 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
     <AILabWebCam
       perf={args.perf}
       model={loaded.ClassificationModel}
+      //@ts-ignore
       onInference={action('onInference', args.onInference)}
+      //@ts-ignore
       perfCallback={action('perfCallback', args.perfCallback)}
       size={224}
       style={{ height: '100%' }}

@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  AILabImage,
+  AILabLocalVideo,
   AILabObjectDetectionUI,
   SimpleObjectDetectionUI,
 } from 'ai-lab';
@@ -9,16 +9,17 @@ import { action } from '@storybook/addon-actions';
 import { CLASSES } from './labels';
 
 export default {
-  title: 'Example/AILabImage/SSD Model',
-  component: AILabImage,
+  title: 'Example/AILabVideo/AILabLocalVideo/SSD Model',
+  component: AILabLocalVideo,
   argTypes: {
     objectDetectionUI: {
       options: ['ai-lab', 'simple'],
       control: { type: 'select' },
     },
-    imageSource: {
-      options: ['dinner', 'cat', 'beach'],
-      control: { type: 'select' },
+    videoSource: {
+      type: 'text',
+      defaultValue:
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
     },
     threshold: {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
@@ -37,56 +38,50 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof AILabImage>;
-
-const gimmeImage = (src: string) => {
-  switch (src) {
-    case 'dinner':
-      return require('./dinner.jpg');
-    case 'cat':
-      return require('./cat.jpeg');
-    default:
-      return require('./beach.jpeg');
-  }
-};
+} as ComponentMeta<typeof AILabLocalVideo>;
 
 ////////////////////////////////////////////////////////////////
-//                  Image Defaults
+//                  Local Video Defaults
 ////////////////////////////////////////////////////////////////
 
-const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
-  //@ts-ignore
-  const theImage = gimmeImage(args.imageSource);
-  return (
-    <AILabImage
-      model={loaded.SSDModel}
-      src={theImage}
-      style={{ height: '100%' }}
-    />
-  );
-};
-
-export const withAnImageDefaults = imageStory.bind({});
-// @ts-ignore
-withAnImageDefaults.args = {
-  //@ts-ignore
-  imageSource: 'cat',
-};
-withAnImageDefaults.parameters = {
-  controls: { include: ['imageSource'] },
-};
-
-////////////////////////////////////////////////////////////////
-//                  Image with Params
-////////////////////////////////////////////////////////////////
-const imageParamsStory: ComponentStory<typeof AILabImage> = (
+const localVideoStory: ComponentStory<typeof AILabLocalVideo> = (
   args,
   { loaded }
 ) => {
   //@ts-ignore
-  const theImage = gimmeImage(args.imageSource);
+  const theVideo = args.videoSource;
   return (
-    <AILabImage
+    <AILabLocalVideo
+      model={loaded.SSDModel}
+      style={{ height: '100%' }}
+      src={theVideo}
+    />
+  );
+};
+
+export const withALocalVideoDefaluts = localVideoStory.bind({});
+withALocalVideoDefaluts.args = {
+  //@ts-ignore
+  videoSource:
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+};
+withALocalVideoDefaluts.parameters = {
+  controls: { include: ['videoSource'] },
+};
+
+////////////////////////////////////////////////////////////////
+//                  Local Video with Params
+////////////////////////////////////////////////////////////////
+const localVideoParamsStory: ComponentStory<typeof AILabLocalVideo> = (
+  args,
+  { loaded }
+) => {
+  //@ts-ignore
+  const theVideo = args.videoSource;
+  return (
+    <AILabLocalVideo
+      perf={args.perf}
+      model={loaded.SSDModel}
       ObjectDetectionUI={
         //@ts-ignore
         args.objectDetectionUI === 'simple'
@@ -97,10 +92,8 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
       onInference={action('onInference', args.onInference)}
       //@ts-ignore
       perfCallback={action('perfCallback', args.perfCallback)}
-      model={loaded.SSDModel}
-      perf={args.perf}
-      src={theImage}
       style={{ height: '100%' }}
+      src={theVideo}
       modelConfig={{
         modelType: 'ssd',
         //@ts-ignore
@@ -116,10 +109,12 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
     />
   );
 };
-export const withImageAndCustomizedSettings = imageParamsStory.bind({});
-withImageAndCustomizedSettings.args = {
+
+export const withLocalVideoAndCustomizedSettings = localVideoParamsStory.bind(
+  {}
+);
+withLocalVideoAndCustomizedSettings.args = {
   //@ts-ignore
-  imageSource: 'dinner',
   iouThreshold: 0.5,
   labels: CLASSES.join(', '),
   maxResults: 20,
@@ -128,12 +123,13 @@ withImageAndCustomizedSettings.args = {
   perf: true,
   threshold: 0.4,
   visual: true,
+  videoSource:
+    'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
 };
 
-withImageAndCustomizedSettings.parameters = {
+withLocalVideoAndCustomizedSettings.parameters = {
   controls: {
     include: [
-      'imageSource',
       'iouThreshold',
       'labels',
       'maxResults',
@@ -142,6 +138,7 @@ withImageAndCustomizedSettings.parameters = {
       'perf',
       'threshold',
       'visual',
+      'videoSource',
     ],
   },
 };
