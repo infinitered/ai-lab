@@ -14,6 +14,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [curModel, setCurModel] = useState<tf.GraphModel | null>(null);
   const [curCtx, setCurCtx] = useState<CanvasRenderingContext2D | null>(null);
+  const fpsCounter = useRef(0);
 
   const modelPath =
     'https://storage.googleapis.com/tfhub-tfjs-modules/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1/model.json';
@@ -133,6 +134,8 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
       justValues,
     ]);
 
+    fpsCounter.current++;
+
     activeInfer = false;
   }
 
@@ -152,7 +155,7 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
   async function runInference() {
     if (activeInfer) return;
 
-    console.log('calling runInference');
+    // console.log('calling runInference');
     if (perf || perfCallback) {
       const perfMetrics = await perfInfo(async () => {
         await tensorFlowIt(curModel);
@@ -171,6 +174,14 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     if (videoRef.current!.paused === false) {
       requestAnimationFrame(runInference);
     }
+
+    // console.log(
+    //   `Current Time: ${videoRef.current?.currentTime} - ${
+    //     videoRef.current?.duration
+    //   } - ${fpsCounter.current} - ${
+    //     fpsCounter.current / (videoRef.current?.currentTime ?? 1)
+    //   }`
+    // );
   }
 
   function startInference() {
@@ -185,6 +196,20 @@ export const AILabLocalVideo = ({ perf, perfCallback, src }: VideoProps) => {
     ctx!.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
     setPerfProps(undefined);
   }
+
+  useEffect(() => {
+    setInterval(
+      () =>
+        console.log(
+          `Current Time: ${videoRef.current?.currentTime} - ${
+            videoRef.current?.duration
+          } - ${fpsCounter.current} - ${
+            fpsCounter.current / (videoRef.current?.currentTime ?? 1)
+          }`
+        ),
+      3000
+    );
+  }, []);
 
   return (
     <div>
