@@ -34,8 +34,7 @@ export const AILabWebCam = ({
   visual,
 }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
-  const stream: React.MutableRefObject<MediaStream | null> =
-    useRef<MediaStream>(null);
+  const stream: React.MutableRefObject<MediaStream | null> = useRef<MediaStream>(null);
   const tfCamera: React.MutableRefObject<any> = useRef(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [devices, setDevices] = useState(null);
@@ -75,7 +74,7 @@ export const AILabWebCam = ({
   async function setupVideo(useDevice: string) {
     if (stream.current) return;
 
-    listMediaDevices();
+    await listMediaDevices();
 
     const deviceId = useDevice ? { exact: useDevice } : undefined;
 
@@ -177,9 +176,11 @@ export const AILabWebCam = ({
       setupVideo(currentDevice);
     }
     return () => {
+      killVideo();
       mounted = false;
     };
   }, [isTFReady]);
+
 
   useEffect(() => {
     (async function () {
@@ -191,6 +192,7 @@ export const AILabWebCam = ({
       }
     })();
   }, [modelConfig, results]);
+
 
   return (
     <div>
