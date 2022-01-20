@@ -18,10 +18,7 @@ export default {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
     },
     maxResults: {
-      control: { type: 'range', min: 0, max: 50, step: 1 },
-    },
-    iouThreshold: {
-      control: { type: 'range', min: 0, max: 1, step: 0.01 },
+      control: { type: 'range', min: 0, max: 5, step: 1 },
     },
     labels: {
       control: {
@@ -45,9 +42,16 @@ const localVideoStory: ComponentStory<typeof AILabLocalVideo> = (
   const theVideo = args.videoSource;
   return (
     <AILabLocalVideo
+      //@ts-ignore
+      onInference={action('onInference', args.onInference)}
+      //@ts-ignore
+      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.ClassificationModel}
-      style={{ height: '100%' }}
+      modelConfig={{
+        modelType: 'classification',
+      }}
       src={theVideo}
+      style={{ height: '100%' }}
     />
   );
 };

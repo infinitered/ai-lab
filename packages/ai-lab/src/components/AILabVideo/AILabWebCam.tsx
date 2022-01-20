@@ -18,7 +18,6 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
-  labels: [],
 };
 
 const delay = async (ms: number) =>
@@ -201,18 +200,18 @@ export const AILabWebCam = ({
             <Performance {...perfProps} drawingTime={drawingTime} />
           </div>
         )}
-        <video ref={myVideo} autoPlay />
+        <video ref={myVideo} autoPlay width={maxWidth} height={maxHeight} />
         {visual && (
           <ObjectDetectionUI
             detectionResults={detectionResults}
-            height={myVideo.current?.height ?? 0}
+            height={myVideo.current?.videoHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
               if (!drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}
-            width={myVideo.current?.width ?? 0}
+            width={myVideo.current?.videoWidth ?? 0}
           />
         )}
       </div>

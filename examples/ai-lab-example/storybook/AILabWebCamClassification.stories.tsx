@@ -29,17 +29,24 @@ export default {
 //                  WebCam Defaults
 ////////////////////////////////////////////////////////////////
 
-const webCamStory: ComponentStory<typeof AILabWebCam> = ({}, { loaded }) => {
+const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
   return (
     <AILabWebCam
+      //@ts-ignore
+      onInference={action('onInference', args.onInference)}
+      //@ts-ignore
+      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.ClassificationModel}
+      modelConfig={{
+        modelType: 'classification',
+      }}
       style={{ height: '100%' }}
     />
   );
 };
 
 export const withAWebCamDefaults = webCamStory.bind({});
-// withAWebCamDefaults.args = {};
+// withAWebCamDefaults.args = {};  * add args as needed
 withAWebCamDefaults.parameters = {
   controls: { include: [] },
 };

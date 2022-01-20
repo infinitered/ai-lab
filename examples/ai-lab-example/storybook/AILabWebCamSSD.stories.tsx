@@ -39,12 +39,30 @@ export default {
 //                  WebCam Defaults
 ////////////////////////////////////////////////////////////////
 
-const webCamStory: ComponentStory<typeof AILabWebCam> = ({}, { loaded }) => {
-  return <AILabWebCam model={loaded.SSDModel} style={{ height: '100%' }} />;
+const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
+  return (
+    <AILabWebCam //@ts-ignore
+      ObjectDetectionUI={args.objectDectionUI}
+      //@ts-ignore
+      onInference={action('onInference', args.onInference)}
+      //@ts-ignore
+      perfCallback={action('perfCallback', args.perfCallback)}
+      model={loaded.SSDModel}
+      style={{ height: '100%' }}
+      modelConfig={{
+        modelType: 'ssd',
+      }}
+      visual={args.visual}
+    />
+  );
 };
 
 export const withAWebCamDefaults = webCamStory.bind({});
-// withAWebCamDefaults.args = {};
+withAWebCamDefaults.args = {
+  //@ts-ignore
+  objectDetectionUI: 'ai-lab',
+  visual: true,
+};
 withAWebCamDefaults.parameters = {
   controls: { include: [] },
 };

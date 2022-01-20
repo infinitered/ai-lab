@@ -52,9 +52,19 @@ const localVideoStory: ComponentStory<typeof AILabLocalVideo> = (
   const theVideo = args.videoSource;
   return (
     <AILabLocalVideo
+      //@ts-ignore
+      ObjectDetectionUI={args.objectDectionUI}
+      //@ts-ignore
+      onInference={action('onInference', args.onInference)}
+      //@ts-ignore
+      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.SSDModel}
+      modelConfig={{
+        modelType: 'ssd',
+      }}
       style={{ height: '100%' }}
       src={theVideo}
+      visual={args.visual}
     />
   );
 };
@@ -64,6 +74,8 @@ withALocalVideoDefaluts.args = {
   //@ts-ignore
   videoSource:
     'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+  objectDetectionUI: 'ai-lab',
+  visual: true,
 };
 withALocalVideoDefaluts.parameters = {
   controls: { include: ['videoSource'] },

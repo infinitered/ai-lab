@@ -55,13 +55,23 @@ const gimmeImage = (src: string) => {
 ////////////////////////////////////////////////////////////////
 
 const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
-  //@ts-ignore
+  // @ts-ignore
   const theImage = gimmeImage(args.imageSource);
   return (
     <AILabImage
+      //@ts-ignore
+      ObjectDetectionUI={args.objectDectionUI}
+      //@ts-ignore
+      onInference={action('onInference', args.onInference)}
+      //@ts-ignore
+      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.SSDModel}
+      modelConfig={{
+        modelType: 'ssd',
+      }}
       src={theImage}
       style={{ height: '100%' }}
+      visual={args.visual}
     />
   );
 };
@@ -71,9 +81,13 @@ export const withAnImageDefaults = imageStory.bind({});
 withAnImageDefaults.args = {
   //@ts-ignore
   imageSource: 'cat',
+  objectDetectionUI: 'ai-lab',
+  visual: true,
 };
 withAnImageDefaults.parameters = {
-  controls: { include: ['imageSource'] },
+  controls: {
+    include: ['imageSource'],
+  },
 };
 
 ////////////////////////////////////////////////////////////////

@@ -17,7 +17,6 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
-  labels: [],
 };
 
 let activeInfer = false;
@@ -36,12 +35,7 @@ export const AILabLocalVideo = ({
   const [isTFReady, setIsTFReady] = useState(false);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
   const [drawingTime, setDrawingTime] = useState(0);
-  // const canvasRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  // const [curModel, setCurModel] = useState<tf.GraphModel | tf.LayersModel>(
-  //   model
-  // );
-  // const [curCtx, setCurCtx] = useState<CanvasRenderingContext2D | null>(null);
   const [detectionResults, setDetectionResults] = useState<any>({});
   const [results, setResults] = useState<Results>();
 
@@ -76,36 +70,14 @@ export const AILabLocalVideo = ({
       setResults(res);
     }
 
-    // const ctx = curCtx;
-
-    // clear previous
-    // ctx!.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
-
-    //Preventing memory leak when it's repainted over and over
-    // Some of these should possibly be kept between loops for greater perf.
-    // tf.dispose([
-    //   // @ts-ignore
-    //   results[0],
-    //   // @ts-ignore
-    //   results[1],
-    //   // model,
-    //   tensor,
-    // ]);
-
     activeInfer = false;
   }
 
   useEffect(() => {
     tf.ready().then(() => {
       setIsTFReady(true);
-      // setupTFJS();
-      // setCurCtx(prepCanvas());
     });
   }, []);
-
-  // const setupTFJS = async () => {
-  //   setCurModel(model);
-  // };
 
   async function runInference() {
     if (activeInfer) return;
@@ -140,8 +112,6 @@ export const AILabLocalVideo = ({
   function stopTFJS() {
     if (!videoRef.current) return;
     videoRef.current.pause();
-    // const ctx = curCtx;
-    // ctx!.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
     setPerfProps(undefined);
   }
 
@@ -187,6 +157,7 @@ export const AILabLocalVideo = ({
           controls
           onEnded={stopTFJS}
           onPlay={startInference}
+          muted
         />
       </div>
     </div>
