@@ -1,18 +1,14 @@
 import React from 'react';
-import { AILabImage } from 'ai-lab';
+import { AILabWebCam } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
 export default {
-  title: 'Example/AILabImage/Classification Model',
-  component: AILabImage,
+  title: 'Example/AILabVideo/AILabWebCam/Classification Model',
+  component: AILabWebCam,
   argTypes: {
-    imageSource: {
-      options: ['dinner', 'cat', 'beach'],
-      control: { type: 'select' },
-    },
     threshold: {
       control: { type: 'range', min: 0, max: 1, step: 0.01 },
     },
@@ -27,28 +23,15 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof AILabImage>;
-
-const gimmeImage = (src: string) => {
-  switch (src) {
-    case 'dinner':
-      return require('./dinner.jpg');
-    case 'cat':
-      return require('./cat.jpeg');
-    default:
-      return require('./beach.jpeg');
-  }
-};
+} as ComponentMeta<typeof AILabWebCam>;
 
 ////////////////////////////////////////////////////////////////
-//                  Image Defaults
+//                  WebCam Defaults
 ////////////////////////////////////////////////////////////////
 
-const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
-  //@ts-ignore
-  const theImage = gimmeImage(args.imageSource);
+const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
   return (
-    <AILabImage
+    <AILabWebCam
       //@ts-ignore
       onInference={action('onInference', args.onInference)}
       //@ts-ignore
@@ -57,41 +40,33 @@ const imageStory: ComponentStory<typeof AILabImage> = (args, { loaded }) => {
       modelConfig={{
         modelType: 'classification',
       }}
-      src={theImage}
       style={{ height: '100%' }}
     />
   );
 };
 
-export const withAnImageDefaults = imageStory.bind({});
-// @ts-ignore
-withAnImageDefaults.args = {
-  //@ts-ignore
-  imageSource: 'cat',
-};
-withAnImageDefaults.parameters = {
-  controls: { include: ['imageSource'] },
+export const withAWebCamDefaults = webCamStory.bind({});
+// withAWebCamDefaults.args = {};  * add args as needed
+withAWebCamDefaults.parameters = {
+  controls: { include: [] },
 };
 
 ////////////////////////////////////////////////////////////////
-//                  Image with Params
+//                  WebCam with Params
 ////////////////////////////////////////////////////////////////
-const imageParamsStory: ComponentStory<typeof AILabImage> = (
+const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
   args,
   { loaded }
 ) => {
-  //@ts-ignore
-  const theImage = gimmeImage(args.imageSource);
   return (
-    <AILabImage
+    <AILabWebCam
+      perf={args.perf}
+      model={loaded.ClassificationModel}
       //@ts-ignore
       onInference={action('onInference', args.onInference)}
       //@ts-ignore
       perfCallback={action('perfCallback', args.perfCallback)}
-      model={loaded.ClassificationModel}
-      perf={args.perf}
       size={224}
-      src={theImage}
       style={{ height: '100%' }}
       modelConfig={{
         modelType: 'classification',
@@ -105,18 +80,17 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
     />
   );
 };
-export const withImageAndCustomizedSettings = imageParamsStory.bind({});
-withImageAndCustomizedSettings.args = {
+export const withWebCamAndCustomizedSettings = webCamParamsStory.bind({});
+withWebCamAndCustomizedSettings.args = {
   //@ts-ignore
-  imageSource: 'dinner',
   maxResults: 5, //topk
   perf: true,
   threshold: 0.4,
   labels: CLASSES.join(', '),
 };
 
-withImageAndCustomizedSettings.parameters = {
+withWebCamAndCustomizedSettings.parameters = {
   controls: {
-    include: ['imageSource', 'maxResults', 'perf', 'threshold', 'labels'],
+    include: ['maxResults', 'perf', 'threshold', 'labels'],
   },
 };

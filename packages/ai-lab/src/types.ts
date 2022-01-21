@@ -27,7 +27,15 @@ export interface VideoProps
       React.VideoHTMLAttributes<HTMLVideoElement>,
       HTMLVideoElement
     >,
-    PerformanceProps {}
+    PerformanceProps {
+  model: tf.GraphModel | tf.LayersModel;
+  modelConfig?: ModelConfig;
+  ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
+  onInference?: (inferenceData: any) => void;
+  size?: number;
+  src?: string;
+  visual?: boolean;
+}
 
 export interface Detections {
   detections: Float32Array | Int32Array | Uint8Array;

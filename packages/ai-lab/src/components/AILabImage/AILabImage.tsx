@@ -17,7 +17,6 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
-  labels: [],
 };
 
 export const AILabImage = ({

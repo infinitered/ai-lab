@@ -9,7 +9,6 @@ const defaultModelConfig: ModelConfig = {
   iouThreshold: 0.5,
   nmsActive: true,
   topK: 5,
-  labels: [],
 };
 
 export async function ssdModelDetection(results: Results, config: ModelConfig) {
@@ -137,7 +136,7 @@ export async function getInferenceData(
   results: number[] | Detections,
   modelConfig: ModelConfig = defaultModelConfig
 ) {
-  const { labels = [] } = modelConfig;
+  const { labels } = modelConfig;
 
   if (Array.isArray(results)) {
     const res = results.map((data, key) => ({

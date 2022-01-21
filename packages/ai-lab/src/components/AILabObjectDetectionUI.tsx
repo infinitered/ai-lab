@@ -74,9 +74,16 @@ export const AILabObjectDetectionUI = ({
   }, [detectionResults, height, modelConfig, width]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
-    />
+    <div
+      style={{
+        bottom: 0,
+        left: 0,
+        position: 'absolute',
+        right: 0,
+        top: 0,
+      }}
+    >
+      <canvas ref={canvasRef} />
+    </div>
   );
 };
