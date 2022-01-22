@@ -29,7 +29,8 @@ export const AILabImage = ({
   src,
   size = 224,
   visual,
-  ...props
+  displaySize,
+  style,
 }: ImageProps) => {
   const [isTFReady, setIsTFReady] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -109,26 +110,33 @@ export const AILabImage = ({
   }, [modelConfig, results]);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <img ref={imgRef} src={src} {...props} />
-      {visual && (
-        <ObjectDetectionUI
-          detectionResults={detectionResults}
-          height={imgRef.current?.height ?? 0}
-          modelConfig={{ ...defaultModelConfig, ...modelConfig }}
-          onDrawComplete={(durationMs) => {
-            if (!drawingTime) {
-              setDrawingTime(durationMs);
-            }
-          }}
-          width={imgRef.current?.width ?? 0}
+    <div style={style}>
+      <div style={{ position: 'relative' }}>
+        {perf && perfProps && (
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+            <Performance {...perfProps} drawingTime={drawingTime} />
+          </div>
+        )}
+        <img
+          ref={imgRef}
+          src={src}
+          height={displaySize === 'max' ? '100%' : undefined}
+          width={displaySize === 'max' ? '100%' : undefined}
         />
-      )}
-      {perf && perfProps && (
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-          <Performance {...perfProps} drawingTime={drawingTime} />
-        </div>
-      )}
+        {visual && (
+          <ObjectDetectionUI
+            detectionResults={detectionResults}
+            height={imgRef.current?.offsetHeight ?? 0}
+            modelConfig={{ ...defaultModelConfig, ...modelConfig }}
+            onDrawComplete={(durationMs) => {
+              if (!drawingTime) {
+                setDrawingTime(durationMs);
+              }
+            }}
+            width={imgRef.current?.offsetWidth ?? 0}
+          />
+        )}
+      </div>
     </div>
   );
 };

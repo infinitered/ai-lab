@@ -31,6 +31,8 @@ export const AILabLocalVideo = ({
   size = 224,
   src,
   visual,
+  displaySize,
+  style,
 }: VideoProps) => {
   const [isTFReady, setIsTFReady] = useState(false);
   const [perfProps, setPerfProps] = useState<PerformanceInfo>();
@@ -38,9 +40,6 @@ export const AILabLocalVideo = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [detectionResults, setDetectionResults] = useState<any>({});
   const [results, setResults] = useState<Results>();
-
-  const maxWidth = window.innerWidth - 18; // subtract scrollbar
-  const maxHeight = window.innerHeight;
 
   async function tensorFlowIt(model: tf.GraphModel | tf.LayersModel) {
     // fix scan ahead processing issue
@@ -127,7 +126,7 @@ export const AILabLocalVideo = ({
   }, [modelConfig, results]);
 
   return (
-    <div>
+    <div style={style}>
       <div style={{ position: 'relative' }}>
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
@@ -137,14 +136,14 @@ export const AILabLocalVideo = ({
         {visual && (
           <ObjectDetectionUI
             detectionResults={detectionResults}
-            height={videoRef.current?.height ?? 0}
+            height={videoRef.current?.offsetHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
               if (!drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}
-            width={videoRef.current?.width ?? 0}
+            width={videoRef.current?.offsetWidth ?? 0}
           />
         )}
         <video
@@ -152,8 +151,8 @@ export const AILabLocalVideo = ({
           id="video"
           src={src}
           ref={videoRef}
-          width={maxWidth}
-          height={maxHeight}
+          width={displaySize === 'max' ? '100%' : undefined}
+          height={displaySize === 'max' ? '100%' : undefined}
           controls
           onEnded={stopTFJS}
           onPlay={startInference}
