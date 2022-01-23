@@ -37,6 +37,10 @@ export default {
         description: 'Comma separated classification labels',
       },
     },
+    displaySize: {
+      options: ['content', 'max'],
+      control: { type: 'select' },
+    },
   },
 } as ComponentMeta<typeof AILabLocalVideo>;
 
@@ -118,6 +122,7 @@ const localVideoParamsStory: ComponentStory<typeof AILabLocalVideo> = (
         labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
+      displaySize={args.displaySize}
     />
   );
 };
@@ -137,6 +142,7 @@ withLocalVideoAndCustomizedSettings.args = {
   visual: true,
   videoSource:
     'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+  displaySize: 'content',
 };
 
 withLocalVideoAndCustomizedSettings.parameters = {
@@ -151,6 +157,7 @@ withLocalVideoAndCustomizedSettings.parameters = {
       'threshold',
       'visual',
       'videoSource',
+      'displaySize',
     ],
   },
 };

@@ -32,6 +32,10 @@ export default {
         description: 'Comma separated classification labels',
       },
     },
+    displaySize: {
+      options: ['content', 'max'],
+      control: { type: 'select' },
+    },
   },
 } as ComponentMeta<typeof AILabWebCam>;
 
@@ -100,6 +104,7 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
       labels: args.labels.split(/,\s*/),
     }}
     visual={args.visual}
+    displaySize={args.displaySize}
   />
 );
 
@@ -114,6 +119,7 @@ withWebCamAndCustomizedSettings.args = {
   perf: true,
   threshold: 0.4,
   visual: true,
+  displaySize: 'content',
 };
 
 withWebCamAndCustomizedSettings.parameters = {
@@ -128,6 +134,7 @@ withWebCamAndCustomizedSettings.parameters = {
       'perf',
       'threshold',
       'visual',
+      'displaySize',
     ],
   },
 };

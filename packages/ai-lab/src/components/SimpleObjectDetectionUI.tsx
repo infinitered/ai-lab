@@ -54,7 +54,7 @@ export const SimpleObjectDetectionUI = ({
   return (
     <canvas
       ref={canvasRef}
-      style={{ position: 'absolute', left: 0, right: 0, bottom: 0, top: 0 }}
+      style={{ position: 'absolute', left: 0, top: 0, height, width }}
     />
   );
 };

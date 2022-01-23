@@ -76,10 +76,10 @@ export const AILabObjectDetectionUI = ({
   return (
     <div
       style={{
-        bottom: 0,
         left: 0,
         position: 'absolute',
-        right: 0,
+        width,
+        height,
         top: 0,
       }}
     >

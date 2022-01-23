@@ -22,6 +22,10 @@ export default {
         description: 'Comma separated classification labels',
       },
     },
+    displaySize: {
+      options: ['content', 'max'],
+      control: { type: 'select' },
+    },
   },
 } as ComponentMeta<typeof AILabWebCam>;
 
@@ -77,6 +81,7 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
         //@ts-ignore
         labels: args.labels.split(/,\s*/),
       }}
+      displaySize={args.displaySize}
     />
   );
 };
@@ -87,10 +92,11 @@ withWebCamAndCustomizedSettings.args = {
   perf: true,
   threshold: 0.4,
   labels: CLASSES.join(', '),
+  displaySize: 'content',
 };
 
 withWebCamAndCustomizedSettings.parameters = {
   controls: {
-    include: ['maxResults', 'perf', 'threshold', 'labels'],
+    include: ['maxResults', 'perf', 'threshold', 'labels', 'displaySize'],
   },
 };

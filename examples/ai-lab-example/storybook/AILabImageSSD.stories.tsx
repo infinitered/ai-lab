@@ -36,6 +36,10 @@ export default {
         description: 'Comma separated classification labels',
       },
     },
+    displaySize: {
+      options: ['content', 'max'],
+      control: { type: 'select' },
+    },
   },
 } as ComponentMeta<typeof AILabImage>;
 
@@ -127,6 +131,7 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
+      displaySize={args.displaySize}
     />
   );
 };
@@ -142,6 +147,7 @@ withImageAndCustomizedSettings.args = {
   perf: true,
   threshold: 0.4,
   visual: true,
+  displaySize: 'content',
 };
 
 withImageAndCustomizedSettings.parameters = {
@@ -156,6 +162,7 @@ withImageAndCustomizedSettings.parameters = {
       'perf',
       'threshold',
       'visual',
+      'displaySize',
     ],
   },
 };

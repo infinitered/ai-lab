@@ -20,6 +20,7 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
     onInference?: (inferenceData: any) => void;
     size?: number;
     visual?: boolean;
+    displaySize?: 'content' | 'max';
   };
 
 export interface VideoProps
@@ -35,6 +36,7 @@ export interface VideoProps
   size?: number;
   src?: string;
   visual?: boolean;
+  displaySize?: 'content' | 'max';
 }
 
 export interface Detections {

@@ -10,6 +10,7 @@ import {
   predictSSD,
 } from '../../lib/helpers';
 import { AILabObjectDetectionUI } from '..';
+import { useComponentSize } from '../../lib/hooks';
 
 const defaultModelConfig: ModelConfig = {
   modelType: 'ssd',
@@ -32,9 +33,12 @@ export const AILabWebCam = ({
   perfCallback,
   size = 224,
   visual,
+  displaySize,
+  style,
 }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
-  const stream: React.MutableRefObject<MediaStream | null> = useRef<MediaStream>(null);
+  const stream: React.MutableRefObject<MediaStream | null> =
+    useRef<MediaStream>(null);
   const tfCamera: React.MutableRefObject<any> = useRef(null);
   const [isTFReady, setIsTFReady] = useState(false);
   const [devices, setDevices] = useState(null);
@@ -45,9 +49,6 @@ export const AILabWebCam = ({
   const [drawingTime, setDrawingTime] = useState(0);
   const [detectionResults, setDetectionResults] = useState<any>({});
   const [results, setResults] = useState<Results>();
-
-  const maxWidth = window.innerWidth - 18; // subtract scrollbar
-  const maxHeight = window.innerHeight;
 
   async function tensorFlowIt(
     tensor: tf.Tensor3D,
@@ -80,12 +81,10 @@ export const AILabWebCam = ({
 
     const videoConstraints = {
       deviceId,
-      width: { ideal: maxWidth, max: maxWidth },
-      height: { ideal: maxHeight, max: maxHeight },
+      width: { ideal: width, max: width },
+      height: { ideal: height, max: height },
       facingMode: 'user', // rear facing if possible options === user, environment, left and right
     };
-    myVideo.current!.width = maxWidth;
-    myVideo.current!.height = maxHeight;
 
     try {
       const vidStream = await navigator.mediaDevices.getUserMedia({
@@ -181,7 +180,6 @@ export const AILabWebCam = ({
     };
   }, [isTFReady]);
 
-
   useEffect(() => {
     (async function () {
       if (results) {
@@ -193,27 +191,33 @@ export const AILabWebCam = ({
     })();
   }, [modelConfig, results]);
 
+  const { height = 0, width = 0 } = useComponentSize(myVideo);
 
   return (
-    <div>
+    <div style={style}>
       <div style={{ position: 'relative' }}>
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <Performance {...perfProps} drawingTime={drawingTime} />
           </div>
         )}
-        <video ref={myVideo} autoPlay width={maxWidth} height={maxHeight} />
+        <video
+          ref={myVideo}
+          autoPlay
+          height={displaySize === 'max' ? '100%' : undefined}
+          width={displaySize === 'max' ? '100%' : undefined}
+        />
         {visual && (
           <ObjectDetectionUI
             detectionResults={detectionResults}
-            height={myVideo.current?.videoHeight ?? 0}
+            height={myVideo.current?.offsetHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
               if (!drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}
-            width={myVideo.current?.videoWidth ?? 0}
+            width={myVideo.current?.offsetWidth ?? 0}
           />
         )}
       </div>
