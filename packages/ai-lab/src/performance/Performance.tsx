@@ -9,7 +9,7 @@ const numberWithCommas = (x: number) =>
 const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
 
 export type PerformanceInfo = ProfileInfo &
-  tf.TimingInfo & { drawingTime?: number };
+  tf.TimingInfo & { drawingTime?: number } & { fps?: number };
 
 export interface PerformanceProps {
   perf?: boolean;
@@ -31,6 +31,7 @@ export const Performance = ({
   newTensors,
   kernelMs,
   drawingTime,
+  fps,
 }: PerformanceInfo) => {
   return (
     //checkout the bottom left corner on the screen to see the metrics boxes
@@ -41,6 +42,7 @@ export const Performance = ({
         <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
         <p>Execution: {kernelMs} ms</p>
         {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
+        {!!fps && <p>FPS: {fps}</p>}
       </div>
       <div style={styles.container}>
         <Memory pollingFrequency={1000} />

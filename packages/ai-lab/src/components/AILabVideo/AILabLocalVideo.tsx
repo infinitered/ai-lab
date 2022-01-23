@@ -38,6 +38,11 @@ export const AILabLocalVideo = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [detectionResults, setDetectionResults] = useState<any>({});
   const [results, setResults] = useState<Results>();
+  const fpsInfo = useRef({
+    lastTensor: -1,
+    fps: 0,
+    calculateFps: () => Math.round(fpsInfo.current.fps * 100) / 100,
+  });
 
   const maxWidth = window.innerWidth - 18; // subtract scrollbar
   const maxHeight = window.innerHeight;
@@ -79,11 +84,23 @@ export const AILabLocalVideo = ({
     });
   }, []);
 
+  function handleFpsCount() {
+    if (fpsInfo.current.lastTensor !== -1) {
+      const timeSinceLastTensor =
+        performance.now() - fpsInfo.current.lastTensor;
+      fpsInfo.current.fps = 1000 / timeSinceLastTensor;
+    }
+
+    fpsInfo.current.lastTensor = performance.now();
+  }
+
   async function runInference() {
     if (activeInfer) return;
 
     console.log('calling runInference');
     if (perf || perfCallback) {
+      handleFpsCount();
+
       const perfMetrics = await perfInfo(async () => {
         await tensorFlowIt(model);
       });
@@ -115,6 +132,10 @@ export const AILabLocalVideo = ({
     setPerfProps(undefined);
   }
 
+  function pauseFpsCalc() {
+    fpsInfo.current.lastTensor = -1;
+  }
+
   useEffect(() => {
     (async function () {
       if (results) {
@@ -131,7 +152,11 @@ export const AILabLocalVideo = ({
       <div style={{ position: 'relative' }}>
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-            <Performance {...perfProps} drawingTime={drawingTime} />
+            <Performance
+              {...perfProps}
+              drawingTime={drawingTime}
+              fps={fpsInfo.current.calculateFps()}
+            />
           </div>
         )}
         {visual && (
@@ -156,6 +181,7 @@ export const AILabLocalVideo = ({
           height={maxHeight}
           controls
           onEnded={stopTFJS}
+          onPause={pauseFpsCalc}
           onPlay={startInference}
           muted
         />
