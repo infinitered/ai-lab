@@ -54,6 +54,7 @@ export const AILabWebCam = ({
     tensor: tf.Tensor3D,
     model: tf.GraphModel | tf.LayersModel
   ) {
+    let res;
     if (modelConfig?.modelType === 'ssd') {
       if (results)
         tf.dispose([
@@ -63,13 +64,18 @@ export const AILabWebCam = ({
           results[1],
         ]);
 
-      const res = await predictSSD(tensor, model);
-      setResults(res);
+      res = await predictSSD(tensor, model);
+    } else if (modelConfig?.modelType === 'pose') {
+      // @ts-ignore
+      res = await model.estimatePoses(myVideo.current, {
+        maxPoses: 1,
+        flipHorizontal: false,
+      });
     } else {
       if (results) tf.dispose(results);
-      const res = await predictClassification(tensor, model, size);
-      setResults(res);
+      res = await predictClassification(tensor, model, size);
     }
+    setResults(res);
   }
 
   async function setupVideo(useDevice: string) {
@@ -141,6 +147,7 @@ export const AILabWebCam = ({
     let mounted = true;
 
     const setupTFJS = async () => {
+      console.log('quick delay');
       tfCamera.current = await tf.data.webcam(myVideo.current!);
       async function handleDrawing() {
         if (!tfCamera.current) return;
