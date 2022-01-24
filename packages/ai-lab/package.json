@@ -8,6 +8,16 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "AI",
+    "React",
+    "tensorflow.js",
+    "tensorflow",
+    "machine learning",
+    "ai",
+    "react",
+    "ai-lab"
+  ],
   "scripts": {
     "test": "tsdx test --env=jsdom",
     "test:watch": "npm run test -- --watchAll",

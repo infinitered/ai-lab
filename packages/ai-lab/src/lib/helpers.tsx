@@ -152,18 +152,16 @@ export async function getInferenceData(
       classLabel: labels ? labels[maxIndices[data]] : `class ${key}`,
       score: scores[data],
     }));
-
     return ssdInferData;
   } else if (modelConfig?.modelType === 'pose') {
     return results;
   } else {
-    if (Array.isArray(results)) {
-      const res = results.map((data, key) => ({
-        class: key,
-        classLabel: labels ? labels[key] : `class ${key}`,
-        score: data,
-      }));
-      return res;
-    }
+    //@ts-ignore
+    const res = results.map((data, key) => ({
+      class: key,
+      classLabel: labels ? labels[key] : `class ${key}`,
+      score: data,
+    }));
+    return res;
   }
 }
