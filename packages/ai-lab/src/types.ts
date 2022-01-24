@@ -6,7 +6,7 @@ export interface ModelConfig {
   iouThreshold?: number;
   labels?: string[];
   maxResults?: number;
-  modelType: 'classification' | 'ssd';
+  modelType: 'classification' | 'ssd' | 'pose';
   nmsActive?: boolean;
   threshold?: number;
   topK?: number;

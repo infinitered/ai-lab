@@ -1,0 +1,1 @@
+{"version":3,"file":"constants.js","sourceRoot":"","sources":["../../src/blazepose_mediapipe/constants.ts"],"names":[],"mappings":";;;AAkBa,QAAA,8BAA8B,GAAkC;IAC3E,OAAO,EAAE,WAAW;IACpB,eAAe,EAAE,IAAI;IACrB,kBAAkB,EAAE,KAAK;IACzB,kBAAkB,EAAE,IAAI;IACxB,SAAS,EAAE,MAAM;CAClB,CAAC;AAEW,QAAA,mCAAmC,GACP;IACnC,QAAQ,EAAE,CAAC;IACX,cAAc,EAAE,KAAK;CACtB,CAAC"}

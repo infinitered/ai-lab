@@ -43,6 +43,7 @@ export const AILabImage = ({
     const image = imgRef.current;
     const tensor = tf.browser.fromPixels(image!);
 
+    let res;
     if (modelConfig?.modelType === 'ssd') {
       if (results)
         tf.dispose([
@@ -52,13 +53,18 @@ export const AILabImage = ({
           results[1],
         ]);
 
-      const res = await predictSSD(tensor, model);
-      setResults(res);
+      res = await predictSSD(tensor, model);
+    } else if (modelConfig?.modelType === 'pose') {
+      // @ts-ignore
+      res = await model.estimatePoses(image, {
+        maxPoses: 1,
+        flipHorizontal: false,
+      });
     } else {
       if (results) tf.dispose(results);
-      const res = await predictClassification(tensor, model, size);
-      setResults(res);
+      res = await predictClassification(tensor, model, size);
     }
+    setResults(res);
   };
 
   useEffect(() => {
