@@ -1,6 +1,6 @@
 {
   "name": "ai-lab",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "description": "A set of components for AI in React",
   "main": "dist/index.js",
   "module": "dist/ai-lab.esm.js",

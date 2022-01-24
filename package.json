@@ -1,7 +1,8 @@
 {
   "name": "@ai-lab/repo",
+  "private": false,
   "description": "A set of components for AI in React",
-  "version": "0.0.2-alpha.0",
+  "version": "0.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
