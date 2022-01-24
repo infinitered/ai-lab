@@ -49,6 +49,11 @@ export const AILabWebCam = ({
   const [drawingTime, setDrawingTime] = useState(0);
   const [detectionResults, setDetectionResults] = useState<any>({});
   const [results, setResults] = useState<Results>();
+  const fpsInfo = useRef({
+    lastTensor: -1,
+    fps: 0,
+    calculateFps: () => Math.round(fpsInfo.current.fps * 100) / 100,
+  });
 
   async function tensorFlowIt(
     tensor: tf.Tensor3D,
@@ -133,6 +138,16 @@ export const AILabWebCam = ({
     setupVideo(dd);
   }
 
+  function handleFpsCount() {
+    if (fpsInfo.current.lastTensor !== -1) {
+      const timeSinceLastTensor =
+        performance.now() - fpsInfo.current.lastTensor;
+      fpsInfo.current.fps = 1000 / timeSinceLastTensor;
+    }
+
+    fpsInfo.current.lastTensor = performance.now();
+  }
+
   useEffect(() => {
     tf.ready().then(() => setIsTFReady(true));
   }, []);
@@ -150,6 +165,8 @@ export const AILabWebCam = ({
 
       if (perf || perfCallback) {
         while (stream.current) {
+          handleFpsCount();
+
           if (mounted) {
             const perfMetrics = await perfInfo(handleDrawing);
 
@@ -198,7 +215,11 @@ export const AILabWebCam = ({
       <div style={{ position: 'relative' }}>
         {perf && perfProps && !!drawingTime && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-            <Performance {...perfProps} drawingTime={drawingTime} />
+            <Performance
+              {...perfProps}
+              drawingTime={drawingTime}
+              fps={fpsInfo.current.calculateFps()}
+            />
           </div>
         )}
         <video
