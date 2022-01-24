@@ -8,6 +8,10 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infinitered/ai-lab.git"
+  },
   "keywords": [
     "AI",
     "React",
