@@ -21,9 +21,6 @@ const defaultModelConfig: ModelConfig = {
   topK: 5,
 };
 
-const delay = async (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 export const AILabWebCam = ({
   model,
   modelConfig,
@@ -34,6 +31,7 @@ export const AILabWebCam = ({
   size = 224,
   visual,
   displaySize,
+  active = true,
   style,
 }: VideoProps) => {
   const myVideo = useRef<HTMLVideoElement>(null);
@@ -67,7 +65,7 @@ export const AILabWebCam = ({
       res = await predictSSD(tensor, model);
     } else if (modelConfig?.modelType === 'pose') {
       // @ts-ignore
-      res = await model.estimatePoses(myVideo.current, {
+      res = await model.estimatePoses(tensor, {
         maxPoses: 1,
         flipHorizontal: false,
       });
@@ -120,9 +118,6 @@ export const AILabWebCam = ({
     if (myVideo.current) myVideo.current.srcObject = null;
     stream.current = null;
     tfCamera.current?.stop();
-    // canvasRef.current
-    //   ?.getContext('2d')
-    //   ?.clearRect(0, 0, canvasRef.current!.width, canvasRef.current!.height);
   }
 
   async function listMediaDevices() {
@@ -140,23 +135,25 @@ export const AILabWebCam = ({
   }
 
   useEffect(() => {
-    tf.ready().then(() => setIsTFReady(true));
+    tf.ready().then(() => {
+      setIsTFReady(true);
+    });
   }, []);
 
   useEffect(() => {
     let mounted = true;
 
     const setupTFJS = async () => {
-      console.log('quick delay');
       tfCamera.current = await tf.data.webcam(myVideo.current!);
       async function handleDrawing() {
         if (!tfCamera.current) return;
+
         const tensor = await tfCamera.current.capture();
-        tensorFlowIt(tensor, model);
+        await tensorFlowIt(tensor, model);
       }
 
       if (perf || perfCallback) {
-        while (stream.current) {
+        while (stream.current && active) {
           if (mounted) {
             const perfMetrics = await perfInfo(handleDrawing);
 
@@ -166,20 +163,19 @@ export const AILabWebCam = ({
             if (perfCallback) {
               perfCallback(perfMetrics);
             }
-            await delay(1000);
           }
         }
       } else {
-        while (stream.current) {
+        while (stream.current && active) {
           await handleDrawing();
-          await delay(1000);
         }
       }
     };
 
     if (isTFReady) {
-      setupTFJS();
-      setupVideo(currentDevice);
+      setupVideo(currentDevice).then(() => {
+        setupTFJS();
+      });
     }
     return () => {
       killVideo();
@@ -211,8 +207,8 @@ export const AILabWebCam = ({
         <video
           ref={myVideo}
           autoPlay
-          height={displaySize === 'max' ? '100%' : undefined}
-          width={displaySize === 'max' ? '100%' : undefined}
+          height={displaySize === 'max' ? '100%' : '768px'}
+          width={displaySize === 'max' ? '100%' : '1024px'}
         />
         {visual && (
           <ObjectDetectionUI

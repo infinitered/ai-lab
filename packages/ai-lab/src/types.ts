@@ -35,6 +35,7 @@ export interface VideoProps
   onInference?: (inferenceData: any) => void;
   size?: number;
   src?: string;
+  active?: boolean;
   visual?: boolean;
   displaySize?: 'content' | 'max';
 }

@@ -41,6 +41,7 @@ export const AILabImage = ({
 
   const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
+    // TODO: Only some models need the tensor
     const tensor = tf.browser.fromPixels(image!);
 
     let res;
@@ -56,7 +57,7 @@ export const AILabImage = ({
       res = await predictSSD(tensor, model);
     } else if (modelConfig?.modelType === 'pose') {
       // @ts-ignore
-      res = await model.estimatePoses(image, {
+      res = await model.estimatePoses(tensor, {
         maxPoses: 1,
         flipHorizontal: false,
       });

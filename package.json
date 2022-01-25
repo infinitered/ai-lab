@@ -16,6 +16,7 @@
   "scripts": {
     "start": "tsdx watch",
     "build": "pnpm build -r",
+    "buildailab": "pnpm build --filter ai-lab",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint && pnpm lint -r",
     "prepare": "tsdx build",

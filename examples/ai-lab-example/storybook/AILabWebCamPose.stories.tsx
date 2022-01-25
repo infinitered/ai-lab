@@ -27,10 +27,11 @@ const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
       //@ts-ignore
       perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.BlazePoseModel}
+      active={args.active}
       modelConfig={{
         modelType: 'pose',
       }}
-      style={{ height: '100%' }}
+      displaySize={args.displaySize}
     />
   );
 };
@@ -38,7 +39,11 @@ const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
 export const withAWebCamDefaults = webCamStory.bind({});
 // withAWebCamDefaults.args = {};  * add args as needed
 withAWebCamDefaults.parameters = {
-  controls: { include: [] },
+  controls: { include: ['displaySize', 'active'] },
+};
+
+withAWebCamDefaults.args = {
+  displaySize: 'content',
 };
 
 // TODO: hardcoding pose type and configs (fix this)
@@ -48,6 +53,7 @@ withAWebCamDefaults.loaders = [
     return {
       BlazePoseModel: await poseDetection.createDetector(blazeModelConfig, {
         runtime: 'tfjs',
+        enableSmoothing: true,
         modelType: 'full',
       }),
     };
