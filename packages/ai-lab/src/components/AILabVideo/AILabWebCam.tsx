@@ -74,6 +74,7 @@ export const AILabWebCam = ({
       res = await predictClassification(tensor, model, size);
     }
     setResults(res);
+    tensor.dispose(); // Cleanup GPU memory
   }
 
   async function setupVideo(useDevice: string) {

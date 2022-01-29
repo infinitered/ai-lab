@@ -41,10 +41,10 @@ importers:
       '@storybook/addon-links': ^6.3.12
       '@storybook/addon-storyshots': ^6.3.12
       '@storybook/react': ^6.3.12
-      '@tensorflow-models/pose-detection': file:./pose-copy/pose-dist
+      '@tensorflow-models/pose-detection': ^1.0.1
       '@types/react': ^16.9.11
       '@types/react-dom': ^16.8.4
-      ai-lab: workspace:^0.0.1
+      ai-lab: workspace:^0.0.2-alpha.2
       parcel: 2.0.1
       react: 17.0.2
       react-app-polyfill: ^1.0.0
@@ -53,7 +53,7 @@ importers:
       typescript: ^3.4.5
     dependencies:
       '@mediapipe/pose': 0.5.1635988162
-      '@tensorflow-models/pose-detection': link:pose-copy/pose-dist
+      '@tensorflow-models/pose-detection': 1.0.1_@mediapipe+pose@0.5.1635988162
       ai-lab: link:../../packages/ai-lab
       react: 17.0.2
       react-app-polyfill: 1.0.6
@@ -6580,6 +6580,19 @@ packages:
   /@swc/helpers/0.2.14:
     resolution: {integrity: sha512-wpCQMhf5p5GhNg2MmGKXzUNwxe7zRiCsmqYsamez2beP7mKPCSiu+BjZcdN95yYSzO857kr0VfQewmGpS77nqA==}
     dev: true
+
+  /@tensorflow-models/pose-detection/1.0.1_@mediapipe+pose@0.5.1635988162:
+    resolution: {integrity: sha512-BWVGUxfW+GcOGT1F+ReTYwsKYnKKN/4CduPq+oytC8dhxmt23qzTNozEnuwi7zphBMCc+8FZwF1J65jK/+d2AQ==}
+    peerDependencies:
+      '@mediapipe/pose': ~0.4.0
+      '@tensorflow/tfjs-backend-wasm': ^3.13.0
+      '@tensorflow/tfjs-backend-webgl': ^3.13.0
+      '@tensorflow/tfjs-converter': ^3.13.0
+      '@tensorflow/tfjs-core': ^3.13.0
+    dependencies:
+      '@mediapipe/pose': 0.5.1635988162
+      rimraf: 3.0.2
+    dev: false
 
   /@tensorflow/tfjs-backend-cpu/3.13.0_@tensorflow+tfjs-core@3.13.0:
     resolution: {integrity: sha512-POmzUoAP8HooYYTZ72O1ZYkpVZB0f+8PeAkbTxIG0oahcJccj6a0Vovp1A6xWKfljUoPlJb3jWVC++S603ZL8w==}
@@ -17772,7 +17785,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.0
-    dev: true
 
   /ripemd160/2.0.2:
     resolution: {integrity: sha512-ii4iagi25WusVoiC4B4lq7pbXfAp3D9v5CwfkY33vffw2+pkDjY1D8GaN7spsxvCSx8dkPqOZCEZyfxcmJG2IA==}
