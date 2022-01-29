@@ -41,8 +41,10 @@ export const AILabImage = ({
 
   const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
+    // TODO: Only some models need the tensor
     const tensor = tf.browser.fromPixels(image!);
 
+    let res;
     if (modelConfig?.modelType === 'ssd') {
       if (results)
         tf.dispose([
@@ -52,13 +54,18 @@ export const AILabImage = ({
           results[1],
         ]);
 
-      const res = await predictSSD(tensor, model);
-      setResults(res);
+      res = await predictSSD(tensor, model);
+    } else if (modelConfig?.modelType === 'pose') {
+      // @ts-ignore
+      res = await model.estimatePoses(tensor, {
+        maxPoses: 1,
+        flipHorizontal: false,
+      });
     } else {
       if (results) tf.dispose(results);
-      const res = await predictClassification(tensor, model, size);
-      setResults(res);
+      res = await predictClassification(tensor, model, size);
     }
+    setResults(res);
   };
 
   useEffect(() => {

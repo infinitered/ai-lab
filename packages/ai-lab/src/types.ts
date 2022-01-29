@@ -6,7 +6,7 @@ export interface ModelConfig {
   iouThreshold?: number;
   labels?: string[];
   maxResults?: number;
-  modelType: 'classification' | 'ssd';
+  modelType: 'classification' | 'ssd' | 'pose';
   nmsActive?: boolean;
   threshold?: number;
   topK?: number;
@@ -35,6 +35,7 @@ export interface VideoProps
   onInference?: (inferenceData: any) => void;
   size?: number;
   src?: string;
+  active?: boolean;
   visual?: boolean;
   displaySize?: 'content' | 'max';
 }

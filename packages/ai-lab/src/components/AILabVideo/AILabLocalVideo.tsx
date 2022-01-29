@@ -55,9 +55,9 @@ export const AILabLocalVideo = ({
     }
 
     activeInfer = true;
-    const tensor = tf.browser.fromPixels(videoRef.current);
 
     if (modelConfig?.modelType === 'ssd') {
+      const tensor = tf.browser.fromPixels(videoRef.current);
       if (results)
         tf.dispose([
           //@ts-ignore
@@ -69,6 +69,7 @@ export const AILabLocalVideo = ({
       const res = await predictSSD(tensor, model);
       setResults(res);
     } else {
+      const tensor = tf.browser.fromPixels(videoRef.current);
       if (results) tf.dispose(results);
       const res = await predictClassification(tensor, model, size);
       setResults(res);

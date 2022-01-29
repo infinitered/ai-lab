@@ -15,10 +15,12 @@ export async function ssdModelDetection(results: Results, config: ModelConfig) {
   // Get a clean tensor of top indices
   const prominentDetection = tf.topk((results as tf.Tensor<tf.Rank>[])[0]);
 
+  // @ts-ignore
   const justBoxes = (results as tf.Tensor<tf.Rank>[])[1].squeeze<
     tf.Tensor<tf.Rank.R2>
   >();
 
+  // @ts-ignore
   const justValues = prominentDetection.values.squeeze<tf.Tensor<tf.Rank.R1>>();
 
   const { threshold, maxResults = 20, iouThreshold, nmsActive } = config;
@@ -98,6 +100,7 @@ export async function predictClassification(
   model: tf.GraphModel | tf.LayersModel,
   size: number
 ) {
+  // @ts-ignore
   const readyfied = tensor.toFloat().div(255);
   let resized = readyfied;
   if (tensor.shape[0] !== size || tensor.shape[1] !== size) {
@@ -124,6 +127,9 @@ export async function getModelDetections(
       ...defaultModelConfig,
       ...modelConfig,
     });
+  } else if (modelConfig?.modelType === 'pose') {
+    //@ts-ignore
+    return results[0];
   } else {
     return await classificationModelDetection(results, {
       ...defaultModelConfig,
@@ -138,7 +144,19 @@ export async function getInferenceData(
 ) {
   const { labels } = modelConfig;
 
-  if (Array.isArray(results)) {
+  if (modelConfig?.modelType === 'ssd') {
+    //@ts-ignore
+    const { detections, maxIndices, scores } = results;
+    const ssdInferData = Array.from(detections).map((data, key) => ({
+      class: key,
+      classLabel: labels ? labels[maxIndices[data]] : `class ${key}`,
+      score: scores[data],
+    }));
+    return ssdInferData;
+  } else if (modelConfig?.modelType === 'pose') {
+    return results;
+  } else {
+    //@ts-ignore
     const res = results.map((data, key) => ({
       class: key,
       classLabel: labels ? labels[key] : `class ${key}`,
@@ -146,13 +164,4 @@ export async function getInferenceData(
     }));
     return res;
   }
-
-  const { detections, maxIndices, scores } = results;
-  const ssdInferData = Array.from(detections).map((data, key) => ({
-    class: key,
-    classLabel: labels ? labels[maxIndices[data]] : `class ${key}`,
-    score: scores[data],
-  }));
-
-  return ssdInferData;
 }
