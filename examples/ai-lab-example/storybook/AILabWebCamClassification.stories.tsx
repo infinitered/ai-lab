@@ -1,7 +1,6 @@
 import React from 'react';
 import { AILabWebCam } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
@@ -36,10 +35,6 @@ export default {
 const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
   return (
     <AILabWebCam
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.ClassificationModel}
       modelConfig={{
         modelType: 'classification',
@@ -66,10 +61,6 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
     <AILabWebCam
       perf={args.perf}
       model={loaded.ClassificationModel}
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       size={224}
       style={{ height: '100%' }}
       modelConfig={{
@@ -89,7 +80,7 @@ export const withWebCamAndCustomizedSettings = webCamParamsStory.bind({});
 withWebCamAndCustomizedSettings.args = {
   //@ts-ignore
   maxResults: 5, //topk
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   labels: CLASSES.join(', '),
   displaySize: 'content',

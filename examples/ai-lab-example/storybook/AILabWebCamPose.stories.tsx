@@ -1,7 +1,6 @@
 import React from 'react';
 import { AILabWebCam } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
 export default {
@@ -22,12 +21,9 @@ export default {
 const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
   return (
     <AILabWebCam
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.BlazePoseModel}
       active={args.active}
+      perf={args.perf}
       modelConfig={{
         modelType: 'pose',
       }}
@@ -44,6 +40,7 @@ withAWebCamDefaults.parameters = {
 
 withAWebCamDefaults.args = {
   displaySize: 'content',
+  perf: 'simple',
 };
 
 // TODO: hardcoding pose type and configs (fix this)

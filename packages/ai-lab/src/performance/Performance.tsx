@@ -8,11 +8,10 @@ const numberWithCommas = (x: number) =>
 
 const formatKB = (bytes: number) => numberWithCommas(Math.round(bytes / 1024));
 
-export type PerformanceInfo = ProfileInfo &
-  tf.TimingInfo & { drawingTime?: number } & { fps?: number };
+export type PerformanceInfo = Partial<ProfileInfo> & Partial<tf.TimingInfo>;
 
 export interface PerformanceProps {
-  perf?: boolean;
+  perf?: 'none' | 'simple' | 'detailed';
   perfCallback?: (perf: PerformanceInfo) => any;
 }
 
@@ -32,21 +31,34 @@ export const Performance = ({
   kernelMs,
   drawingTime,
   fps,
-}: PerformanceInfo) => {
+  perf,
+}: PerformanceInfo & {
+  drawingTime?: number;
+  fps?: number;
+  perf: PerformanceProps['perf'];
+}) => {
   return (
     //checkout the bottom left corner on the screen to see the metrics boxes
     <div>
-      <div style={styles.container}>
-        <p>New Bytes: {formatKB(newBytes)} KB </p>
-        <p>New Tensors: {newTensors}</p>
-        <p>Peak Bytes: {formatKB(peakBytes < 0 ? 0 : peakBytes)} KB</p>
-        <p>Execution: {kernelMs} ms</p>
-        {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
-        {!!fps && <p>FPS: {fps}</p>}
-      </div>
-      <div style={styles.container}>
-        <Memory pollingFrequency={1000} />
-      </div>
+      {perf !== 'none' && (
+        <div style={styles.container}>
+          {perf === 'detailed' && (
+            <>
+              <p>New Bytes: {formatKB(newBytes!)} KB </p>
+              <p>New Tensors: {newTensors}</p>
+              <p>Peak Bytes: {formatKB(peakBytes! < 0 ? 0 : peakBytes!)} KB</p>
+              <p>Execution: {kernelMs} ms</p>
+            </>
+          )}
+          {!!drawingTime && <p>Drawing Time: {drawingTime.toFixed(2)} ms</p>}
+          {!!fps && <p>FPS: {fps}</p>}
+        </div>
+      )}
+      {perf === 'detailed' && (
+        <div style={styles.container}>
+          <Memory pollingFrequency={1000} />
+        </div>
+      )}
     </div>
   );
 };

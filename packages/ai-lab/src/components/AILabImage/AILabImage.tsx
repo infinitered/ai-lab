@@ -76,11 +76,11 @@ export const AILabImage = ({
 
   useEffect(() => {
     const setupTFJS = async () => {
-      if (perf || perfCallback) {
+      if (perf === 'detailed' || perfCallback) {
         const perfMetrics = await perfInfo(async () => {
           await tensorFlowIt(model);
         });
-        if (perf) {
+        if (perf === 'detailed') {
           //@ts-ignore
           setPerfProps(perfMetrics);
         }
@@ -119,9 +119,9 @@ export const AILabImage = ({
   return (
     <div style={style}>
       <div style={{ position: 'relative' }}>
-        {perf && perfProps && (
+        {perf && perf !== 'none' && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
-            <Performance {...perfProps} drawingTime={drawingTime} />
+            <Performance {...perfProps} drawingTime={drawingTime} perf={perf} />
           </div>
         )}
         <img
@@ -136,7 +136,7 @@ export const AILabImage = ({
             height={imgRef.current?.offsetHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
-              if (!drawingTime) {
+              if (perf !== 'none' && !drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}

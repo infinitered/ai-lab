@@ -115,7 +115,7 @@ withImageAndCustomizedSettings.args = {
   //@ts-ignore
   imageSource: 'dinner',
   maxResults: 5, //topk
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   labels: CLASSES.join(', '),
   displaySize: 'content',

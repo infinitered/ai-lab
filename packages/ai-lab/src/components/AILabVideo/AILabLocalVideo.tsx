@@ -97,15 +97,14 @@ export const AILabLocalVideo = ({
   async function runInference() {
     if (activeInfer) return;
 
-    console.log('calling runInference');
-    if (perf || perfCallback) {
-      handleFpsCount();
+    handleFpsCount();
 
+    if (perf === 'detailed' || perfCallback) {
       const perfMetrics = await perfInfo(async () => {
         await tensorFlowIt(model);
       });
 
-      if (perf) {
+      if (perf === 'detailed') {
         setPerfProps(perfMetrics);
       }
       if (perfCallback) {
@@ -150,12 +149,13 @@ export const AILabLocalVideo = ({
   return (
     <div style={style}>
       <div style={{ position: 'relative' }}>
-        {perf && perfProps && !!drawingTime && (
+        {perf && perf !== 'none' && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <Performance
               {...perfProps}
               drawingTime={drawingTime}
               fps={fpsInfo.current.calculateFps()}
+              perf={perf}
             />
           </div>
         )}
@@ -165,7 +165,7 @@ export const AILabLocalVideo = ({
             height={videoRef.current?.offsetHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
-              if (!drawingTime) {
+              if (perf !== 'none' && !drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}
