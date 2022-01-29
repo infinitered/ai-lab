@@ -1,6 +1,6 @@
-# AI-Lab
+# AI-Lab (currently in ALPHA)
 
-AI-lab is a set of components and tools built on TensorFlow JS for React and React Native!
+AI-lab is a set of components and tools built on TensorFlow JS for web frameworks.
 
 ## Requirements
 
