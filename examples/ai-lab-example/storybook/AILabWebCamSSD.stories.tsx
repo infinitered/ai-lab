@@ -5,7 +5,6 @@ import {
   SimpleObjectDetectionUI,
 } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import { CLASSES } from './labels';
 
 export default {
@@ -47,10 +46,6 @@ const webCamStory: ComponentStory<typeof AILabWebCam> = (args, { loaded }) => {
   return (
     <AILabWebCam //@ts-ignore
       ObjectDetectionUI={args.objectDectionUI}
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.SSDModel}
       style={{ height: '100%' }}
       modelConfig={{
@@ -87,10 +82,6 @@ const webCamParamsStory: ComponentStory<typeof AILabWebCam> = (
         ? SimpleObjectDetectionUI
         : AILabObjectDetectionUI
     }
-    //@ts-ignore
-    onInference={action('onInference', args.onInference)}
-    //@ts-ignore
-    perfCallback={action('perfCallback', args.perfCallback)}
     style={{ height: '100%' }}
     modelConfig={{
       modelType: 'ssd',
@@ -116,7 +107,7 @@ withWebCamAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   visual: true,
   displaySize: 'content',

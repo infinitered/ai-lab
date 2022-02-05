@@ -1,7 +1,6 @@
 import React from 'react';
 import { AILabLocalVideo } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
@@ -46,10 +45,6 @@ const localVideoStory: ComponentStory<typeof AILabLocalVideo> = (
   const theVideo = args.videoSource;
   return (
     <AILabLocalVideo
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.ClassificationModel}
       modelConfig={{
         modelType: 'classification',
@@ -83,10 +78,6 @@ const localVideoParamsStory: ComponentStory<typeof AILabLocalVideo> = (
     <AILabLocalVideo
       perf={args.perf}
       model={loaded.ClassificationModel}
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       style={{ height: '100%' }}
       src={theVideo}
       modelConfig={{
@@ -111,7 +102,7 @@ withLocalVideoAndCustomizedSettings.args = {
 
   labels: CLASSES.join(', '),
   maxResults: 20,
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   videoSource:
     'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',

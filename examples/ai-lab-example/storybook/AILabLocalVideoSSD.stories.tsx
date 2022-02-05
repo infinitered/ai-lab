@@ -5,7 +5,6 @@ import {
   SimpleObjectDetectionUI,
 } from 'ai-lab';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
 import { CLASSES } from './labels';
 
 export default {
@@ -58,10 +57,6 @@ const localVideoStory: ComponentStory<typeof AILabLocalVideo> = (
     <AILabLocalVideo
       //@ts-ignore
       ObjectDetectionUI={args.objectDectionUI}
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       model={loaded.SSDModel}
       modelConfig={{
         modelType: 'ssd',
@@ -104,10 +99,6 @@ const localVideoParamsStory: ComponentStory<typeof AILabLocalVideo> = (
           ? SimpleObjectDetectionUI
           : AILabObjectDetectionUI
       }
-      //@ts-ignore
-      onInference={action('onInference', args.onInference)}
-      //@ts-ignore
-      perfCallback={action('perfCallback', args.perfCallback)}
       style={{ height: '100%' }}
       src={theVideo}
       modelConfig={{
@@ -137,7 +128,7 @@ withLocalVideoAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   visual: true,
   videoSource:

@@ -144,7 +144,7 @@ withImageAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: true,
+  perf: "simple",
   threshold: 0.4,
   visual: true,
   displaySize: 'content',

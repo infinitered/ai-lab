@@ -168,15 +168,14 @@ export const AILabWebCam = ({
         await tensorFlowIt(tensor, model);
       }
 
-      if (perf || perfCallback) {
+      if (perf === 'detailed' || perfCallback) {
         while (stream.current && active) {
-
           handleFpsCount();
 
           if (mounted) {
             const perfMetrics = await perfInfo(handleDrawing);
 
-            if (perf) {
+            if (perf === 'detailed') {
               setPerfProps(perfMetrics);
             }
             if (perfCallback) {
@@ -186,6 +185,8 @@ export const AILabWebCam = ({
         }
       } else {
         while (stream.current && active) {
+          handleFpsCount();
+
           await handleDrawing();
         }
       }
@@ -218,12 +219,13 @@ export const AILabWebCam = ({
   return (
     <div style={style}>
       <div style={{ position: 'relative' }}>
-        {perf && perfProps && !!drawingTime && (
+        {perf && perf !== 'none' && (
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
             <Performance
               {...perfProps}
               drawingTime={drawingTime}
               fps={fpsInfo.current.calculateFps()}
+              perf={perf}
             />
           </div>
         )}
@@ -239,7 +241,7 @@ export const AILabWebCam = ({
             height={myVideo.current?.offsetHeight ?? 0}
             modelConfig={{ ...defaultModelConfig, ...modelConfig }}
             onDrawComplete={(durationMs) => {
-              if (!drawingTime) {
+              if (perf !== 'none' && !drawingTime) {
                 setDrawingTime(durationMs);
               }
             }}
