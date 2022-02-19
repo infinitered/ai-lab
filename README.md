@@ -10,7 +10,7 @@ The packages in this repository require Node v14+ and `pnpm`.
 
 <center>
 
-| App                                           | Web                                           |
+| App (broken for now)                          | Web                                           |
 | --------------------------------------------- | --------------------------------------------- |
 | ![app example](assets/images/app-example.png) | ![web example](assets/images/web-example.png) |
 
