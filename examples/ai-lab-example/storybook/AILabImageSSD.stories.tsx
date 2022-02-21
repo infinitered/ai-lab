@@ -8,6 +8,12 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { CLASSES } from './labels';
 
+const filterGroups = {
+  people: [0],
+  vehicles: [1, 2, 3, 4, 5, 6, 7, 8],
+  seats: [61, 62, 14],
+};
+
 export default {
   title: 'Example/AILabImage/SSD Model',
   component: AILabImage,
@@ -38,6 +44,10 @@ export default {
     },
     displaySize: {
       options: ['content', 'max'],
+      control: { type: 'select' },
+    },
+    filter: {
+      options: ['all', 'people', 'vehicles', 'seats'],
       control: { type: 'select' },
     },
   },
@@ -131,6 +141,8 @@ const imageParamsStory: ComponentStory<typeof AILabImage> = (
         labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
+      //@ts-ignore
+      filter={filterGroups[args.filter]}
       displaySize={args.displaySize}
     />
   );
@@ -144,10 +156,12 @@ withImageAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   visual: true,
   displaySize: 'content',
+  //@ts-ignore
+  filter: 'all',
 };
 
 withImageAndCustomizedSettings.parameters = {
@@ -163,6 +177,7 @@ withImageAndCustomizedSettings.parameters = {
       'threshold',
       'visual',
       'displaySize',
+      'filter',
     ],
   },
 };

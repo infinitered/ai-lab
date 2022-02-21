@@ -7,6 +7,11 @@ import {
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { CLASSES } from './labels';
 
+const filterGroups = {
+  people: [0],
+  vehicles: [1, 2, 3, 4, 5, 6, 7, 8],
+};
+
 export default {
   title: 'Example/AILabVideo/AILabLocalVideo/SSD Model',
   component: AILabLocalVideo,
@@ -38,6 +43,10 @@ export default {
     },
     displaySize: {
       options: ['content', 'max'],
+      control: { type: 'select' },
+    },
+    filter: {
+      options: ['all', 'people', 'vehicles'],
       control: { type: 'select' },
     },
   },
@@ -113,6 +122,8 @@ const localVideoParamsStory: ComponentStory<typeof AILabLocalVideo> = (
         labels: args.labels.split(/,\s*/),
       }}
       visual={args.visual}
+      //@ts-ignore
+      filter={filterGroups[args.filter]}
       displaySize={args.displaySize}
     />
   );
@@ -128,12 +139,14 @@ withLocalVideoAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   visual: true,
   videoSource:
     'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
   displaySize: 'content',
+  //@ts-ignore
+  filter: 'all',
 };
 
 withLocalVideoAndCustomizedSettings.parameters = {
@@ -149,6 +162,7 @@ withLocalVideoAndCustomizedSettings.parameters = {
       'visual',
       'videoSource',
       'displaySize',
+      'filter',
     ],
   },
 };
