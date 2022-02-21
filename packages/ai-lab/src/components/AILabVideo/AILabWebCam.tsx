@@ -29,6 +29,7 @@ export const AILabWebCam = ({
   perf,
   perfCallback,
   size = 224,
+  filter,
   visual,
   displaySize,
   active = true,
@@ -206,7 +207,9 @@ export const AILabWebCam = ({
   useEffect(() => {
     (async function () {
       if (results) {
-        const detections = await getModelDetections(results, modelConfig);
+        const detections = await getModelDetections(results, modelConfig, {
+          filter,
+        });
         const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
         onInference?.(inferences);

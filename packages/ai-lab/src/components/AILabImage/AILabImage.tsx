@@ -29,6 +29,7 @@ export const AILabImage = ({
   src,
   size = 224,
   visual,
+  filter,
   displaySize,
   style,
 }: ImageProps) => {
@@ -41,7 +42,6 @@ export const AILabImage = ({
 
   const tensorFlowIt = async (model: tf.GraphModel | tf.LayersModel) => {
     const image = imgRef.current;
-    // TODO: Only some models need the tensor
     const tensor = tf.browser.fromPixels(image!);
 
     let res;
@@ -66,6 +66,8 @@ export const AILabImage = ({
       res = await predictClassification(tensor, model, size);
     }
     setResults(res);
+
+    tf.dispose(tensor);
   };
 
   useEffect(() => {
@@ -108,7 +110,9 @@ export const AILabImage = ({
   useEffect(() => {
     (async function () {
       if (results) {
-        const detections = await getModelDetections(results, modelConfig);
+        const detections = await getModelDetections(results, modelConfig, {
+          filter,
+        });
         const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
         onInference?.(inferences);

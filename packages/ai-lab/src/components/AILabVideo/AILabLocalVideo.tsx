@@ -30,6 +30,7 @@ export const AILabLocalVideo = ({
   perfCallback,
   size = 224,
   src,
+  filter,
   visual,
   displaySize,
   style,
@@ -56,8 +57,8 @@ export const AILabLocalVideo = ({
 
     activeInfer = true;
 
+    const tensor = tf.browser.fromPixels(videoRef.current);
     if (modelConfig?.modelType === 'ssd') {
-      const tensor = tf.browser.fromPixels(videoRef.current);
       if (results)
         tf.dispose([
           //@ts-ignore
@@ -69,13 +70,13 @@ export const AILabLocalVideo = ({
       const res = await predictSSD(tensor, model);
       setResults(res);
     } else {
-      const tensor = tf.browser.fromPixels(videoRef.current);
       if (results) tf.dispose(results);
       const res = await predictClassification(tensor, model, size);
       setResults(res);
     }
 
     activeInfer = false;
+    tf.dispose(tensor);
   }
 
   useEffect(() => {
@@ -138,7 +139,9 @@ export const AILabLocalVideo = ({
   useEffect(() => {
     (async function () {
       if (results) {
-        const detections = await getModelDetections(results, modelConfig);
+        const detections = await getModelDetections(results, modelConfig, {
+          filter,
+        });
         const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
         onInference?.(inferences);
