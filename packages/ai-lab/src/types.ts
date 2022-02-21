@@ -19,6 +19,7 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
     onInference?: (inferenceData: any) => void;
     size?: number;
+    filter?: Array<number>;
     visual?: boolean;
     displaySize?: 'content' | 'max';
   };
@@ -35,6 +36,7 @@ export interface VideoProps
   onInference?: (inferenceData: any) => void;
   size?: number;
   src?: string;
+  filter?: Array<number>;
   active?: boolean;
   visual?: boolean;
   displaySize?: 'content' | 'max';

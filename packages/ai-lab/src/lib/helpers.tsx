@@ -42,9 +42,32 @@ export async function ssdModelDetection(results: Results, config: ModelConfig) {
     nmsActive ? 1 : 0 // 0 is normal NMS, 1 is Soft-NMS for overlapping support
   );
 
-  const detections = await nmsDetections.selectedIndices.data();
+  let detections = await nmsDetections.selectedIndices.array();
 
-  tf.dispose([nmsDetections.selectedIndices, nmsDetections.selectedScores]);
+  tf.dispose([
+    nmsDetections.selectedIndices,
+    nmsDetections.selectedScores,
+    prominentDetection.values,
+    prominentDetection.indices,
+    justValues,
+    justBoxes,
+  ]);
+
+  // @ts-ignore
+  if (config.filter) {
+    // Filter results by filter classes
+    // @ts-ignore
+    detections = detections.flatMap((x) => {
+      let xClass = maxIndices[x];
+
+      // @ts-ignore
+      if (config.filter.includes(xClass)) {
+        return x;
+      } else {
+        return [];
+      }
+    });
+  }
 
   return { detections, maxIndices, scores, boxes };
 }
@@ -88,10 +111,11 @@ export async function predictSSD(
   model: tf.GraphModel | tf.LayersModel
 ) {
   // SSD Mobilenet single batch
-
   const readyfied = tf.expandDims(tensor, 0);
   const res = await (model as tf.GraphModel).executeAsync(readyfied);
 
+  // clean up
+  tf.dispose(readyfied);
   return res;
 }
 
@@ -120,11 +144,13 @@ export async function predictClassification(
 
 export async function getModelDetections(
   results: Results,
-  modelConfig: ModelConfig = defaultModelConfig
+  modelConfig: ModelConfig = defaultModelConfig,
+  componentConfig: Object = {}
 ) {
   if (modelConfig?.modelType === 'ssd') {
     return await ssdModelDetection(results, {
       ...defaultModelConfig,
+      ...componentConfig,
       ...modelConfig,
     });
   } else if (modelConfig?.modelType === 'pose') {
