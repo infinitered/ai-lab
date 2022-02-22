@@ -17,7 +17,7 @@ export type ImageProps = React.ImgHTMLAttributes<HTMLImageElement> &
     model: tf.GraphModel | tf.LayersModel;
     modelConfig?: ModelConfig;
     ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
-    onInference?: (inferenceData: any) => void;
+    onInference?: (inferenceData: any, detectionData?: any) => void;
     size?: number;
     filter?: Array<number>;
     visual?: boolean;
@@ -33,7 +33,7 @@ export interface VideoProps
   model: tf.GraphModel | tf.LayersModel;
   modelConfig?: ModelConfig;
   ObjectDetectionUI?: (props: ObjectDetectionUIProps) => JSX.Element;
-  onInference?: (inferenceData: any) => void;
+  onInference?: (inferenceData: any, detectionData?: any) => void;
   size?: number;
   src?: string;
   filter?: Array<number>;

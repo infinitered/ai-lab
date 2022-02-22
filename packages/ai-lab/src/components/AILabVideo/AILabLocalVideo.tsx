@@ -82,6 +82,7 @@ export const AILabLocalVideo = ({
   useEffect(() => {
     tf.ready().then(() => {
       setIsTFReady(true);
+      tensorFlowIt(model); // warm up model
     });
   }, []);
 
@@ -144,7 +145,7 @@ export const AILabLocalVideo = ({
         });
         const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
-        onInference?.(inferences);
+        onInference?.(inferences, detections);
       }
     })();
   }, [modelConfig, results]);

@@ -115,7 +115,7 @@ export const AILabImage = ({
         });
         const inferences = await getInferenceData(detections, modelConfig);
         setDetectionResults(detections);
-        onInference?.(inferences);
+        onInference?.(inferences, detections);
       }
     })();
   }, [modelConfig, results]);
