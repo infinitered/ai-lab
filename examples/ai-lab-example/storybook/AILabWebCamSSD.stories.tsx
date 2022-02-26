@@ -28,7 +28,7 @@ export default {
       control: {
         type: 'text',
         defaultValue: CLASSES.join(', '),
-        description: 'Comma separated classification labels',
+        description: 'Comma separated classification labels.',
       },
     },
     displaySize: {
@@ -107,7 +107,7 @@ withWebCamAndCustomizedSettings.args = {
   maxResults: 20,
   nmsActive: true,
   objectDetectionUI: 'ai-lab',
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   visual: true,
   displaySize: 'content',
