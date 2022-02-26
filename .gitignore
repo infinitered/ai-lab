@@ -7,3 +7,4 @@ storybook-static
 package-lock.json
 .pnpm-debug.log
 .cache/
+docs-build/

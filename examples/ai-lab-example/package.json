@@ -7,7 +7,7 @@
     "start": "pnpm storybook",
     "build": "parcel build index.html",
     "storybook": "start-storybook -p 6006 -c storybook",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -c storybook"
   },
   "dependencies": {
     "@mediapipe/pose": "^0.5.1635988162",

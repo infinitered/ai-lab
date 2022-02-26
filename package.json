@@ -21,7 +21,8 @@
     "lint": "tsdx lint && pnpm lint -r",
     "prepare": "tsdx build",
     "size": "size-limit",
-    "analyze": "size-limit --why"
+    "analyze": "size-limit --why",
+    "build-storybook": "cd examples/ai-lab-example && build-storybook -c storybook -o ../../docs-build"
   },
   "peerDependencies": {
     "react": ">=16"
