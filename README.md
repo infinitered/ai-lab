@@ -1,4 +1,6 @@
-# AI-Lab (currently in ALPHA)
+# AI-Lab (currently in _ALPHA_)
+
+[![Docs Working](https://github.com/infinitered/ai-lab/actions/workflows/storybook.yml/badge.svg)](https://infinitered.github.io/ai-lab/)
 
 AI-lab is a set of components and tools built on TensorFlow JS for web frameworks.
 
@@ -10,7 +12,7 @@ The packages in this repository require Node v14+ and `pnpm`.
 
 <center>
 
-| App (broken for now)                          | Web                                           |
+| React Native (broken for now)                 | React                                         |
 | --------------------------------------------- | --------------------------------------------- |
 | ![app example](assets/images/app-example.png) | ![web example](assets/images/web-example.png) |
 
@@ -25,7 +27,9 @@ import React from 'react';
 import { AILabImage } from 'ai-lab';
 
 const MyAIComponent = ({ src }) => {
-  return <AILabImage perf perfCallback={perf => console.log(perf)} src={src} />;
+  return (
+    <AILabImage perf perfCallback={(perf) => console.log(perf)} src={src} />
+  );
 };
 ```
 
