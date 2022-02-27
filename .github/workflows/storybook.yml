@@ -16,11 +16,12 @@ jobs:
           persist-credentials: false
       - name: Install It All 🔧
         run: | # prep for storybook + page
-          npm install
-          npm run buildailab
+          npm install -g pnpm
+          pnpm install
+          pnpm build --filter ai-lab
       - name: Build ⚙
         run: | # build the Storybook files
-          npm build-storybook
+          pnpm build-storybook
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.6.2
         with:
