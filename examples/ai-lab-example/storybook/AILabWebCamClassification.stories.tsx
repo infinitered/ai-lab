@@ -5,7 +5,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
 export default {
-  title: 'Example/AILabVideo/AILabWebCam/Classification Model',
+  title: 'Examples/AILabVideo/AILabWebCam/Classification Model',
   component: AILabWebCam,
   argTypes: {
     threshold: {
@@ -80,7 +80,7 @@ export const withWebCamAndCustomizedSettings = webCamParamsStory.bind({});
 withWebCamAndCustomizedSettings.args = {
   //@ts-ignore
   maxResults: 5, //topk
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   labels: CLASSES.join(', '),
   displaySize: 'content',

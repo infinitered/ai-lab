@@ -4,7 +4,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
 export default {
-  title: 'Example/AILabVideo/AILabWebCam/Pose Model',
+  title: 'Examples/AILabVideo/AILabWebCam/Pose Model',
   component: AILabWebCam,
   argTypes: {
     displaySize: {

@@ -5,7 +5,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
 export default {
-  title: 'Example/AILabVideo/AILabLocalVideo/Classification Model',
+  title: 'Examples/AILabVideo/AILabLocalVideo/Classification Model',
   component: AILabLocalVideo,
   argTypes: {
     videoSource: {
@@ -102,7 +102,7 @@ withLocalVideoAndCustomizedSettings.args = {
 
   labels: CLASSES.join(', '),
   maxResults: 20,
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   videoSource:
     'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',

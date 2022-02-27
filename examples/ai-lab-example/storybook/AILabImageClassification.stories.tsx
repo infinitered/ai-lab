@@ -6,7 +6,7 @@ import { action } from '@storybook/addon-actions';
 const CLASSES = ['Drawing', 'Hentai', 'Neutral', 'Porn', 'Sexy'];
 
 export default {
-  title: 'Example/AILabImage/Classification Model',
+  title: 'Examples/AILabImage/Classification Model',
   component: AILabImage,
   argTypes: {
     imageSource: {
@@ -115,7 +115,7 @@ withImageAndCustomizedSettings.args = {
   //@ts-ignore
   imageSource: 'dinner',
   maxResults: 5, //topk
-  perf: "simple",
+  perf: 'simple',
   threshold: 0.4,
   labels: CLASSES.join(', '),
   displaySize: 'content',

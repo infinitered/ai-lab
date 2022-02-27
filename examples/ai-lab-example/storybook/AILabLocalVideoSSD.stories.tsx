@@ -13,7 +13,7 @@ const filterGroups = {
 };
 
 export default {
-  title: 'Example/AILabVideo/AILabLocalVideo/SSD Model',
+  title: 'Examples/AILabVideo/AILabLocalVideo/SSD Model',
   component: AILabLocalVideo,
   argTypes: {
     objectDetectionUI: {

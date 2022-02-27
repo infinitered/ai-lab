@@ -8,7 +8,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { CLASSES } from './labels';
 
 export default {
-  title: 'Example/AILabVideo/AILabWebCam/SSD Model',
+  title: 'Examples/AILabVideo/AILabWebCam/SSD Model',
   component: AILabWebCam,
   argTypes: {
     objectDetectionUI: {

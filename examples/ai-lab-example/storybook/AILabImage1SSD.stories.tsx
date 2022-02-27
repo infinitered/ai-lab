@@ -15,7 +15,7 @@ const filterGroups = {
 };
 
 export default {
-  title: 'Example/AILabImage/SSD Model',
+  title: 'Examples/AILabImage/SSD Model',
   component: AILabImage,
   argTypes: {
     objectDetectionUI: {

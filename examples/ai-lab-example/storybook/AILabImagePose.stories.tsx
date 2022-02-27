@@ -5,7 +5,7 @@ import { action } from '@storybook/addon-actions';
 import * as poseDetection from '@tensorflow-models/pose-detection';
 
 export default {
-  title: 'Example/AILabImage/Pose Detection Model',
+  title: 'Examples/AILabImage/Pose Detection Model',
   component: AILabImage,
   argTypes: {
     imageSource: {
