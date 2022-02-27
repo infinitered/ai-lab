@@ -4,6 +4,7 @@
     "outDir": "dist",
     "rootDir": "./src"
   },
+  "allowSyntheticDefaultImports": true,
   "extends": "../../shared/tsconfig.base.json",
   "include": ["src"]
 }
