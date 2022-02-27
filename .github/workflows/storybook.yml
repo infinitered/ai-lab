@@ -15,7 +15,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Install It All 🔧
-        run: | # prep for storybook + page build
+        run: | # prep for storybook + page
           npm install -g pnpm
           pnpm install
           pnpm buildailab
