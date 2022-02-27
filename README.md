@@ -1,4 +1,4 @@
-[![Docs Working](https://github.com/infinitered/ai-lab/actions/workflows/storybook.yml/badge.svg)](https://infinitered.github.io/ai-lab/)
+[![Docs Working](https://github.com/infinitered/ai-lab/actions/workflows/storybook.yml/badge.svg)](https://infinitered.github.io/ai-lab/) ![CodeQL](https://github.com/infinitered/ai-lab/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)
 
 # ![AI-Lab](assets/images/ai-lab.jpg) Bring the power of AI to Web easily.  (currently in _ALPHA_).
 
