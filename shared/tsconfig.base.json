@@ -3,6 +3,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "jsx": "react",
     "lib": ["dom", "esnext"],

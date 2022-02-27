@@ -5,7 +5,7 @@ on:
         'examples/ai-lab-example/storybook/**',
         'packages/ai-lab/src/components/**',
         '.github/workflows/storybook.yml',
-      ] # Trigger the action only when files change in the folders defined here
+      ] # Trigger the action only when files change in the folders defined above
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
