@@ -18,7 +18,7 @@ jobs:
         run: | # prep for storybook + page
           npm install -g pnpm
           pnpm install
-          NODE_ENV=staging pnpm buildailab
+          pnpm buildailab
       - name: Build ⚙
         run: | # build the Storybook files
           pnpm build-storybook
