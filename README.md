@@ -1,15 +1,13 @@
-# AI-Lab (currently in _ALPHA_)
-
 [![Docs Working](https://github.com/infinitered/ai-lab/actions/workflows/storybook.yml/badge.svg)](https://infinitered.github.io/ai-lab/)
 
-AI-lab is a set of components and tools built on TensorFlow JS for web frameworks.
+# ![AI-Lab](assets/images/ai-lab.jpg) Bring the power of AI to Web easily.  (currently in _ALPHA_).
 
-## Requirements
 
-The packages in this repository require Node v14+ and `pnpm`.
+This project wires together frameworks for Artificial Intelligence on the edge.  The current focus is popular computer vision models in TensorFlow.js on React.  The goal is to support React Native, and multiple web frameworks.
 
 ## Quick Look
 
+To play with AI-Lab, check out the latest [storybook build](https://infinitered.github.io/ai-lab/).
 <center>
 
 | React Native (broken for now)                 | React                                         |
@@ -18,30 +16,67 @@ The packages in this repository require Node v14+ and `pnpm`.
 
 </center>
 
-## Examples
+## Install
 
-### _AILabImage_
+```
+yarn add ai-lab @tensorflow/tfjs
+```
+
+Then add it
 
 ```tsx
 import React from 'react';
 import { AILabImage } from 'ai-lab';
-
-const MyAIComponent = ({ src }) => {
-  return (
-    <AILabImage perf perfCallback={(perf) => console.log(perf)} src={src} />
-  );
-};
 ```
 
-### _Properties_
+## Dev Requirements
 
-| Prop         | Type                                      | Description                         |
-| ------------ | ----------------------------------------- | ----------------------------------- |
-| perf         | boolean                                   | Display performance metrics overlay |
-| prefCallback | (perfInfo: PerfInfo) => Promise<PerfInfo> | Get performance metrics in callback |
-| src          | string                                    | URI to image file                   |
+The packages in this repository require Node v14+ and `pnpm`.
 
-<br>
+## Examples
+
+### 📷 _AILabImage_
+
+The following code automatically runs the SSD model and places bounding boxes for detections.
+```tsx
+  <AILabImage
+    model={SSD_MODEL_HERE}
+    modelConfig={{
+      modelType: 'ssd'
+    }}
+    src={require('./cat.jpeg')}
+    visual
+  />  
+```
+
+### 📺 _AILabLocalVideo_
+
+This code runs the model on the supplied video and logs the results
+
+```tsx
+  <AILabLocalVideo
+    model={ClassificationModel}
+    onInference={console.log}
+    modelConfig={{
+      modelType: 'classification',
+    }}
+    src={theVideo}
+  />
+```
+
+### 🕸🎥 _AILabWebCam_
+
+This code runs the model on the webcam feed and logs the results
+
+```tsx
+    <AILabWebCam
+      model={BlazePoseModel}
+      onInference={console.log}
+      modelConfig={{
+        modelType: 'pose',
+      }}
+    />
+```
 
 ## Installation
 
