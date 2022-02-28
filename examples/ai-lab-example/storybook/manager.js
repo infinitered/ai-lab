@@ -5,7 +5,7 @@ addons.setConfig({
   theme: {
     ...themes.dark,
     brandTitle: 'AI-Lab',
-    brandUrl: 'https://infinitered.github.io/ai-lab/',
+    brandUrl: 'https://github.com/infinitered/ai-lab',
     brandImage:
       'https://raw.githubusercontent.com/infinitered/ai-lab/master/assets/images/ai-lab.jpg',
   },
